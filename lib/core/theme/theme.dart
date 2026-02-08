@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:portal_jtv/core/theme/portal_appbar_theme.dart';
-import 'package:portal_jtv/core/theme/portal_button_theme.dart';
-import 'package:portal_jtv/core/theme/portal_colors.dart';
-import 'package:portal_jtv/core/theme/portal_input_theme.dart';
-import 'package:portal_jtv/core/theme/portal_navigation_theme.dart';
-import 'package:portal_jtv/core/theme/portal_typography.dart';
+import 'package:portal_jtv/core/theme/appbar/portal_appbar_theme.dart';
+import 'package:portal_jtv/core/theme/button/portal_button_theme.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
+import 'package:portal_jtv/core/theme/input/portal_input_theme.dart';
+import 'package:portal_jtv/core/theme/navigation/portal_navigation_theme.dart';
+import 'package:portal_jtv/core/theme/typography/portal_typography.dart';
 
 /// Theme utama untuk Portal JTV
 /// Mendukung Light dan Dark mode dengan warna brand JTV

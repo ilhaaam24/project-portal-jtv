@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portal_jtv/core/theme/portal_colors.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 
 /// Navigation Theme untuk Portal JTV
 /// Berisi konfigurasi untuk BottomNavigationBar dan NavigationBar (Material 3)

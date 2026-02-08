@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:portal_jtv/core/theme/portal_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_jtv/config/routes/app_routes.dart';
+import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
 import 'package:portal_jtv/core/theme/theme.dart';
 import 'config/injection/injection.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [BlocProvider(create: (_) => NavigationCubit())],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,18 +21,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Portal JTV',
+    return MaterialApp.router(
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
       theme: PortalTheme.lightTheme,
       darkTheme: PortalTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      home: Center(
-        child: Text(
-          'Portal JTV App',
-          style: TextStyle(fontSize: 20, color: PortalColors.jtvJingga),
-        ),
-      ),
+      themeMode: ThemeMode.light,
     );
   }
 }

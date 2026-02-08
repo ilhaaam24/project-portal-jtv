@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portal_jtv/core/theme/portal_colors.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 
 /// AppBar Theme untuk Portal JTV
 /// Mendukung Light dan Dark mode dengan warna brand JTV

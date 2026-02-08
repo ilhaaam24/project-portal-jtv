@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portal_jtv/core/theme/portal_colors.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 
 /// Input Theme untuk Portal JTV
 /// Berisi konfigurasi untuk TextField, SearchBar, dan input lainnya
