@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
-import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/core/widgets/nav_item.dart';
 
 class BottomNavBar extends StatelessWidget {

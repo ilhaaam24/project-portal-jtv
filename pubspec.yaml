@@ -26,10 +26,18 @@ dependencies:
   # network
   dio: ^5.9.1
 
+  dartz: ^0.10.1
   equatable: ^2.0.8
   intl: ^0.20.2
 
+  # mapping json to object
+  json_annotation: ^4.10.0
+
+  # create immutable class/object
+  freezed_annotation: ^3.1.0
+
 dev_dependencies:
+
   flutter_test:
     sdk: flutter
 
@@ -37,10 +45,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  # To add assets to your application, add
-  # Fonts configuration
-
 
   assets:
     - assets/images/
