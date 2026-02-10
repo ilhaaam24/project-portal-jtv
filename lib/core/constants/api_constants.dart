@@ -11,6 +11,8 @@ class ApiConstants {
   static const String videos = '/video';
   static const String categories = '/navbar/kategori';
   static const String newsDetail = '/news/detail';
+  static const String hit = '/hit';
+  static const String savedNews = '/saved-news';
 
   // Timeout
   static const Duration connectTimeout = Duration(seconds: 30);
