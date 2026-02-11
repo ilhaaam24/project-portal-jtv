@@ -36,8 +36,13 @@ dependencies:
   # create immutable class/object
   freezed_annotation: ^3.1.0
 
-dev_dependencies:
+  shared_preferences: ^2.5.4
+  share_plus: ^12.0.1
 
+  flutter_html: ^3.0.0
+  flutter_tts: ^4.2.5
+
+dev_dependencies:
   flutter_test:
     sdk: flutter
 
@@ -49,6 +54,8 @@ flutter:
   assets:
     - assets/images/
     - assets/logos/
+    - assets/icons/
+    - assets/icons/navigation/
   fonts:
     - family: Inter
       fonts:
