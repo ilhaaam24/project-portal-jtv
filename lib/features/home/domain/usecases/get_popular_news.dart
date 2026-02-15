@@ -1,20 +1,24 @@
-import 'package:dartz/dartz.dart';
-import 'package:portal_jtv/core/error/failures.dart';
-import 'package:portal_jtv/core/usecase/usecase.dart';
-import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
-import 'package:portal_jtv/features/home/domain/repositories/home_respository.dart';
+// lib/features/home/domain/usecases/get_populer.dart
 
-class GetPopularNews implements UseCase<List<NewsEntity>, PopularNewsParams> {
-  final HomeRepository homeRepository;
-  GetPopularNews(this.homeRepository);
+import 'package:dartz/dartz.dart';
+import 'package:portal_jtv/core/usecase/usecase.dart';
+import 'package:portal_jtv/features/home/domain/repositories/home_respository.dart';
+import '../../../../core/error/failures.dart';
+
+class GetPopuler implements UseCase<PaginatedNews, PopulerParams> {
+  final HomeRepository repository;
+
+  GetPopuler(this.repository);
 
   @override
-  Future<Either<Failure, List<NewsEntity>>> call(PopularNewsParams params) {
-    return homeRepository.getPopularNews(limit: params.limit);
+  Future<Either<Failure, PaginatedNews>> call(PopulerParams params) {
+    return repository.getPopulerNews(page: params.page, limit: params.limit);
   }
 }
 
-class PopularNewsParams {
-  final int limit;
-  PopularNewsParams({this.limit = 5});
+class PopulerParams {
+  final int page;
+  final int? limit;
+
+  const PopulerParams({this.page = 1, this.limit = 10});
 }

@@ -1,11 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:portal_jtv/core/constants/api_constants.dart';
+import 'package:portal_jtv/core/network/auth_interceptor.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../error/exceptions.dart';
 
 class ApiClient {
   late final Dio _dio;
 
-  ApiClient() {
+  ApiClient(SharedPreferences prefs) {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
@@ -17,6 +19,8 @@ class ApiClient {
         },
       ),
     );
+
+    _dio.interceptors.add(AuthInterceptor(prefs));
 
     // Interceptor untuk logging (optional, untuk debug)
     _dio.interceptors.add(

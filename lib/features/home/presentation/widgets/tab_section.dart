@@ -32,15 +32,15 @@ class _TabSectionState extends State<TabSection> {
                   alignment: Alignment.center,
                   height: 45,
                   decoration: BoxDecoration(
-                    border: tab == tabs[index]
-                        ? Border(
-                            bottom: BorderSide(
-                              color: PortalColors.jtvJingga,
-                              width: 2,
-                              style: BorderStyle.solid,
-                            ),
-                          )
-                        : Border(),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: tab == tabs[index]
+                            ? PortalColors.jtvJingga
+                            : Colors.transparent,
+                        width: 2,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
                   ),
                   child: Text(
                     tab,

@@ -45,11 +45,9 @@ class BottomNavBar extends StatelessWidget {
                     isSelected: currentIndex == 1,
                     onTap: () {
                       context.read<NavigationCubit>().changeIndex(1);
-                      context.go('/live');
+                      context.go('/category');
                     },
                   ),
-                  // Space untuk FAB di tengah
-                  // const SizedBox(width: 48),
                   // Bookmark
                   NavItem(
                     icon: "assets/icons/navigation/play_inactive.png",

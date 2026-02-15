@@ -1,20 +1,20 @@
 // lib/features/home/presentation/bloc/home_bloc.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/get_headlines.dart';
-import '../../domain/usecases/get_breaking_news.dart';
-import '../../domain/usecases/get_latest_news.dart';
-import '../../domain/usecases/get_popular_news.dart';
-import '../../domain/usecases/get_sorot.dart';
-import '../../domain/usecases/get_videos.dart';
-import 'home_event.dart';
-import 'home_state.dart';
+import '../../../domain/usecases/get_headlines.dart';
+import '../../../domain/usecases/get_breaking_news.dart';
+import '../../../domain/usecases/get_latest_news.dart';
+import '../../../domain/usecases/get_popular_news.dart';
+import '../../../domain/usecases/get_sorot.dart';
+import '../../../domain/usecases/get_videos.dart';
+import 'terbaru_event.dart';
+import 'terbaru_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetHeadlines getHeadlines;
   final GetBreakingNews getBreakingNews;
   final GetLatestNews getLatestNews;
-  final GetPopularNews getPopularNews;
+  final GetPopuler getPopularNews;
   final GetSorot getSorot;
   final GetVideos getVideos;
 
@@ -54,7 +54,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         BreakingNewsParams(limit: 3),
       );
       final headlinesResult = await getHeadlines(HeadlinesParams(limit: 5));
-      final popularResult = await getPopularNews(PopularNewsParams(limit: 5));
       final latestResult = await getLatestNews(
         LatestNewsParams(page: 1, limit: 10),
       );
@@ -82,10 +81,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         return <dynamic>[];
       }, (data) => data);
 
-      final popular = popularResult.fold((failure) {
-        errorMessage ??= failure.message;
-        return <dynamic>[];
-      }, (data) => data);
+      
 
       final latestPaginated = latestResult.fold((failure) {
         errorMessage ??= failure.message;
@@ -106,7 +102,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (errorMessage != null &&
           breaking.isEmpty &&
           headlines.isEmpty &&
-          popular.isEmpty &&
           latestPaginated == null) {
         emit(
           state.copyWith(
@@ -123,7 +118,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           status: HomeStatus.success,
           breakingNews: List.from(breaking),
           headlines: List.from(headlines),
-          popularNews: List.from(popular),
           latestNews: latestPaginated?.news ?? [],
           sorot: List.from(sorot),
           videos: List.from(videos),

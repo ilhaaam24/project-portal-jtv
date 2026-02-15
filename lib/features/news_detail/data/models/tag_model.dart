@@ -5,11 +5,11 @@ class TagModel extends TagEntity {
 
   /// Perhatikan: dari backend, field-nya adalah 'namatag' dan 'seo_tag'
   factory TagModel.fromJson(Map<String, dynamic> json) {
-    return TagModel(name: json['namatag'] ?? '', seo: json['seo_tag'] ?? '');
+    return TagModel(name: json['title'] ?? '', seo: json['seo'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {'namatag': name, 'seo_tag': seo};
+    return {'title': name, 'seo': seo};
   }
 
   TagEntity toEntity() => this;

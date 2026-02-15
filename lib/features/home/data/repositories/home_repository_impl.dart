@@ -3,6 +3,7 @@ import 'package:portal_jtv/core/error/exceptions.dart';
 import 'package:portal_jtv/core/error/failures.dart';
 import 'package:portal_jtv/features/home/data/datasources/home_remote_datasource.dart';
 import 'package:portal_jtv/features/home/domain/entities/category_entity.dart';
+import 'package:portal_jtv/features/home/domain/entities/for_you_entity.dart';
 import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/home/domain/entities/sorot_entity.dart';
 import 'package:portal_jtv/features/home/domain/entities/video_entity.dart';
@@ -33,20 +34,6 @@ class HomeRepositoryImpl implements HomeRepository {
   }) async {
     try {
       final result = await remoteDataSource.getHeadlines(limit: limit);
-      return Right(result.map((model) => model.toEntity()).toList());
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message));
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<NewsEntity>>> getPopularNews({
-    int limit = 5,
-  }) async {
-    try {
-      final result = await remoteDataSource.getPopularNews(limit: limit);
       return Right(result.map((model) => model.toEntity()).toList());
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
@@ -114,6 +101,32 @@ class HomeRepositoryImpl implements HomeRepository {
       return Left(ServerFailure(message: e.message));
     } on NetworkException catch (e) {
       return Left(NetworkFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ForYouEntity>>> getForYou({int? limit}) async {
+    try {
+      final result = await remoteDataSource.getForYou(limit: limit);
+      return Right(result.map((e) => e.toEntity()).toList());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PaginatedNews>> getPopulerNews({
+    int page = 1,
+    int? limit,
+  }) async {
+    try {
+      final result = await remoteDataSource.getPopularNews(
+        page: page,
+        limit: limit,
+      );
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
     }
   }
 }

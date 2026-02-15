@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 
 /// AppBar Theme untuk Portal JTV
@@ -13,6 +14,12 @@ class PortalAppBarTheme {
   static const AppBarTheme lightAppBarTheme = AppBarTheme(
     backgroundColor: PortalColors.jtvBiru,
     foregroundColor: PortalColors.white,
+    surfaceTintColor: Colors.transparent,
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarColor:
+          Colors.transparent, // Supaya status bar mengikuti warna AppBar
+      statusBarIconBrightness: Brightness.light,
+    ),
     elevation: 0,
     centerTitle: true,
     iconTheme: IconThemeData(color: PortalColors.white),
@@ -29,9 +36,15 @@ class PortalAppBarTheme {
   // ============================================================
 
   static const AppBarTheme darkAppBarTheme = AppBarTheme(
-    backgroundColor: PortalColors.darkSurface,
+    backgroundColor: PortalColors.jtvBiru,
     foregroundColor: PortalColors.white,
+    surfaceTintColor: Colors.transparent,
     elevation: 0,
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarColor:
+          Colors.transparent, // Supaya status bar mengikuti warna AppBar
+      statusBarIconBrightness: Brightness.dark,
+    ),
     centerTitle: true,
     iconTheme: IconThemeData(color: PortalColors.white),
     actionsIconTheme: IconThemeData(color: PortalColors.white),
@@ -49,6 +62,7 @@ class PortalAppBarTheme {
   static const AppBarTheme transparentAppBarTheme = AppBarTheme(
     backgroundColor: Colors.transparent,
     foregroundColor: PortalColors.white,
+
     elevation: 0,
     centerTitle: true,
     iconTheme: IconThemeData(color: PortalColors.white),

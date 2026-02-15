@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1076749668307",
+    "project_id": "portal-jtv",
+    "storage_bucket": "portal-jtv.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076749668307:android:96c4d51ac2c1e4aa63a926",
+        "android_client_info": {
+          "package_name": "com.example.portal_jtv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWTDJktshDQ5gko9VqXVr0TkWYoG6dxmc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

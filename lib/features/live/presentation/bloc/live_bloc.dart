@@ -1,11 +1,41 @@
-import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+// lib/features/live/presentation/bloc/live_bloc.dart
 
-part 'live_event.dart';
-part 'live_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_jtv/core/usecase/usecase.dart';
+import '../../domain/usecases/get_livestream.dart';
+import 'live_event.dart';
+import 'live_state.dart';
 
 class LiveBloc extends Bloc<LiveEvent, LiveState> {
-  LiveBloc() : super(LiveInitial()) {
-    on<LiveEvent>((event, emit) {});
+  final GetLivestream getLivestream;
+
+  LiveBloc({required this.getLivestream}) : super(LiveState.initial()) {
+    on<LoadLivestream>(_onLoad);
+    on<RefreshLivestream>(_onRefresh);
+  }
+
+  Future<void> _onLoad(LoadLivestream event, Emitter<LiveState> emit) async {
+    emit(state.copyWith(status: LiveStatus.loading));
+
+    final result = await getLivestream(const NoParams());
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          status: LiveStatus.failure,
+          errorMessage: failure.message,
+        ),
+      ),
+      (livestream) => emit(
+        state.copyWith(status: LiveStatus.success, livestream: livestream),
+      ),
+    );
+  }
+
+  Future<void> _onRefresh(
+    RefreshLivestream event,
+    Emitter<LiveState> emit,
+  ) async {
+    await _onLoad(const LoadLivestream(), emit);
   }
 }

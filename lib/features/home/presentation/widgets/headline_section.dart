@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portal_jtv/features/home/presentation/bloc/home_state.dart';
+import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
 
 Widget buildHeadlinesSection(HomeState state) {
   return SizedBox(

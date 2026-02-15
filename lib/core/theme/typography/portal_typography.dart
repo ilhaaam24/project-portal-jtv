@@ -32,7 +32,7 @@ class PortalTypography {
     fontSize: 32,
     fontWeight: FontWeight.w600,
     height: 1.5,
-    letterSpacing: 4,
+    letterSpacing: -1,
   );
 
   /// headlineMedium Text Style

@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:portal_jtv/core/error/failures.dart';
 import 'package:portal_jtv/features/home/domain/entities/category_entity.dart';
+import 'package:portal_jtv/features/home/domain/entities/for_you_entity.dart';
 import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/home/domain/entities/sorot_entity.dart';
 import 'package:portal_jtv/features/home/domain/entities/video_entity.dart';
@@ -11,7 +12,7 @@ abstract class HomeRepository {
 
   Future<Either<Failure, List<NewsEntity>>> getHeadlines({int limit = 5});
 
-  Future<Either<Failure, List<NewsEntity>>> getPopularNews({int limit = 5});
+  Future<Either<Failure, PaginatedNews>> getPopulerNews({int page = 1, int? limit});
 
   Future<Either<Failure, PaginatedNews>> getLatestNews({
     int page = 1,
@@ -22,7 +23,10 @@ abstract class HomeRepository {
 
   Future<Either<Failure, List<VideoEntity>>> getVideos({int limit = 5});
 
+  Future<Either<Failure, List<ForYouEntity>>> getForYou({int? limit});
+
   Future<Either<Failure, List<CategoryEntity>>> getCategories();
+
 }
 
 class PaginatedNews extends Equatable {
