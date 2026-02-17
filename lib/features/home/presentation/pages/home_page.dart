@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_event.dart';
@@ -82,16 +83,13 @@ class _HomeViewState extends State<_HomeView>
       appBar: AppBar(
         centerTitle: false,
         title: Image.asset('assets/logos/logo-jtv-white.png', height: 24),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 16),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // Navigate ke SearchPage
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SearchPage()),
-              );
+          GestureDetector(
+            onTap: () {
+              context.pushNamed('search');
             },
+            child: Image.asset('assets/icons/search-normal.png', height: 24),
           ),
         ],
         bottom: TabBar(

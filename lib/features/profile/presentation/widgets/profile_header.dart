@@ -34,15 +34,38 @@ class ProfileHeader extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Nama
-          Text(
-            nama,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
+          SizedBox(
+            child: email == "-"
+                ? TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      "Login",
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      Text(
+                        nama,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
 
-          // Email
-          Text(email, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                      // Email
+                      Text(
+                        email,
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+          ),
+          // Nama
         ],
       ),
     );

@@ -3,12 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_event.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
-import 'package:portal_jtv/features/home/presentation/widgets/breaking_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/headline_carousel.dart';
-import 'package:portal_jtv/features/home/presentation/widgets/headline_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/news_card.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/sorot_section.dart';
-import 'package:portal_jtv/features/home/presentation/widgets/video_section.dart';
+import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/video_section2.dart';
 
 class TerbaruTab extends StatefulWidget {
@@ -113,18 +111,13 @@ class _TerbaruTabState extends State<TerbaruTab> {
                             const SliverToBoxAdapter(
                               child: Padding(
                                 padding: EdgeInsets.all(16),
-                                child: Text(
-                                  'Berita Terbaru',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                child: TittleSection(title: "Berita Terbaru"),
                               ),
                             ),
 
                             // 6. Latest News List (Infinite Scroll)
                             SliverList(
+
                               delegate: SliverChildBuilderDelegate((
                                 context,
                                 index,

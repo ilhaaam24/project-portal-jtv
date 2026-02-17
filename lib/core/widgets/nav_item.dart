@@ -19,11 +19,19 @@ class NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isSelected ? PortalColors.jtvBiru : PortalColors.grey500;
-
+    final colorbg = isSelected
+        ? Theme.of(context).brightness == Brightness.light
+              ? PortalColors.jtvBiru
+              : PortalColors.white
+        : Colors.transparent;
+    final colortext = isSelected
+        ? Theme.of(context).brightness == Brightness.light
+              ? PortalColors.white
+              : PortalColors.jtvBiru
+        : PortalColors.grey500;
     return Expanded(
       child: Material(
-        color: isSelected ? color : Colors.transparent,
+        color: colorbg,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: onTap,
@@ -42,9 +50,7 @@ class NavItem extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    color: isSelected
-                        ? PortalColors.white
-                        : PortalColors.grey500,
+                    color: colortext,
                     fontSize: 10,
                     fontWeight: isSelected
                         ? FontWeight.w600

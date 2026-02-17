@@ -35,7 +35,7 @@ final router = GoRouter(
             ),
           ],
         ),
-        
+
         StatefulShellBranch(
           routes: [
             GoRoute(

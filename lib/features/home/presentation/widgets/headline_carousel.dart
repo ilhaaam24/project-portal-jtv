@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
+import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import '../../domain/entities/news_entity.dart';
 
 class HeadlineCarousel extends StatefulWidget {
@@ -52,20 +53,7 @@ class _HeadlineCarouselState extends State<HeadlineCarousel> {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          Row(
-            children: [
-              Container(width: 4, height: 24, color: PortalColors.jtvJingga),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  "Headline",
-                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                    color: PortalColors.jtvBiru,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          TittleSection(title: 'Headline'),
           const SizedBox(height: 12),
 
           SizedBox(

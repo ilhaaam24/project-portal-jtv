@@ -68,6 +68,7 @@ class _ProfileView extends StatelessWidget {
                     return ProfileMenuItem(
                       icon: Icons.notifications_outlined,
                       title: 'Notifikasi',
+                      
                       trailing: Switch(
                         value: isEnabled,
                         onChanged: (_) =>

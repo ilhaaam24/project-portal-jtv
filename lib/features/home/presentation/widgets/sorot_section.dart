@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
+import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 
 Widget buildSorotSection(HomeState state) {
   return Column(
@@ -7,10 +8,7 @@ Widget buildSorotSection(HomeState state) {
     children: [
       const Padding(
         padding: EdgeInsets.all(16),
-        child: Text(
-          '🔦 Sorotan',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        child: TittleSection(title: "Sorotan"),
       ),
       SizedBox(
         height: 100,

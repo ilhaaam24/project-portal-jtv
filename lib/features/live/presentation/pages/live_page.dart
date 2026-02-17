@@ -149,18 +149,6 @@ class _LiveViewState extends State<_LiveView> {
                 ),
 
               // Fullscreen button
-              Positioned(
-                bottom: 12,
-                right: 12,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.fullscreen,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                  onPressed: () => _enterFullscreen(live),
-                ),
-              ),
             ],
           ),
         ),
@@ -235,7 +223,13 @@ class _LiveViewState extends State<_LiveView> {
       // Native player untuk HLS stream
       return Video(
         controller: _videoController,
-        filterQuality: FilterQuality.high,
+        filterQuality: FilterQuality.medium,
+        aspectRatio: 16 / 9,
+        onEnterFullscreen: () => _enterFullscreen(live),
+        onExitFullscreen: () async {
+          await _exitFullscreen();
+          if (mounted) Navigator.pop(context);
+        },
       );
     } else {
       // WebView untuk embed (Vidio, Facebook)
@@ -272,9 +266,10 @@ class _LiveViewState extends State<_LiveView> {
     );
   }
 
-  void _enterFullscreen(LivestreamEntity live) {
+  Future<void> _enterFullscreen(LivestreamEntity live) async {
     // Landscape fullscreen
     SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
@@ -293,10 +288,18 @@ class _LiveViewState extends State<_LiveView> {
               ]);
               SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
             },
-            child: Center(child: Video(controller: _videoController)),
+            child: SafeArea(
+              child: Center(child: Video(controller: _videoController)),
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _exitFullscreen() async {
+    // Kembalikan ke portrait
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
   }
 }

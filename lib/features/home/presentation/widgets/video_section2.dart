@@ -1,6 +1,7 @@
 // lib/features/home/presentation/widgets/video_section.dart
 
 import 'package:flutter/material.dart';
+import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import '../../domain/entities/video_entity.dart';
 
 class VideoSection extends StatelessWidget {
@@ -14,17 +15,8 @@ class VideoSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Row(
-            children: [
-              Icon(Icons.videocam, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Video Terbaru',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+          padding: EdgeInsets.all(16),
+          child: TittleSection(title: 'Video Terbaru'),
         ),
         SizedBox(
           height: 140,

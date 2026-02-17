@@ -4,44 +4,68 @@ import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_enti
 
 Widget buildNewsCard(dynamic news, BuildContext context) {
   return Card(
+    shape: RoundedRectangleBorder(
+      side: BorderSide(color: Colors.grey.shade300),
+      borderRadius: BorderRadius.circular(8),
+    ),
     elevation: 0,
     shadowColor: Colors.transparent,
-    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    child: ListTile(
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          news.photo,
-          width: 80,
-          height: 60,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) =>
-              Container(width: 80, height: 60, color: Colors.grey),
-        ),
-      ),
-      title: Text(news.title, maxLines: 2, overflow: TextOverflow.ellipsis),
-      subtitle: Text('${news.category} • ${news.date}'),
+    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(8),
       onTap: () {
         final args = DetailArgsEntity.fromNewsEntity(news);
         context.pushNamed("detail", extra: args);
-
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (_) => MultiBlocProvider(
-        //       providers: [
-        //         BlocProvider(
-        //           create: (_) =>
-        //               sl<DetailBloc>()..add(LoadDetail(seo: args.seo)),
-        //         ),
-        //         BlocProvider(create: (_) => sl<TextSizeCubit>()),
-        //         BlocProvider(create: (_) => sl<TextToSpeechCubit>()),
-        //       ],
-        //       child: DetailPage(args: args),
-        //     ),
-        //   ),
-        // );
       },
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ─── GAMBAR ───
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                news.photo,
+                width: 110,
+                height: 100, // ← bebas atur tinggi di sini
+                fit: BoxFit.cover, // ← cover lebih baik untuk thumbnail
+                errorBuilder: (_, _, _) => Container(
+                  width: 110,
+                  height: 100,
+                  color: Colors.grey.shade200,
+                  child: const Icon(Icons.broken_image, color: Colors.grey),
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            // ─── TEKS ───
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    news.title,
+                    maxLines: 3, // ← bisa lebih banyak baris
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${news.category} • ${news.date}',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     ),
   );
 }
