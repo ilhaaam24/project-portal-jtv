@@ -1,6 +1,8 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get_it/get_it.dart';
 import 'package:portal_jtv/core/network/api_client.dart';
+import 'package:portal_jtv/core/services/notification_service.dart';
+import 'package:portal_jtv/core/services/shared_preferences_service.dart';
 import 'package:portal_jtv/core/utils/text_size_preferences.dart';
 import 'package:portal_jtv/core/utils/text_to_speech.dart';
 import 'package:portal_jtv/features/bookmark/data/datasources/bookmark_remote_datasource.dart';
@@ -9,6 +11,13 @@ import 'package:portal_jtv/features/bookmark/domain/repositories/bookmark_reposi
 import 'package:portal_jtv/features/bookmark/domain/usecases/delete_saved_news.dart';
 import 'package:portal_jtv/features/bookmark/domain/usecases/get_saved_news_list.dart';
 import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_bloc.dart';
+import 'package:portal_jtv/features/category/data/datasources/category_remote_datasource.dart';
+import 'package:portal_jtv/features/category/data/repositories/category_repository_impl.dart';
+import 'package:portal_jtv/features/category/domain/repositories/category_repository.dart';
+import 'package:portal_jtv/features/category/domain/usecases/get_categories.dart';
+import 'package:portal_jtv/features/category/domain/usecases/get_news_by_category.dart';
+import 'package:portal_jtv/features/category/presentation/bloc/category_bloc.dart';
+import 'package:portal_jtv/features/category/presentation/bloc/category_news/category_news_bloc.dart';
 import 'package:portal_jtv/features/home/data/datasources/home_remote_datasource.dart';
 import 'package:portal_jtv/features/home/data/repositories/home_repository_impl.dart';
 import 'package:portal_jtv/features/home/domain/repositories/home_respository.dart';
@@ -66,14 +75,11 @@ Future<void> init() async {
   sl.registerLazySingleton<FlutterTts>(() => flutterTts);
 
   sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
+  sl.registerLazySingleton<SharedPreferencesService>(
+    () => SharedPreferencesService(sl()),
+  );
   // Core
   sl.registerLazySingleton<ApiClient>(() => ApiClient(sl()));
-
-  // shared preferences
-
-  // sl.registerLazySingletonAsync(
-  //   () async => await SharedPreferences.getInstance(),
-  // );
 
   sl.registerLazySingleton<TextSizePreferences>(
     () => TextSizePreferences(sl()),
@@ -232,5 +238,24 @@ Future<void> init() async {
 
   sl.registerLazySingleton<LiveRemoteDataSource>(
     () => LiveRemoteDataSourceImpl(client: sl()),
+  );
+
+  // ============ CATEGORY FEATURE ============
+  sl.registerFactory<CategoryBloc>(() => CategoryBloc(getCategories: sl()));
+  sl.registerFactory<CategoryNewsBloc>(
+    () => CategoryNewsBloc(getNewsByCategory: sl()),
+  );
+  sl.registerLazySingleton(() => GetCategories(sl()));
+  sl.registerLazySingleton(() => GetNewsByCategory(sl()));
+  sl.registerLazySingleton<CategoryRepository>(
+    () => CategoryRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<CategoryRemoteDataSource>(
+    () => CategoryRemoteDataSourceImpl(client: sl()),
+  );
+
+  // ============ NOTIFICATION SERVICE ============
+  sl.registerLazySingleton<NotificationService>(
+    () => NotificationService(sl()),
   );
 }

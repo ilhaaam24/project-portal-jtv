@@ -12,7 +12,6 @@ import 'package:portal_jtv/features/home/presentation/pages/foryou_tab.dart';
 import 'package:portal_jtv/features/home/presentation/pages/terbaru_tab.dart';
 import 'package:portal_jtv/features/home/presentation/pages/populer_tab.dart';
 import 'package:portal_jtv/config/injection/injection.dart' as di;
-import 'package:portal_jtv/features/search/presentation/pages/search_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

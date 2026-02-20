@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import '../../domain/entities/news_entity.dart';
 
@@ -72,17 +71,21 @@ class _HeadlineCarouselState extends State<HeadlineCarousel> {
                     fit: StackFit.expand,
                     children: [
                       // Image
-                      Image.network(
-                        news.photo,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Container(
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.image, size: 48),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          news.photo,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => Container(
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.image, size: 48),
+                          ),
                         ),
                       ),
                       // Gradient overlay
                       Container(
                         decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,

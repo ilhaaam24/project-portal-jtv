@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/core/widgets/bottom_nav_bar.dart';
 
 class MainLayout extends StatelessWidget {
-  final Widget child;
-
-  const MainLayout({super.key, required this.child});
+  final StatefulNavigationShell navigationShell;
+  const MainLayout({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child,
-      bottomNavigationBar: const BottomNavBar(),
+      body: navigationShell,
+      bottomNavigationBar: BottomNavBar(navigationShell: navigationShell),
+
       // floatingActionButton: Container(
       //   decoration: BoxDecoration(
       //     shape: BoxShape.circle,

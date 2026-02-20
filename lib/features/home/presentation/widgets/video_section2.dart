@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import '../../domain/entities/video_entity.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class VideoSection extends StatelessWidget {
   final List<VideoEntity> videos;
@@ -19,7 +20,7 @@ class VideoSection extends StatelessWidget {
           child: TittleSection(title: 'Video Terbaru'),
         ),
         SizedBox(
-          height: 140,
+          height: 160,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -32,6 +33,7 @@ class VideoSection extends StatelessWidget {
                 },
                 child: Container(
                   width: 200,
+                  height: 100,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,30 +46,23 @@ class VideoSection extends StatelessWidget {
                             Image.network(
                               video.thumbnail,
                               width: 200,
-                              height: 100,
+                              height: 110,
                               fit: BoxFit.cover,
                               errorBuilder: (_, _, _) => Container(
                                 width: 200,
-                                height: 100,
+                                height: 110,
                                 color: Colors.grey[300],
                                 child: const Icon(Icons.videocam),
                               ),
                             ),
                             // Play button overlay
-                            Positioned.fill(
-                              child: Center(
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.6),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.play_arrow,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
+                            Positioned(
+                              top: 6,
+                              left: 6,
+
+                              child: SvgPicture.asset(
+                                'assets/icons/play.svg',
+                                height: 24,
                               ),
                             ),
                           ],
@@ -77,7 +72,7 @@ class VideoSection extends StatelessWidget {
                       // Title
                       Text(
                         video.title,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,

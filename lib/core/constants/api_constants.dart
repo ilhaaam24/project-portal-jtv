@@ -13,6 +13,8 @@ class ApiConstants {
   static const String newsDetail = '/news/detail';
   static const String hit = '/hit';
   static const String savedNews = '/saved-news';
+  static const String fcmRegister = '/fcm/register';
+  static const String fcmUnregister = '/fcm/unregister';
 
   // Timeout
   static const Duration connectTimeout = Duration(seconds: 30);

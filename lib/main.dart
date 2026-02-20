@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:portal_jtv/config/routes/app_routes.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
+import 'package:portal_jtv/core/services/notification_service.dart';
 import 'package:portal_jtv/core/theme/theme.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_event.dart';
@@ -11,10 +13,22 @@ import 'package:portal_jtv/features/profile/presentation/cubit/notification_cubi
 import 'package:portal_jtv/features/profile/presentation/cubit/theme_cubit.dart';
 import 'config/injection/injection.dart' as di;
 
+Player? _activePlayer;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   MediaKit.ensureInitialized();
   await di.init();
+
+  await _activePlayer?.dispose();
+  _activePlayer = null;
+
+  MediaKit.ensureInitialized();
+
+  // Init push notification (non-blocking)
+  di.sl<NotificationService>().init(router);
+
   runApp(
     MultiBlocProvider(
       providers: [

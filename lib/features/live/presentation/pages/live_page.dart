@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../bloc/live_bloc.dart';
 import '../bloc/live_event.dart';
@@ -29,25 +30,40 @@ class _LiveView extends StatefulWidget {
   State<_LiveView> createState() => _LiveViewState();
 }
 
-class _LiveViewState extends State<_LiveView> {
+class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
   // media_kit player & controller
   late final Player _player;
   late final VideoController _videoController;
 
   // Track sumber aktif
   String _activeSource = 'jtv';
+  static const int _liveTabIndex = 2;
 
   @override
   void initState() {
     super.initState();
     _player = Player();
     _videoController = VideoController(_player);
+    WidgetsBinding.instance.addObserver(this); // App lifecycle
   }
 
   @override
   void dispose() {
-    _player.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    try {
+      _player.dispose();
+    } catch (e) {
+      debugPrint('Player dispose error: $e');
+    }
     super.dispose();
+  }
+
+  // ✅ Pause saat app ke background
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _player.pause();
+    }
   }
 
   /// Play HLS stream via media_kit
@@ -57,50 +73,61 @@ class _LiveViewState extends State<_LiveView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Live Streaming'), centerTitle: true),
-      body: BlocConsumer<LiveBloc, LiveState>(
-        listener: (context, state) {
-          // Auto-play saat data loaded
-          if (state.status == LiveStatus.success && state.livestream != null) {
-            final live = state.livestream!;
-            if (live.isLive && live.hasJtv) {
-              _playStream(live.jtv);
+    return BlocListener<NavigationCubit, int>(
+      listener: (context, currentTab) {
+        if (currentTab != _liveTabIndex) {
+          _player.pause(); // Pindah dari Live → PAUSE
+        } else {
+          _player.play(); // Balik ke Live → PLAY
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Live Streaming'), centerTitle: true),
+        body: BlocConsumer<LiveBloc, LiveState>(
+          listener: (context, state) {
+            // Auto-play saat data loaded
+            if (state.status == LiveStatus.success &&
+                state.livestream != null) {
+              final live = state.livestream!;
+              if (live.isLive && live.hasJtv) {
+                _playStream(live.jtv);
+              }
             }
-          }
-        },
-        builder: (context, state) {
-          switch (state.status) {
-            case LiveStatus.initial:
-            case LiveStatus.loading:
-              return const Center(child: CircularProgressIndicator());
+          },
+          builder: (context, state) {
+            switch (state.status) {
+              case LiveStatus.initial:
+              case LiveStatus.loading:
+                return const Center(child: CircularProgressIndicator());
 
-            case LiveStatus.failure:
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(state.errorMessage ?? 'Gagal memuat'),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () =>
-                          context.read<LiveBloc>().add(const LoadLivestream()),
-                      child: const Text('Coba Lagi'),
-                    ),
-                  ],
-                ),
-              );
+              case LiveStatus.failure:
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(state.errorMessage ?? 'Gagal memuat'),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => context.read<LiveBloc>().add(
+                          const LoadLivestream(),
+                        ),
+                        child: const Text('Coba Lagi'),
+                      ),
+                    ],
+                  ),
+                );
 
-            case LiveStatus.success:
-              return _buildLiveContent(state.livestream!);
-          }
-        },
+              case LiveStatus.success:
+                return _buildLiveContent(state.livestream!);
+            }
+          },
+        ),
       ),
     );
   }

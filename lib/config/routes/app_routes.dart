@@ -4,6 +4,7 @@ import 'package:portal_jtv/config/injection/injection.dart';
 import 'package:portal_jtv/config/routes/route_names.dart';
 import 'package:portal_jtv/core/widgets/main_layout.dart';
 import 'package:portal_jtv/features/bookmark/presentation/pages/bookmark_page.dart';
+import 'package:portal_jtv/features/category/presentation/pages/category_news_page.dart';
 import 'package:portal_jtv/features/category/presentation/pages/category_page.dart';
 import 'package:portal_jtv/features/home/presentation/pages/home_page.dart';
 import 'package:portal_jtv/features/live/presentation/pages/live_page.dart';
@@ -25,7 +26,8 @@ final router = GoRouter(
   initialLocation: RouteNames.home,
   routes: [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, child) => MainLayout(child: child),
+      builder: (context, state, navigationShell) =>
+          MainLayout(navigationShell: navigationShell),
       branches: [
         StatefulShellBranch(
           routes: [
@@ -91,6 +93,18 @@ final router = GoRouter(
       path: RouteNames.faq,
       name: 'faq',
       builder: (context, state) => const FaqPage(),
+    ),
+    GoRoute(
+      path: RouteNames.categoryNews,
+      name: 'category-news',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        return CategoryNewsPage(
+          seo: args['seo'] as String,
+          title: args['title'] as String,
+          isBiro: args['isBiro'] as bool? ?? false,
+        );
+      },
     ),
     GoRoute(
       path: RouteNames.edit,

@@ -35,6 +35,8 @@
       Internet access permissions.
       -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Push Notification (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!--
       Media access permissions.
       Android 13 or higher.

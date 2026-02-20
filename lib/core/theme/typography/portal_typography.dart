@@ -117,6 +117,6 @@ class PortalTypography {
     fontSize: 11,
     fontWeight: FontWeight.w100,
     height: 1.2,
-    letterSpacing: 1.3,
+    letterSpacing: 0,
   );
 }

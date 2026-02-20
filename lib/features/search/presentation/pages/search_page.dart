@@ -207,6 +207,9 @@ class _SearchViewState extends State<_SearchView> {
                 ),
               ),
               TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                ),
                 onPressed: () =>
                     context.read<SearchBloc>().add(SearchHistoryCleared()),
                 child: const Text(
