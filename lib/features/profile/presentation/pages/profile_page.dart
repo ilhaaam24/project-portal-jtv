@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/l10n/app_localizations.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_event.dart';
 import '../bloc/profile_state.dart';
@@ -29,8 +30,9 @@ class _ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile'), centerTitle: true),
+      appBar: AppBar(title: Text(l10n.profile), centerTitle: true),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           // Logout berhasil → kembali ke login
@@ -50,25 +52,25 @@ class _ProfileView extends StatelessWidget {
                 const Divider(height: 1),
 
                 // ─── SECTION: Akun ───
-                _buildSectionTitle('Akun'),
+                _buildSectionTitle(l10n.account),
                 ProfileMenuItem(
                   icon: Icons.edit_outlined,
-                  title: 'Edit Biodata',
+                  title: l10n.editBio,
                   onTap: () => _navigateToEdit(context, state),
                 ),
 
                 const Divider(height: 1, indent: 72),
 
                 // ─── SECTION: Pengaturan ───
-                _buildSectionTitle('Pengaturan'),
+                _buildSectionTitle(l10n.settings),
 
                 // Notifikasi
                 BlocBuilder<NotificationCubit, bool>(
                   builder: (context, isEnabled) {
                     return ProfileMenuItem(
                       icon: Icons.notifications_outlined,
-                      title: 'Notifikasi',
-                      
+                      title: l10n.notification,
+
                       trailing: Switch(
                         value: isEnabled,
                         onChanged: (_) =>
@@ -84,7 +86,7 @@ class _ProfileView extends StatelessWidget {
                   builder: (context, locale) {
                     return ProfileMenuItem(
                       icon: Icons.language,
-                      title: 'Bahasa',
+                      title: l10n.language,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -107,7 +109,7 @@ class _ProfileView extends StatelessWidget {
                       icon: themeMode == ThemeMode.dark
                           ? Icons.dark_mode
                           : Icons.light_mode,
-                      title: 'Tema',
+                      title: l10n.theme,
                       trailing: Switch(
                         value: context.read<ThemeCubit>().isDark,
                         onChanged: (_) =>
@@ -127,11 +129,11 @@ class _ProfileView extends StatelessWidget {
                 const Divider(height: 1, indent: 72),
 
                 // ─── SECTION: Lainnya ───
-                _buildSectionTitle('Lainnya'),
+                _buildSectionTitle(l10n.others),
 
                 ProfileMenuItem(
                   icon: Icons.help_outline,
-                  title: 'FAQ',
+                  title: l10n.faq,
                   onTap: () {
                     context.pushNamed('faq');
                   },
@@ -139,7 +141,7 @@ class _ProfileView extends StatelessWidget {
 
                 ProfileMenuItem(
                   icon: Icons.star_outline,
-                  title: 'Beri Rating',
+                  title: l10n.rateUs,
                   onTap: () async {
                     final inAppReview = InAppReview.instance;
                     if (await inAppReview.isAvailable()) {
@@ -154,7 +156,7 @@ class _ProfileView extends StatelessWidget {
                 // ─── LOGOUT ───
                 ProfileMenuItem(
                   icon: Icons.logout,
-                  title: 'Keluar',
+                  title: l10n.logout,
                   iconColor: Colors.red,
                   textColor: Colors.red,
                   trailing: const SizedBox.shrink(),
@@ -213,23 +215,24 @@ class _ProfileView extends StatelessWidget {
 
   // ─── LANGUAGE DIALOG ───
   void _showLanguageDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final languageCubit = context.read<LanguageCubit>();
     showDialog(
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: const Text('Pilih Bahasa'),
+          title: Text(l10n.selectLanguage),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: LanguageCubit.supportedLocales.map((locale) {
               final name = LanguageCubit.localeNames[locale.languageCode]!;
-              final isSelected = context.read<LanguageCubit>().state == locale;
-              return RadioListTile<String>(
+              return RadioListTile<String?>(
                 title: Text(name),
                 value: locale.languageCode,
-                groupValue: context.read<LanguageCubit>().state.languageCode,
+                groupValue: languageCubit.state.languageCode,
                 onChanged: (code) {
-                  context.read<LanguageCubit>().changeLanguage(code!);
-                  Navigator.pop(context);
+                  context.pop();
+                  languageCubit.changeLanguage(code!);
                 },
               );
             }).toList(),
@@ -241,15 +244,16 @@ class _ProfileView extends StatelessWidget {
 
   // ─── LOGOUT DIALOG ───
   void _showLogoutDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Keluar'),
-        content: const Text('Apakah Anda yakin ingin keluar?'),
+        title: Text(l10n.logout),
+        content: Text(l10n.logoutConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -257,7 +261,7 @@ class _ProfileView extends StatelessWidget {
               context.read<ProfileBloc>().add(const LogoutRequested());
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Keluar'),
+            child: Text(l10n.logout),
           ),
         ],
       ),

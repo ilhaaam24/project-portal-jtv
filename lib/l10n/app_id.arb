@@ -1,0 +1,55 @@
+{
+  "@@locale": "id",
+
+  "navHome": "Beranda",
+  "navCategory": "Kategori",
+  "navLive": "Live TV",
+  "navSave": "Simpan",
+  "navProfile": "Profil",
+
+  "tabLatest": "TERBARU",
+  "tabPopular": "TERPOPULER",
+  "tabForYou": "FOR YOU",
+
+  "search": "Pencarian",
+  "searchHint": "Cari berita...",
+  "searchRecent": "Pencarian Terakhir",
+  "searchLatest": "Cari berita terkini",
+  "clearAll": "Hapus Semua",
+  "noResults": "Tidak ditemukan hasil untuk",
+  "resultsFor": "Hasil untuk \"{keyword}\" ({count})",
+  "@resultsFor": {
+    "placeholders": {
+      "keyword": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+
+  "savedNews": "Berita Tersimpan",
+  "newsDeleted": "Berita dihapus",
+  "noSavedNews": "Belum ada berita tersimpan",
+  "saveHint": "Simpan berita favoritmu agar mudah\ndibaca kembali nanti",
+
+  "retry": "Coba Lagi",
+  "loadFailed": "Gagal memuat data",
+  "errorOccurred": "Terjadi kesalahan",
+
+  "liveStreaming": "Live Streaming",
+  "noLiveBroadcast": "Tidak ada siaran langsung saat ini",
+  "stayTuned": "Nantikan siaran berikutnya",
+
+  "profile": "Profile",
+  "account": "Akun",
+  "editBio": "Edit Biodata",
+  "settings": "Pengaturan",
+  "notification": "Notifikasi",
+  "language": "Bahasa",
+  "theme": "Tema",
+  "others": "Lainnya",
+  "faq": "FAQ",
+  "rateUs": "Beri Rating",
+  "logout": "Keluar",
+  "logoutConfirm": "Apakah Anda yakin ingin keluar?",
+  "cancel": "Batal",
+  "selectLanguage": "Pilih Bahasa"
+}

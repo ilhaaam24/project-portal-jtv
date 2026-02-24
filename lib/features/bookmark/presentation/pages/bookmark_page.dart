@@ -8,6 +8,7 @@ import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_e
 import 'package:portal_jtv/features/news_detail/presentation/cubit/text_size_cubit.dart';
 import 'package:portal_jtv/features/news_detail/presentation/cubit/text_to_speech_cubit.dart';
 import 'package:portal_jtv/features/news_detail/presentation/pages/detail_page.dart';
+import 'package:portal_jtv/l10n/app_localizations.dart';
 import '../bloc/bookmark_bloc.dart';
 import '../bloc/bookmark_event.dart';
 import '../bloc/bookmark_state.dart';
@@ -31,6 +32,7 @@ class _BookmarkView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocListener<NavigationCubit, int>(
       listener: (context, currentTab) {
         if (currentTab == _bookmarkTabIndex) {
@@ -39,10 +41,7 @@ class _BookmarkView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Berita Tersimpan'),
-          centerTitle: true,
-        ),
+        appBar: AppBar(title: Text(l10n.savedNews), centerTitle: true),
         body: BlocConsumer<BookmarkBloc, BookmarkState>(
           // Listener untuk SnackBar
           listener: (context, state) {
@@ -51,15 +50,7 @@ class _BookmarkView extends StatelessWidget {
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
                   SnackBar(
-                    content: Text('Berita dihapus'),
-                    // action: SnackBarAction(
-                    //   label: 'UNDO',
-                    //   onPressed: () {
-                    //     context.read<BookmarkBloc>().add(
-                    //       const UndoDeleteBookmark(),
-                    //     );
-                    //   },
-                    // ),
+                    content: Text(l10n.newsDeleted),
                     duration: const Duration(seconds: 1),
                   ),
                 );
@@ -84,7 +75,7 @@ class _BookmarkView extends StatelessWidget {
                         color: Colors.grey,
                       ),
                       const SizedBox(height: 16),
-                      Text(state.errorMessage ?? 'Gagal memuat data'),
+                      Text(state.errorMessage ?? l10n.loadFailed),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
@@ -92,7 +83,7 @@ class _BookmarkView extends StatelessWidget {
                             const LoadBookmarks(),
                           );
                         },
-                        child: const Text('Coba Lagi'),
+                        child: Text(l10n.retry),
                       ),
                     ],
                   ),
@@ -111,7 +102,7 @@ class _BookmarkView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Belum ada berita tersimpan',
+                        l10n.noSavedNews,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
@@ -120,7 +111,7 @@ class _BookmarkView extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Simpan berita favoritmu agar mudah\ndibaca kembali nanti',
+                        l10n.saveHint,
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.grey[500]),
                       ),

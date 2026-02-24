@@ -1,4 +1,3 @@
-
 class ServerException implements Exception {
   final String message;
   final int? statusCode;
@@ -6,7 +5,7 @@ class ServerException implements Exception {
   ServerException({this.message = 'Server error occurred', this.statusCode});
 
   @override
-  String toString() => 'ServerException: $message (status: $statusCode)';
+  String toString() => message;
 }
 
 class NetworkException implements Exception {
@@ -15,7 +14,7 @@ class NetworkException implements Exception {
   NetworkException({this.message = 'No internet connection'});
 
   @override
-  String toString() => 'NetworkException: $message';
+  String toString() => message;
 }
 
 class CacheException implements Exception {
@@ -24,5 +23,5 @@ class CacheException implements Exception {
   CacheException({this.message = 'Cache error occurred'});
 
   @override
-  String toString() => 'CacheException: $message';
+  String toString() => message;
 }

@@ -1,0 +1,55 @@
+{
+  "@@locale": "en",
+
+  "navHome": "Home",
+  "navCategory": "Category",
+  "navLive": "Live TV",
+  "navSave": "Saved",
+  "navProfile": "Profile",
+
+  "tabLatest": "LATEST",
+  "tabPopular": "POPULAR",
+  "tabForYou": "FOR YOU",
+
+  "search": "Search",
+  "searchHint": "Search news...",
+  "searchRecent": "Recent Searches",
+  "searchLatest": "Search latest news",
+  "clearAll": "Clear All",
+  "noResults": "No results found for",
+  "resultsFor": "Results for \"{keyword}\" ({count})",
+  "@resultsFor": {
+    "placeholders": {
+      "keyword": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+
+  "savedNews": "Saved News",
+  "newsDeleted": "News deleted",
+  "noSavedNews": "No saved news yet",
+  "saveHint": "Save your favorite news for\neasy reading later",
+
+  "retry": "Try Again",
+  "loadFailed": "Failed to load data",
+  "errorOccurred": "An error occurred",
+
+  "liveStreaming": "Live Streaming",
+  "noLiveBroadcast": "No live broadcast at the moment",
+  "stayTuned": "Stay tuned for the next broadcast",
+
+  "profile": "Profile",
+  "account": "Account",
+  "editBio": "Edit Profile",
+  "settings": "Settings",
+  "notification": "Notifications",
+  "language": "Language",
+  "theme": "Theme",
+  "others": "Others",
+  "faq": "FAQ",
+  "rateUs": "Rate Us",
+  "logout": "Log Out",
+  "logoutConfirm": "Are you sure you want to log out?",
+  "cancel": "Cancel",
+  "selectLanguage": "Select Language"
+}

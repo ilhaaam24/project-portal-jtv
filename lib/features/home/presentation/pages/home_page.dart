@@ -12,6 +12,7 @@ import 'package:portal_jtv/features/home/presentation/pages/foryou_tab.dart';
 import 'package:portal_jtv/features/home/presentation/pages/terbaru_tab.dart';
 import 'package:portal_jtv/features/home/presentation/pages/populer_tab.dart';
 import 'package:portal_jtv/config/injection/injection.dart' as di;
+import 'package:portal_jtv/l10n/app_localizations.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -78,6 +79,7 @@ class _HomeViewState extends State<_HomeView>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -96,21 +98,21 @@ class _HomeViewState extends State<_HomeView>
           labelPadding: const EdgeInsets.all(10),
           tabs: [
             Text(
-              "TERBARU",
+              l10n.tabLatest,
               style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                 color: PortalColors.white,
                 fontSize: 14,
               ),
             ),
             Text(
-              "TERPOPULER",
+              l10n.tabPopular,
               style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                 color: PortalColors.white,
                 fontSize: 14,
               ),
             ),
             Text(
-              "FOR YOU",
+              l10n.tabForYou,
               style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                 color: PortalColors.white,
                 fontSize: 14,

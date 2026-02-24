@@ -11,6 +11,7 @@ import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_event
 import 'package:portal_jtv/features/profile/presentation/cubit/language_cubit.dart';
 import 'package:portal_jtv/features/profile/presentation/cubit/notification_cubit.dart';
 import 'package:portal_jtv/features/profile/presentation/cubit/theme_cubit.dart';
+import 'package:portal_jtv/l10n/app_localizations.dart';
 import 'config/injection/injection.dart' as di;
 
 Player? _activePlayer;
@@ -50,13 +51,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, themeMode) {
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          themeMode: themeMode, // ← dari ThemeCubit
-          theme: PortalTheme.lightTheme,
-          darkTheme: PortalTheme.darkTheme,
-          // locale: context.watch<LanguageCubit>().state,
-          routerConfig: router,
+        return BlocBuilder<LanguageCubit, Locale>(
+          builder: (context, locale) {
+            return MaterialApp.router(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: LanguageCubit.supportedLocales,
+              locale: locale,
+              debugShowCheckedModeBanner: false,
+              themeMode: themeMode,
+              theme: PortalTheme.lightTheme,
+              darkTheme: PortalTheme.darkTheme,
+              routerConfig: router,
+            );
+          },
         );
       },
     );

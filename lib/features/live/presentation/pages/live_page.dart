@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
+import 'package:portal_jtv/l10n/app_localizations.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../bloc/live_bloc.dart';
 import '../bloc/live_event.dart';
@@ -82,7 +83,10 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Live Streaming'), centerTitle: true),
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.liveStreaming),
+          centerTitle: true,
+        ),
         body: BlocConsumer<LiveBloc, LiveState>(
           listener: (context, state) {
             // Auto-play saat data loaded
@@ -111,13 +115,16 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
                         color: Colors.grey,
                       ),
                       const SizedBox(height: 16),
-                      Text(state.errorMessage ?? 'Gagal memuat'),
+                      Text(
+                        state.errorMessage ??
+                            AppLocalizations.of(context)!.loadFailed,
+                      ),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () => context.read<LiveBloc>().add(
                           const LoadLivestream(),
                         ),
-                        child: const Text('Coba Lagi'),
+                        child: Text(AppLocalizations.of(context)!.retry),
                       ),
                     ],
                   ),
@@ -229,12 +236,12 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
                   Icon(Icons.tv_off, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
-                    'Tidak ada siaran langsung saat ini',
+                    AppLocalizations.of(context)!.noLiveBroadcast,
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Nantikan siaran berikutnya',
+                    AppLocalizations.of(context)!.stayTuned,
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                 ],

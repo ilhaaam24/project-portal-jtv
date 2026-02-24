@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
+import 'package:portal_jtv/l10n/app_localizations.dart';
 import '../bloc/search_bloc.dart';
 import '../bloc/search_event.dart';
 import '../bloc/search_state.dart';
@@ -89,7 +90,7 @@ class _SearchViewState extends State<_SearchView> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-        title: Text("Pencarian"),
+        title: Text(AppLocalizations.of(context)!.search),
         centerTitle: false,
       ),
       body: Column(
@@ -123,13 +124,16 @@ class _SearchViewState extends State<_SearchView> {
                             color: Colors.grey,
                           ),
                           const SizedBox(height: 16),
-                          Text(state.errorMessage ?? 'Terjadi kesalahan'),
+                          Text(
+                            state.errorMessage ??
+                                AppLocalizations.of(context)!.errorOccurred,
+                          ),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () => context.read<SearchBloc>().add(
                               SearchSubmitted(keyword: state.keyword),
                             ),
-                            child: const Text('Coba Lagi'),
+                            child: Text(AppLocalizations.of(context)!.retry),
                           ),
                         ],
                       ),
@@ -156,7 +160,7 @@ class _SearchViewState extends State<_SearchView> {
         autofocus: true,
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.search),
-          hintText: 'Cari berita...',
+          hintText: AppLocalizations.of(context)!.searchHint,
           border: InputBorder.none,
           suffixIcon: _controller.text.isNotEmpty
               ? IconButton(
@@ -182,7 +186,7 @@ class _SearchViewState extends State<_SearchView> {
             Icon(Icons.search, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'Cari berita terkini',
+              AppLocalizations.of(context)!.searchLatest,
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
           ],
@@ -200,7 +204,7 @@ class _SearchViewState extends State<_SearchView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Pencarian Terakhir',
+                AppLocalizations.of(context)!.searchRecent,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[700],
@@ -212,9 +216,9 @@ class _SearchViewState extends State<_SearchView> {
                 ),
                 onPressed: () =>
                     context.read<SearchBloc>().add(SearchHistoryCleared()),
-                child: const Text(
-                  'Hapus Semua',
-                  style: TextStyle(fontSize: 12),
+                child: Text(
+                  AppLocalizations.of(context)!.clearAll,
+                  style: const TextStyle(fontSize: 12),
                 ),
               ),
             ],
@@ -261,7 +265,7 @@ class _SearchViewState extends State<_SearchView> {
           Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
-            'Tidak ditemukan hasil untuk',
+            AppLocalizations.of(context)!.noResults,
             style: TextStyle(color: Colors.grey[600]),
           ),
           const SizedBox(height: 4),
