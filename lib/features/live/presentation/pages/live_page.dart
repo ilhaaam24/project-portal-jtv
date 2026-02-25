@@ -10,6 +10,7 @@ import '../bloc/live_bloc.dart';
 import '../bloc/live_event.dart';
 import '../bloc/live_state.dart';
 import '../../domain/entities/livestream_entity.dart';
+import '../../domain/entities/schedule_entity.dart';
 import 'package:portal_jtv/config/injection/injection.dart' as di;
 
 class LivePage extends StatelessWidget {
@@ -17,8 +18,13 @@ class LivePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Hitung hari ini: DateTime.monday = 1 → dayIndex 0, dst.
+    final todayIndex = DateTime.now().weekday - 1; // 0=Senin, 6=Minggu
+
     return BlocProvider(
-      create: (_) => di.sl<LiveBloc>()..add(const LoadLivestream()),
+      create: (_) => di.sl<LiveBloc>()
+        ..add(const LoadLivestream())
+        ..add(LoadSchedule(todayIndex)),
       child: const _LiveView(),
     );
   }
@@ -39,6 +45,17 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
   // Track sumber aktif
   String _activeSource = 'jtv';
   static const int _liveTabIndex = 2;
+
+  // Nama hari
+  static const List<String> _dayNames = [
+    'Senin',
+    'Selasa',
+    'Rabu',
+    'Kamis',
+    'Jumat',
+    'Sabtu',
+    'Minggu',
+  ];
 
   @override
   void initState() {
@@ -72,8 +89,34 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
     _player.open(Media(url));
   }
 
+  /// Cek apakah waktu sekarang sedang dalam jadwal program
+  bool _isCurrentlyAiring(ScheduleEntity schedule) {
+    final now = TimeOfDay.now();
+    final parts = schedule.jamMulai.split(':');
+    final endParts = schedule.jamBerakhir.split(':');
+
+    if (parts.length < 2 || endParts.length < 2) return false;
+
+    final start = TimeOfDay(
+      hour: int.tryParse(parts[0]) ?? 0,
+      minute: int.tryParse(parts[1]) ?? 0,
+    );
+    final end = TimeOfDay(
+      hour: int.tryParse(endParts[0]) ?? 0,
+      minute: int.tryParse(endParts[1]) ?? 0,
+    );
+
+    final nowMinutes = now.hour * 60 + now.minute;
+    final startMinutes = start.hour * 60 + start.minute;
+    final endMinutes = end.hour * 60 + end.minute;
+
+    return nowMinutes >= startMinutes && nowMinutes < endMinutes;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final todayIndex = DateTime.now().weekday - 1;
+
     return BlocListener<NavigationCubit, int>(
       listener: (context, currentTab) {
         if (currentTab != _liveTabIndex) {
@@ -131,7 +174,7 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
                 );
 
               case LiveStatus.success:
-                return _buildLiveContent(state.livestream!);
+                return _buildLiveContent(state, todayIndex);
             }
           },
         ),
@@ -139,116 +182,325 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildLiveContent(LivestreamEntity live) {
-    return Column(
-      children: [
-        // ─── VIDEO PLAYER AREA ───
-        AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Stack(
-            children: [
-              // Player / WebView berdasarkan sumber aktif
-              _buildPlayerView(live),
+  Widget _buildLiveContent(LiveState state, int todayIndex) {
+    final live = state.livestream!;
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ─── VIDEO PLAYER AREA ───
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Stack(
+              children: [
+                // Player / WebView berdasarkan sumber aktif
+                _buildPlayerView(live),
 
-              // Badge LIVE
-              if (live.isLive)
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.circle, color: Colors.white, size: 8),
-                        SizedBox(width: 4),
-                        Text(
-                          'LIVE',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                // Badge LIVE
+                if (live.isLive)
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.circle, color: Colors.white, size: 8),
+                          SizedBox(width: 4),
+                          Text(
+                            'LIVE',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-
-              // Fullscreen button
-            ],
+              ],
+            ),
           ),
-        ),
 
-        // ─── INFO LIVE ───
-        Padding(
-          padding: const EdgeInsets.all(16),
+          // ─── INFO LIVE ───
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Icon(
+                  live.isLive ? Icons.live_tv : Icons.tv_off,
+                  color: live.isLive ? Colors.red : Colors.grey,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  live.liveTitle,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const Divider(height: 1),
+
+          // ─── TAB SUMBER ───
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                if (live.hasJtv) _buildSourceTab('JTV', 'jtv', Icons.tv),
+                if (live.hasVidio)
+                  _buildSourceTab('Vidio', 'vidio', Icons.play_circle),
+                if (live.hasYoutube)
+                  _buildSourceTab('YouTube', 'youtube', Icons.smart_display),
+                if (live.hasFacebook)
+                  _buildSourceTab('Facebook', 'facebook', Icons.facebook),
+              ],
+            ),
+          ),
+
+          // ─── OFFLINE STATE ───
+          if (!live.isLive)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(Icons.tv_off, size: 64, color: Colors.grey[400]),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizations.of(context)!.noLiveBroadcast,
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      AppLocalizations.of(context)!.stayTuned,
+                      style: TextStyle(color: Colors.grey[500]),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          const Divider(height: 1),
+
+          // ─── JADWAL PROGRAM ───
+          _buildScheduleSection(state, todayIndex),
+        ],
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  //  SCHEDULE SECTION
+  // ─────────────────────────────────────────────
+
+  Widget _buildScheduleSection(LiveState state, int todayIndex) {
+    final selectedDay = state.selectedDay == -1
+        ? todayIndex
+        : state.selectedDay;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Row(
             children: [
-              Icon(
-                live.isLive ? Icons.live_tv : Icons.tv_off,
-                color: live.isLive ? Colors.red : Colors.grey,
-              ),
-              const SizedBox(width: 8),
+              Icon(Icons.schedule, size: 20),
+              SizedBox(width: 8),
               Text(
-                live.liveTitle,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                'Jadwal Program',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
           ),
         ),
 
-        const Divider(height: 1),
-
-        // ─── TAB SUMBER ───
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              if (live.hasJtv) _buildSourceTab('JTV', 'jtv', Icons.tv),
-              if (live.hasVidio)
-                _buildSourceTab('Vidio', 'vidio', Icons.play_circle),
-              if (live.hasYoutube)
-                _buildSourceTab('YouTube', 'youtube', Icons.smart_display),
-              if (live.hasFacebook)
-                _buildSourceTab('Facebook', 'facebook', Icons.facebook),
-            ],
+        // Day selector (horizontal scroll chips)
+        SizedBox(
+          height: 44,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            itemCount: _dayNames.length,
+            itemBuilder: (context, index) {
+              final isSelected = selectedDay == index;
+              final isToday = index == todayIndex;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: ChoiceChip(
+                  label: Text(
+                    isToday
+                        ? '${_dayNames[index]} (Hari ini)'
+                        : _dayNames[index],
+                  ),
+                  selected: isSelected,
+                  onSelected: (_) {
+                    context.read<LiveBloc>().add(LoadSchedule(index));
+                  },
+                ),
+              );
+            },
           ),
         ),
 
-        // ─── OFFLINE STATE ───
-        if (!live.isLive)
-          Expanded(
+        const SizedBox(height: 8),
+
+        // Schedule list
+        _buildScheduleList(state, selectedDay == todayIndex),
+      ],
+    );
+  }
+
+  Widget _buildScheduleList(LiveState state, bool isToday) {
+    switch (state.scheduleStatus) {
+      case ScheduleStatus.initial:
+      case ScheduleStatus.loading:
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 32),
+          child: Center(child: CircularProgressIndicator()),
+        );
+
+      case ScheduleStatus.failure:
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 32),
+          child: Center(
+            child: Column(
+              children: [
+                const Icon(Icons.error_outline, size: 40, color: Colors.grey),
+                const SizedBox(height: 8),
+                Text(state.scheduleError ?? 'Gagal memuat jadwal'),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () {
+                    final day = state.selectedDay;
+                    context.read<LiveBloc>().add(LoadSchedule(day));
+                  },
+                  child: const Text('Coba Lagi'),
+                ),
+              ],
+            ),
+          ),
+        );
+
+      case ScheduleStatus.success:
+        if (state.schedules.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 32),
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.tv_off, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppLocalizations.of(context)!.noLiveBroadcast,
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              child: Text(
+                'Belum ada jadwal untuk hari ini',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          );
+        }
+
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          itemCount: state.schedules.length,
+          separatorBuilder: (_, _) => const Divider(height: 1),
+          itemBuilder: (context, index) {
+            final schedule = state.schedules[index];
+            final isAiring = isToday && _isCurrentlyAiring(schedule);
+
+            return _buildScheduleItem(schedule, isAiring);
+          },
+        );
+    }
+  }
+
+  Widget _buildScheduleItem(ScheduleEntity schedule, bool isAiring) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      decoration: isAiring
+          ? BoxDecoration(
+              color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(8),
+            )
+          : null,
+      child: Row(
+        children: [
+          // Waktu
+          SizedBox(
+            width: 100,
+            child: Row(
+              children: [
+                if (isAiring)
+                  Container(
+                    width: 8,
+                    height: 8,
+                    margin: const EdgeInsets.only(right: 6),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppLocalizations.of(context)!.stayTuned,
-                    style: TextStyle(color: Colors.grey[500]),
+                Text(
+                  '${schedule.jamMulai} - ${schedule.jamBerakhir}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isAiring ? FontWeight.bold : FontWeight.w500,
+                    color: isAiring
+                        ? colorScheme.primary
+                        : theme.textTheme.bodySmall?.color,
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          // Nama program
+          Expanded(
+            child: Text(
+              schedule.nama,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isAiring ? FontWeight.bold : FontWeight.normal,
+                color: isAiring ? colorScheme.primary : null,
               ),
             ),
           ),
-      ],
+
+          // Sedang tayang badge
+          if (isAiring)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Text(
+                'LIVE',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 

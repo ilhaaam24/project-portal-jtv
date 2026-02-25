@@ -35,6 +35,7 @@ import 'package:portal_jtv/features/live/data/datasources/live_remote_datasource
 import 'package:portal_jtv/features/live/data/repositories/live_repository_impl.dart';
 import 'package:portal_jtv/features/live/domain/repositories/live_repository.dart';
 import 'package:portal_jtv/features/live/domain/usecases/get_livestream.dart';
+import 'package:portal_jtv/features/live/domain/usecases/get_live_schedule.dart';
 import 'package:portal_jtv/features/live/presentation/bloc/live_bloc.dart';
 
 // ============ DETAIL FEATURE ============
@@ -65,6 +66,13 @@ import 'package:portal_jtv/features/search/domain/repositories/search_repository
 import 'package:portal_jtv/features/search/domain/usecases/search_news.dart';
 import 'package:portal_jtv/features/search/presentation/bloc/search_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+// ============ VIDEO DETAIL FEATURE ============
+import 'package:portal_jtv/features/video_detail/data/datasources/video_remote_datasource.dart';
+import 'package:portal_jtv/features/video_detail/data/repositories/video_repository_impl.dart';
+import 'package:portal_jtv/features/video_detail/domain/repositories/video_repository.dart';
+import 'package:portal_jtv/features/video_detail/domain/usecases/get_paginated_videos.dart';
+import 'package:portal_jtv/features/video_detail/presentation/bloc/video_detail_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -228,9 +236,12 @@ Future<void> init() async {
 
   // ============ LIVE FEATURE ============
 
-  sl.registerFactory<LiveBloc>(() => LiveBloc(getLivestream: sl()));
+  sl.registerFactory<LiveBloc>(
+    () => LiveBloc(getLivestream: sl(), getLiveSchedule: sl()),
+  );
 
   sl.registerLazySingleton(() => GetLivestream(sl()));
+  sl.registerLazySingleton(() => GetLiveSchedule(sl()));
 
   sl.registerLazySingleton<LiveRepository>(
     () => LiveRepositoryImpl(remoteDataSource: sl()),
@@ -252,6 +263,19 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<CategoryRemoteDataSource>(
     () => CategoryRemoteDataSourceImpl(client: sl()),
+  );
+
+  // ============ VIDEO DETAIL FEATURE ============
+
+  sl.registerFactory<VideoDetailBloc>(
+    () => VideoDetailBloc(getPaginatedVideos: sl()),
+  );
+  sl.registerLazySingleton(() => GetPaginatedVideos(sl()));
+  sl.registerLazySingleton<VideoRepository>(
+    () => VideoRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<VideoRemoteDataSource>(
+    () => VideoRemoteDataSourceImpl(client: sl()),
   );
 
   // ============ NOTIFICATION SERVICE ============

@@ -9,7 +9,6 @@ class SharedPreferencesService {
   Future<void> saveNotificationSetting(bool value) async {
     try {
       await prefs.setBool(notificationKey, value);
-      print('Saved notification setting: $value');
     } catch (e) {
       throw ('Error saving notification setting: $e');
     }

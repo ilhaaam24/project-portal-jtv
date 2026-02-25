@@ -1,6 +1,7 @@
 // lib/features/home/presentation/widgets/video_section.dart
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import '../../domain/entities/video_entity.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,7 +30,10 @@ class VideoSection extends StatelessWidget {
               final video = videos[index];
               return GestureDetector(
                 onTap: () {
-                  // Navigate ke video player / YouTube
+                  context.pushNamed(
+                    'video-detail',
+                    extra: {'videos': videos, 'initialIndex': index},
+                  );
                 },
                 child: Container(
                   width: 200,

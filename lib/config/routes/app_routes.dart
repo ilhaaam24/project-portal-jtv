@@ -21,6 +21,9 @@ import 'package:portal_jtv/features/profile/presentation/pages/faq_page.dart';
 import 'package:portal_jtv/features/profile/presentation/pages/profile_page.dart';
 import 'package:portal_jtv/features/search/presentation/bloc/search_bloc.dart';
 import 'package:portal_jtv/features/search/presentation/pages/search_page.dart';
+import 'package:portal_jtv/features/home/domain/entities/video_entity.dart';
+import 'package:portal_jtv/features/video_detail/presentation/bloc/video_detail_bloc.dart';
+import 'package:portal_jtv/features/video_detail/presentation/pages/video_detail_page.dart';
 
 final router = GoRouter(
   initialLocation: RouteNames.home,
@@ -124,6 +127,19 @@ final router = GoRouter(
         return BlocProvider(
           create: (_) => sl<SearchBloc>(),
           child: const SearchPage(),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteNames.videoDetail,
+      name: 'video-detail',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        final videos = args['videos'] as List<VideoEntity>;
+        final index = args['initialIndex'] as int;
+        return BlocProvider(
+          create: (_) => sl<VideoDetailBloc>(),
+          child: VideoDetailPage(initialVideos: videos, initialIndex: index),
         );
       },
     ),

@@ -9,4 +9,5 @@ class RouteNames {
   static const faq = '/faq';
   static const search = '/search';
   static const categoryNews = '/category-news';
+  static const videoDetail = '/video-detail';
 }

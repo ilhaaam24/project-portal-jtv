@@ -16,3 +16,12 @@ class LoadLivestream extends LiveEvent {
 class RefreshLivestream extends LiveEvent {
   const RefreshLivestream();
 }
+
+class LoadSchedule extends LiveEvent {
+  final int dayIndex;
+
+  const LoadSchedule(this.dayIndex);
+
+  @override
+  List<Object?> get props => [dayIndex];
+}

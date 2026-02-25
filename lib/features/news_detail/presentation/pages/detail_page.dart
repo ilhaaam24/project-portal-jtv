@@ -32,7 +32,6 @@ class DetailPage extends StatelessWidget {
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => context.pop(),
                   ),
-                  expandedHeight: 250,
                   pinned: true,
                   actions: [
                     // Tombol Text Size
@@ -83,11 +82,11 @@ class DetailPage extends StatelessWidget {
                           );
                         }
                       },
-                      child: Image.asset(
-                        state.isSaved
-                            ? "assets/icons/bookmark-active.png"
-                            : "assets/icons/bookmark-inactive.png",
-                        height: 24,
+                      child: Icon(
+                        state.isSaved ? Icons.bookmark : Icons.bookmark_border,
+                        color: state.isSaved
+                            ? PortalColors.jtvJingga
+                            : Colors.grey,
                       ),
                     ),
 
@@ -97,16 +96,6 @@ class DetailPage extends StatelessWidget {
                       onPressed: () => _shareArticle(state),
                     ),
                   ],
-                  flexibleSpace: FlexibleSpaceBar(
-                    collapseMode: CollapseMode.parallax,
-
-                    // Foto langsung tampil dari args (pre-populated)
-                    background: Image.network(
-                      args.photo,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Container(color: Colors.grey),
-                    ),
-                  ),
                 ),
 
                 // Konten
@@ -116,6 +105,12 @@ class DetailPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Image.network(
+                          args.photo,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) =>
+                              Container(color: Colors.grey),
+                        ),
                         // Kategori + Tanggal (dari args, langsung tampil)
                         Text(
                           '${args.category} • ${args.date}',
