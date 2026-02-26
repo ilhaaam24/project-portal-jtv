@@ -78,7 +78,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get errorOccurred => 'Terjadi kesalahan';
 
   @override
-  String get liveStreaming => 'Live Streaming';
+  String get liveStreaming => 'Live TV';
 
   @override
   String get noLiveBroadcast => 'Tidak ada siaran langsung saat ini';

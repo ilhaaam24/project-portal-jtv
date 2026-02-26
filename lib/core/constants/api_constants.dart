@@ -1,5 +1,6 @@
 class ApiConstants {
   static const String baseUrl = 'http://10.0.2.2:8000/api'; // Android Emulator
+  // static const String baseUrl ='https://9474-114-8-224-253.ngrok-free.app/api'; 
   // static const String baseUrl = 'http://localhost:8000/api'; // iOS Simulator
 
   // Endpoints

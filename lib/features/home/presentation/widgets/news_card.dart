@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/core/helper/format_date.dart';
+import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
 
-Widget buildNewsCard(dynamic news, BuildContext context) {
+Widget buildNewsCard(NewsEntity news, BuildContext context) {
   return Card(
     shape: RoundedRectangleBorder(
       side: BorderSide(color: Colors.grey.shade300),
@@ -57,7 +59,7 @@ Widget buildNewsCard(dynamic news, BuildContext context) {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${news.category} • ${news.date}',
+                    '${news.author} • ${formatDate(news.date)}',
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],

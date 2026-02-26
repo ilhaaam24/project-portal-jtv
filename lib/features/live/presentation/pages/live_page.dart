@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/l10n/app_localizations.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../bloc/live_bloc.dart';
@@ -315,11 +316,15 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header
-        const Padding(
+        Padding(
           padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Row(
             children: [
-              Icon(Icons.schedule, size: 20),
+              Container(
+                height: 24,
+                width: 4,
+                decoration: BoxDecoration(color: PortalColors.jtvJingga),
+              ),
               SizedBox(width: 8),
               Text(
                 'Jadwal Program',
@@ -433,7 +438,8 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
       decoration: isAiring
           ? BoxDecoration(
-              color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+              border: Border.all(color: colorScheme.secondary, width: 1),
+              color: colorScheme.secondary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             )
           : null,
@@ -441,21 +447,10 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
         children: [
           // Waktu
           SizedBox(
-            width: 100,
             child: Row(
               children: [
-                if (isAiring)
-                  Container(
-                    width: 8,
-                    height: 8,
-                    margin: const EdgeInsets.only(right: 6),
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
                 Text(
-                  '${schedule.jamMulai} - ${schedule.jamBerakhir}',
+                  schedule.jamMulai,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isAiring ? FontWeight.bold : FontWeight.w500,
@@ -468,6 +463,13 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
             ),
           ),
 
+          const SizedBox(width: 12),
+
+          Container(
+            height: 24,
+            width: 2,
+            decoration: BoxDecoration(color: colorScheme.primary),
+          ),
           const SizedBox(width: 12),
 
           // Nama program
@@ -487,7 +489,7 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: PortalColors.jtvJingga,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: const Text(

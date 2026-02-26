@@ -99,7 +99,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                 );
               },
             );
-          },
+          },  
         ),
       ),
     );
@@ -133,13 +133,13 @@ class _VideoPageItemState extends State<_VideoPageItem> {
   @override
   void initState() {
     super.initState();
-    final videoId = _extractVideoId(widget.video.youtubeId);
+    final videoId = _extractVideoId('RU0COHxejE0');
     debugPrint(
       '▶ Init YT controller for: $videoId (active: ${widget.isActive})',
     );
 
     _controller = YoutubePlayerController(
-      initialVideoId: videoId,
+      initialVideoId: 'RU0COHxejE0',
       flags: YoutubePlayerFlags(
         autoPlay: widget.isActive,
         mute: false,

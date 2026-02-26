@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @liveStreaming.
   ///
   /// In id, this message translates to:
-  /// **'Live Streaming'**
+  /// **'Live TV'**
   String get liveStreaming;
 
   /// No description provided for @noLiveBroadcast.

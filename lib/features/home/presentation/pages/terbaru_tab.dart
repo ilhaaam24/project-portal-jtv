@@ -117,7 +117,6 @@ class _TerbaruTabState extends State<TerbaruTab> {
 
                             // 6. Latest News List (Infinite Scroll)
                             SliverList(
-
                               delegate: SliverChildBuilderDelegate((
                                 context,
                                 index,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/core/helper/format_date.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
@@ -33,6 +34,11 @@ class DetailPage extends StatelessWidget {
                     onPressed: () => context.pop(),
                   ),
                   pinned: true,
+                  centerTitle: false,
+                  title: Image.asset(
+                    'assets/logos/logo-jtv-white.png',
+                    height: 24,
+                  ),
                   actions: [
                     // Tombol Text Size
                     IconButton(
@@ -105,19 +111,20 @@ class DetailPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.network(
-                          args.photo,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) =>
-                              Container(color: Colors.grey),
-                        ),
-                        // Kategori + Tanggal (dari args, langsung tampil)
-                        Text(
-                          '${args.category} • ${args.date}',
-                          style: TextStyle(color: Colors.blue, fontSize: 13),
-                        ),
                         const SizedBox(height: 8),
 
+                        // Categori (dari args, langsung tampil)
+                        Text(
+                          args.category,
+                          style: Theme.of(context).textTheme.headlineSmall!
+                              .copyWith(
+                                color: PortalColors.jtvBiru,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+
+                        const SizedBox(height: 8),
                         // Judul (dari args, LANGSUNG TAMPIL)
                         Text(
                           args.title,
@@ -126,24 +133,27 @@ class DetailPage extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
 
                         // Author (dari args, langsung tampil)
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 16,
-                              backgroundImage: NetworkImage(args.picAuthor),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              args.author,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
+                        Text(
+                          '${args.author} • ${formatDate(args.date)}',
+                          style: Theme.of(context).textTheme.headlineSmall!
+                              .copyWith(
+                                color: PortalColors.grey700,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ),
-                          ],
                         ),
+                        const SizedBox(height: 8),
+                        Image.network(
+                          args.photo,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) =>
+                              Container(color: Colors.grey),
+                        ),
+
+                        // Kategori + Tanggal (dari args, langsung tampil)
                         const SizedBox(height: 16),
 
                         // ===== KONTEN DARI API (loading/success) =====

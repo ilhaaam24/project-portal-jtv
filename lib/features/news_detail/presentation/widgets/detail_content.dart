@@ -10,7 +10,11 @@ import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_s
 import 'package:portal_jtv/features/news_detail/presentation/cubit/text_size_cubit.dart';
 import 'package:portal_jtv/features/news_detail/presentation/widgets/tts_section.dart';
 
-Widget buildContent(BuildContext context, DetailState state, DetailArgsEntity args) {
+Widget buildContent(
+  BuildContext context,
+  DetailState state,
+  DetailArgsEntity args,
+) {
   switch (state.status) {
     case DetailStatus.initial:
     case DetailStatus.loading:
@@ -53,17 +57,35 @@ Widget buildContent(BuildContext context, DetailState state, DetailArgsEntity ar
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Views + Editor
+              // Row(
+              //   children: [
+              //     Icon(Icons.visibility, size: 16, color: Colors.grey),
+              //     const SizedBox(width: 4),
+              //     Text('${state.detail!.hit} views'),
+              //     const SizedBox(width: 16),
+              //     if (state.detail!.editorBerita != null) ...[
+              //       Icon(Icons.edit, size: 16, color: Colors.grey),
+              //       const SizedBox(width: 4),
+              //       Text('Editor: ${state.detail!.editorBerita}'),
+              //     ],
+              //   ],
+              // ),
               Row(
                 children: [
-                  Icon(Icons.visibility, size: 16, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text('${state.detail!.hit} views'),
-                  const SizedBox(width: 16),
-                  if (state.detail!.editorBerita != null) ...[
-                    Icon(Icons.edit, size: 16, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text('Editor: ${state.detail!.editorBerita}'),
-                  ],
+                  Container(
+                    width: 4,
+                    height: 40,
+                    color: PortalColors.jtvJingga,
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      state.detail!.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
               const Divider(height: 24),
@@ -93,7 +115,7 @@ Widget buildContent(BuildContext context, DetailState state, DetailArgsEntity ar
                     ),
                     tooltip: tag.name,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(8),
                       side: BorderSide(
                         color: PortalColors.jtvBiru.withValues(alpha: 0.5),
                       ),
