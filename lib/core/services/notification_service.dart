@@ -192,6 +192,7 @@ class NotificationService {
     if (_router == null) return;
 
     final args = DetailArgsEntity(
+      idBerita: 0,
       seo: seo,
       title: '',
       photo: '',

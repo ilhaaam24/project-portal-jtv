@@ -74,6 +74,17 @@ import 'package:portal_jtv/features/video_detail/domain/repositories/video_repos
 import 'package:portal_jtv/features/video_detail/domain/usecases/get_paginated_videos.dart';
 import 'package:portal_jtv/features/video_detail/presentation/bloc/video_detail_bloc.dart';
 
+// ============ COMMENT FEATURE ============
+import 'package:portal_jtv/features/comment/data/datasources/comment_remote_datasource.dart';
+import 'package:portal_jtv/features/comment/data/repositories/comment_repository_impl.dart';
+import 'package:portal_jtv/features/comment/domain/repositories/comment_repository.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/get_comments.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/post_comment.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/update_comment.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/delete_comment.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/toggle_comment_like.dart';
+import 'package:portal_jtv/features/comment/presentation/bloc/comment_bloc.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -281,5 +292,31 @@ Future<void> init() async {
   // ============ NOTIFICATION SERVICE ============
   sl.registerLazySingleton<NotificationService>(
     () => NotificationService(sl()),
+  );
+
+  // ============ COMMENT FEATURE ============
+
+  // Bloc
+  sl.registerFactory<CommentBloc>(
+    () => CommentBloc(
+      getComments: sl(),
+      postComment: sl(),
+      deleteComment: sl(),
+      toggleCommentLike: sl(),
+    ),
+  );
+  // Use Cases
+  sl.registerLazySingleton(() => GetComments(sl()));
+  sl.registerLazySingleton(() => PostComment(sl()));
+  sl.registerLazySingleton(() => UpdateComment(sl()));
+  sl.registerLazySingleton(() => DeleteComment(sl()));
+  sl.registerLazySingleton(() => ToggleCommentLike(sl()));
+  // Repository
+  sl.registerLazySingleton<CommentRepository>(
+    () => CommentRepositoryImpl(remoteDataSource: sl()),
+  );
+  // Data Sources
+  sl.registerLazySingleton<CommentRemoteDataSource>(
+    () => CommentRemoteDataSourceImpl(client: sl()),
   );
 }

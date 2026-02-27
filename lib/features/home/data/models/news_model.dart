@@ -2,6 +2,7 @@ import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 
 class NewsModel extends NewsEntity {
   const NewsModel({
+    required super.idBerita,
     required super.title,
     required super.seo,
     required super.seoBiro,
@@ -24,6 +25,7 @@ class NewsModel extends NewsEntity {
 
   factory NewsModel.fromJson(Map<String, dynamic> json) {
     return NewsModel(
+      idBerita: json['id_berita'] ?? 0,
       title: json['title'] ?? '',
       seo: json['seo'] ?? '',
       seoBiro: json['seo_biro'] ?? '',
@@ -47,6 +49,7 @@ class NewsModel extends NewsEntity {
 
   Map<String, dynamic> toJson() {
     return {
+      'id_berita': idBerita,
       'title': title,
       'seo': seo,
       'seo_biro': seoBiro,

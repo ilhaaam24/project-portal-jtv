@@ -157,6 +157,7 @@ class _BookmarkView extends StatelessWidget {
   void _navigateToDetail(BuildContext context, dynamic item) {
     // Buat args dari data bookmark untuk pre-populated detail
     final args = DetailArgsEntity(
+      idBerita: item.idBerita,
       seo: item.berita.seo,
       title: item.berita.title,
       photo: item.berita.photo ?? '',

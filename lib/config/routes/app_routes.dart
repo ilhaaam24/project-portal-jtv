@@ -24,6 +24,9 @@ import 'package:portal_jtv/features/search/presentation/pages/search_page.dart';
 import 'package:portal_jtv/features/home/domain/entities/video_entity.dart';
 import 'package:portal_jtv/features/video_detail/presentation/bloc/video_detail_bloc.dart';
 import 'package:portal_jtv/features/video_detail/presentation/pages/video_detail_page.dart';
+import 'package:portal_jtv/features/comment/presentation/bloc/comment_bloc.dart';
+import 'package:portal_jtv/features/comment/presentation/bloc/comment_event.dart';
+import 'package:portal_jtv/features/comment/presentation/pages/comment_page.dart';
 
 final router = GoRouter(
   initialLocation: RouteNames.home,
@@ -140,6 +143,25 @@ final router = GoRouter(
         return BlocProvider(
           create: (_) => sl<VideoDetailBloc>(),
           child: VideoDetailPage(initialVideos: videos, initialIndex: index),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteNames.comments,
+      name: 'comments',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        final idBerita = args['idBerita'] as int;
+        return BlocProvider(
+          create: (_) =>
+              sl<CommentBloc>()..add(LoadComments(idBerita: idBerita)),
+          child: CommentPage(
+            idBerita: idBerita,
+            title: args['title'] as String,
+            category: args['category'] as String,
+            author: args['author'] as String,
+            date: args['date'] as String,
+          ),
         );
       },
     ),

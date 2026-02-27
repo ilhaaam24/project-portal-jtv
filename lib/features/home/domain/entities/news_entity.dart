@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class NewsEntity extends Equatable {
+  final int idBerita;
   final String title;
   final String seo;
   final String seoBiro;
@@ -21,6 +22,7 @@ class NewsEntity extends Equatable {
   final bool isYoutube;
 
   const NewsEntity({
+    required this.idBerita,
     required this.title,
     required this.seo,
     required this.seoBiro,
@@ -43,6 +45,7 @@ class NewsEntity extends Equatable {
 
   @override
   List<Object?> get props => [
+    idBerita,
     title,
     seo,
     seoBiro,

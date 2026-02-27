@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/core/utils/text_to_speech.dart';
+import 'package:portal_jtv/features/comment/presentation/widgets/comment_preview.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
 import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_bloc.dart';
 import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_event.dart';
@@ -57,19 +58,6 @@ Widget buildContent(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Views + Editor
-              // Row(
-              //   children: [
-              //     Icon(Icons.visibility, size: 16, color: Colors.grey),
-              //     const SizedBox(width: 4),
-              //     Text('${state.detail!.hit} views'),
-              //     const SizedBox(width: 16),
-              //     if (state.detail!.editorBerita != null) ...[
-              //       Icon(Icons.edit, size: 16, color: Colors.grey),
-              //       const SizedBox(width: 4),
-              //       Text('Editor: ${state.detail!.editorBerita}'),
-              //     ],
-              //   ],
-              // ),
               Row(
                 children: [
                   Container(
@@ -124,15 +112,25 @@ Widget buildContent(
                     backgroundColor: PortalColors.white,
                     onPressed: () {},
                   );
-                  // return Text(
-                  //   tag.name,
-                  //   style: TextStyle(color: PortalColors.jtvBiru),
-                  // );
                 }).toList(),
               ),
+
+              // Comment Preview Section
+              CommentPreview(
+                idBerita: args.idBerita,
+                title: args.title,
+                category: args.category,
+                author: args.author,
+                date: args.date,
+                photo: args.photo,
+                seo: args.seo,
+              ),
+
+              const SizedBox(height: 16),
             ],
           );
         },
       );
   }
 }
+
