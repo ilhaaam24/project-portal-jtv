@@ -163,6 +163,7 @@ class _BookmarkView extends StatelessWidget {
       photo: item.berita.photo ?? '',
       date: item.berita.date ?? '',
       category: item.berita.category ?? '',
+      seoCategory: item.berita.seoCategory ?? '',
       author: item.berita.author ?? '',
       picAuthor: item.berita.picAuthor ?? '',
     );
@@ -174,8 +175,8 @@ class _BookmarkView extends StatelessWidget {
         builder: (_) => MultiBlocProvider(
           providers: [
             BlocProvider(
-              create: (_) =>
-                  di.sl<DetailBloc>()..add(LoadDetail(seo: args.seo)),
+              create: (_) => di.sl<DetailBloc>()
+                ..add(LoadDetail(seo: args.seo, seoCategory: args.seoCategory)),
             ),
             BlocProvider(create: (_) => di.sl<TextSizeCubit>()),
             BlocProvider(create: (_) => di.sl<TextToSpeechCubit>()),

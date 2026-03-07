@@ -43,6 +43,7 @@ import 'package:portal_jtv/features/news_detail/data/datasources/detail_remote_d
 import 'package:portal_jtv/features/news_detail/data/repositories/detail_repository_impl.dart';
 import 'package:portal_jtv/features/news_detail/domain/repositories/detail_repository.dart';
 import 'package:portal_jtv/features/news_detail/domain/usecases/get_news_detail.dart';
+import 'package:portal_jtv/features/news_detail/domain/usecases/get_related_news.dart';
 import 'package:portal_jtv/features/news_detail/domain/usecases/send_hit_counter.dart';
 import 'package:portal_jtv/features/news_detail/domain/usecases/check_bookmark_status.dart';
 import 'package:portal_jtv/features/news_detail/domain/usecases/save_bookmark.dart';
@@ -146,6 +147,7 @@ Future<void> init() async {
   // Bloc
   sl.registerFactory<DetailBloc>(
     () => DetailBloc(
+      getRelatedNews: sl(),
       getNewsDetail: sl(),
       sendHitCounter: sl(),
       checkBookmarkStatus: sl(),
@@ -164,6 +166,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CheckBookmarkStatus(sl()));
   sl.registerLazySingleton(() => SaveBookmark(sl()));
   sl.registerLazySingleton(() => RemoveBookmark(sl()));
+  sl.registerLazySingleton(() => GetRelatedNews(sl()));
+
 
   // Repository
   sl.registerLazySingleton<DetailRepository>(

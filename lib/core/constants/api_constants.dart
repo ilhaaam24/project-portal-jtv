@@ -1,6 +1,6 @@
 class ApiConstants {
   static const String baseUrl = 'http://10.0.2.2:8000/api'; // Android Emulator
-  // static const String baseUrl ='https://9474-114-8-224-253.ngrok-free.app/api'; 
+  // static const String baseUrl = 'https://52a5-114-5-246-205.ngrok-free.app/api';
   // static const String baseUrl = 'http://localhost:8000/api'; // iOS Simulator
 
   // Endpoints
@@ -12,6 +12,7 @@ class ApiConstants {
   static const String videos = '/video';
   static const String categories = '/navbar/kategori';
   static const String newsDetail = '/news/detail';
+  static const String newsKategori = '/news/kategori';
   static const String hit = '/hit';
   static const String savedNews = '/saved-news';
   static const String fcmRegister = '/fcm/register';

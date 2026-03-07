@@ -10,8 +10,8 @@ class CommentUserModel extends CommentUserEntity {
   factory CommentUserModel.fromJson(Map<String, dynamic> json) {
     return CommentUserModel(
       idPenulis: json['id_penulis'] ?? 0,
-      nama: json['nama_lengkap'] ?? json['nama'] ?? 'Anonim',
-      pic: json['pic'],
+      nama: json['nama_penulis'] ?? json['nama'] ?? 'Anonim',
+      pic: json['image_penulis'],
     );
   }
 }

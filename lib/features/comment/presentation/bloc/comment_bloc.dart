@@ -34,14 +34,15 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     final result = await getComments(event.idBerita);
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: CommentStatus.failure,
-        errorMessage: failure.message,
-      )),
-      (comments) => emit(state.copyWith(
-        status: CommentStatus.success,
-        comments: comments,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          status: CommentStatus.failure,
+          errorMessage: failure.message,
+        ),
+      ),
+      (comments) => emit(
+        state.copyWith(status: CommentStatus.success, comments: comments),
+      ),
     );
   }
 
@@ -51,23 +52,28 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
   ) async {
     emit(state.copyWith(isPosting: true));
 
-    final result = await postComment(PostCommentParams(
-      idBerita: event.idBerita,
-      content: event.content,
-      parentId: event.parentId,
-    ));
+    final result = await postComment(
+      PostCommentParams(
+        idBerita: event.idBerita,
+        content: event.content,
+        parentId: event.parentId,
+      ),
+    );
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        isPosting: false,
-        errorMessage: failure.message,
-      )),
+      (failure) {
+        emit(state.copyWith(isPosting: false, errorMessage: failure.message));
+      },
       (newComment) {
-        final updatedComments = List.of(state.comments)..add(newComment);
-        emit(state.copyWith(
-          isPosting: false,
-          comments: updatedComments,
-        ));
+        final updatedComments = [newComment, ...state.comments];
+
+        emit(
+          state.copyWith(
+            isPosting: false,
+            status: CommentStatus.success,
+            comments: updatedComments,
+          ),
+        );
       },
     );
   }
@@ -81,8 +87,12 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     result.fold(
       (failure) => emit(state.copyWith(errorMessage: failure.message)),
       (_) {
-        final updatedComments =
-            state.comments.where((c) => c.id != event.commentId).toList();
+        // Hapus komentar + semua reply children-nya
+        final updatedComments = state.comments
+            .where(
+              (c) => c.id != event.commentId && c.parentId != event.commentId,
+            )
+            .toList();
         emit(state.copyWith(comments: updatedComments));
       },
     );
@@ -137,10 +147,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     );
   }
 
-  void _onChangeSortOrder(
-    ChangeSortOrder event,
-    Emitter<CommentState> emit,
-  ) {
+  void _onChangeSortOrder(ChangeSortOrder event, Emitter<CommentState> emit) {
     emit(state.copyWith(sortOrder: event.sortOrder));
   }
 }

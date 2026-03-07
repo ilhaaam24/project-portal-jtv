@@ -12,7 +12,7 @@ Widget buildNewsCard(NewsEntity news, BuildContext context) {
     ),
     elevation: 0,
     shadowColor: Colors.transparent,
-    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    margin: const EdgeInsets.symmetric(vertical: 4),
     child: InkWell(
       borderRadius: BorderRadius.circular(8),
       onTap: () {
@@ -25,18 +25,21 @@ Widget buildNewsCard(NewsEntity news, BuildContext context) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ─── GAMBAR ───
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                news.photo,
-                width: 110,
-                height: 100, // ← bebas atur tinggi di sini
-                fit: BoxFit.cover, // ← cover lebih baik untuk thumbnail
-                errorBuilder: (_, _, _) => Container(
+            Hero(
+              tag: news.idBerita,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  news.photo,
                   width: 110,
-                  height: 100,
-                  color: Colors.grey.shade200,
-                  child: const Icon(Icons.broken_image, color: Colors.grey),
+                  height: 100, // ← bebas atur tinggi di sini
+                  fit: BoxFit.cover, // ← cover lebih baik untuk thumbnail
+                  errorBuilder: (_, _, _) => Container(
+                    width: 110,
+                    height: 100,
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.broken_image, color: Colors.grey),
+                  ),
                 ),
               ),
             ),

@@ -48,6 +48,10 @@ class _CommentPageState extends State<CommentPage> {
     });
   }
 
+  void _loadComments() {
+    context.read<CommentBloc>().add(LoadComments(idBerita: widget.idBerita));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,51 +66,40 @@ class _CommentPageState extends State<CommentPage> {
         ),
         centerTitle: false,
       ),
-      body: Column(
-        children: [
-          // Expanded content area
-          Expanded(
-            child: BlocBuilder<CommentBloc, CommentState>(
-              builder: (context, state) {
-                return CustomScrollView(
-                  slivers: [
-                    // News Info Header
-                    SliverToBoxAdapter(
-                      child: _buildNewsInfo(context),
-                    ),
+      body: BlocBuilder<CommentBloc, CommentState>(
+        builder: (context, state) {
+          return Column(
+            children: [
+              // News Info Header
+              _buildNewsInfo(context),
 
-                    // Sort Tabs
-                    SliverToBoxAdapter(
-                      child: _buildSortTabs(context, state),
-                    ),
+              // Sort Tabs
+              _buildSortTabs(context, state),
 
-                    // Comment List
-                    _buildCommentList(context, state),
-                  ],
-                );
-              },
-            ),
-          ),
+              // Expanded content area — comment list
+              Expanded(child: _buildCommentList(context, state)),
 
-          // Bottom Input
-          BlocBuilder<CommentBloc, CommentState>(
-            builder: (context, state) {
-              return CommentInput(
+              // Bottom Input
+              CommentInput(
                 isPosting: state.isPosting,
                 replyTo: _replyToName,
                 onCancelReply: _cancelReply,
                 onSubmit: (content) {
-                  context.read<CommentBloc>().add(PostCommentEvent(
-                        idBerita: widget.idBerita,
-                        content: content,
-                        parentId: _replyToId,
-                      ));
+                  context.read<CommentBloc>().add(
+                    PostCommentEvent(
+                      idBerita: widget.idBerita,
+                      content: content,
+                      parentId: _replyToId,
+                    ),
+                  );
+
+                  _loadComments();
                   _cancelReply();
                 },
-              );
-            },
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -115,7 +108,6 @@ class _CommentPageState extends State<CommentPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: PortalColors.jtvBiru,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(16),
           bottomRight: Radius.circular(16),
@@ -127,26 +119,23 @@ class _CommentPageState extends State<CommentPage> {
           Text(
             widget.category,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: PortalColors.jtvJingga,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: PortalColors.jtvBiru,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             widget.title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
             '${widget.author} • ${formatDate(widget.date)}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: PortalColors.grey300,
-                ),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),
@@ -163,8 +152,8 @@ class _CommentPageState extends State<CommentPage> {
             label: 'Terbaru',
             isSelected: state.sortOrder == CommentSortOrder.terbaru,
             onTap: () => context.read<CommentBloc>().add(
-                  const ChangeSortOrder(sortOrder: CommentSortOrder.terbaru),
-                ),
+              const ChangeSortOrder(sortOrder: CommentSortOrder.terbaru),
+            ),
           ),
           const SizedBox(width: 8),
           _buildTabChip(
@@ -172,9 +161,8 @@ class _CommentPageState extends State<CommentPage> {
             label: 'Terpopuler',
             isSelected: state.sortOrder == CommentSortOrder.terpopuler,
             onTap: () => context.read<CommentBloc>().add(
-                  const ChangeSortOrder(
-                      sortOrder: CommentSortOrder.terpopuler),
-                ),
+              const ChangeSortOrder(sortOrder: CommentSortOrder.terpopuler),
+            ),
           ),
         ],
       ),
@@ -201,9 +189,9 @@ class _CommentPageState extends State<CommentPage> {
         child: Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: isSelected ? Colors.white : PortalColors.grey700,
-                fontWeight: FontWeight.w600,
-              ),
+            color: isSelected ? Colors.white : PortalColors.grey700,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
@@ -213,26 +201,22 @@ class _CommentPageState extends State<CommentPage> {
     switch (state.status) {
       case CommentStatus.initial:
       case CommentStatus.loading:
-        return const SliverFillRemaining(
-          child: Center(child: CircularProgressIndicator()),
-        );
+        return const Center(child: CircularProgressIndicator());
 
       case CommentStatus.failure:
-        return SliverFillRemaining(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(state.errorMessage ?? 'Gagal memuat komentar'),
-                const SizedBox(height: 8),
-                ElevatedButton(
-                  onPressed: () => context
-                      .read<CommentBloc>()
-                      .add(LoadComments(idBerita: widget.idBerita)),
-                  child: const Text('Coba Lagi'),
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(state.errorMessage ?? 'Gagal memuat komentar'),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () => context.read<CommentBloc>().add(
+                  LoadComments(idBerita: widget.idBerita),
                 ),
-              ],
-            ),
+                child: const Text('Coba Lagi'),
+              ),
+            ],
           ),
         );
 
@@ -240,47 +224,39 @@ class _CommentPageState extends State<CommentPage> {
         final comments = state.sortedComments;
 
         if (comments.isEmpty) {
-          return const SliverFillRemaining(
-            child: Center(
-              child: Text('Belum ada komentar. Jadilah yang pertama!'),
-            ),
+          return const Center(
+            child: Text('Belum ada komentar. Jadilah yang pertama!'),
           );
         }
 
-        // Separate root comments and replies
-        final rootComments =
-            comments.where((c) => c.parentId == null).toList();
+        final rootComments = comments.where((c) => c.parentId == null).toList();
 
-        return SliverPadding(
+        return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final rootComment = rootComments[index];
-                // Find replies for this root comment
-                final replies = comments
-                    .where((c) => c.parentId == rootComment.id)
-                    .toList();
+          itemCount: rootComments.length,
+          itemBuilder: (context, index) {
+            final rootComment = rootComments[index];
+            // Find replies for this root comment
+            final replies = comments
+                .where((c) => c.parentId == rootComment.id)
+                .toList();
 
-                return Column(
-                  children: [
-                    CommentCard(
-                      comment: rootComment,
-                      onReply: () => _setReplyTo(rootComment),
-                    ),
-                    ...replies.map(
-                      (reply) => CommentCard(
-                        comment: reply,
-                        isReply: true,
-                        onReply: () => _setReplyTo(rootComment),
-                      ),
-                    ),
-                  ],
-                );
-              },
-              childCount: rootComments.length,
-            ),
-          ),
+            return Column(
+              children: [
+                CommentCard(
+                  comment: rootComment,
+                  onReply: () => _setReplyTo(rootComment),
+                ),
+                ...replies.map(
+                  (reply) => CommentCard(
+                    comment: reply,
+                    isReply: true,
+                    onReply: () => _setReplyTo(rootComment),
+                  ),
+                ),
+              ],
+            );
+          },
         );
     }
   }

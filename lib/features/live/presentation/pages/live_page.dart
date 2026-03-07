@@ -44,7 +44,7 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
   late final VideoController _videoController;
 
   // Track sumber aktif
-  String _activeSource = 'jtv';
+  final String _activeSource = 'jtv';
   static const int _liveTabIndex = 2;
 
   // Nama hari
@@ -185,7 +185,7 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
 
   Widget _buildLiveContent(LiveState state, int todayIndex) {
     final live = state.livestream!;
-    return SingleChildScrollView(
+    return SizedBox(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -255,22 +255,6 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
 
           const Divider(height: 1),
 
-          // ─── TAB SUMBER ───
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                if (live.hasJtv) _buildSourceTab('JTV', 'jtv', Icons.tv),
-                if (live.hasVidio)
-                  _buildSourceTab('Vidio', 'vidio', Icons.play_circle),
-                if (live.hasYoutube)
-                  _buildSourceTab('YouTube', 'youtube', Icons.smart_display),
-                if (live.hasFacebook)
-                  _buildSourceTab('Facebook', 'facebook', Icons.facebook),
-              ],
-            ),
-          ),
-
           // ─── OFFLINE STATE ───
           if (!live.isLive)
             Padding(
@@ -297,7 +281,7 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
           const Divider(height: 1),
 
           // ─── JADWAL PROGRAM ───
-          _buildScheduleSection(state, todayIndex),
+          Expanded(child: _buildScheduleSection(state, todayIndex)),
         ],
       ),
     );
@@ -364,8 +348,8 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
 
         const SizedBox(height: 8),
 
-        // Schedule list
-        _buildScheduleList(state, selectedDay == todayIndex),
+        // Schedule list — hanya bagian ini yang bisa di-scroll
+        Expanded(child: _buildScheduleList(state, selectedDay == todayIndex)),
       ],
     );
   }
@@ -415,8 +399,6 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
         }
 
         return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           itemCount: state.schedules.length,
           separatorBuilder: (_, _) => const Divider(height: 1),
@@ -528,30 +510,6 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
           ..loadRequest(Uri.parse(url)),
       );
     }
-  }
-
-  Widget _buildSourceTab(String label, String source, IconData icon) {
-    final isActive = _activeSource == source;
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: ChoiceChip(
-        avatar: Icon(icon, size: 18),
-        label: Text(label),
-        selected: isActive,
-        onSelected: (_) {
-          setState(() => _activeSource = source);
-          final live = context.read<LiveBloc>().state.livestream!;
-
-          // Switch sumber
-          if (source == 'jtv' && live.hasJtv) {
-            _playStream(live.jtv);
-          } else if (source == 'youtube' && live.hasYoutube) {
-            _playStream(live.youtube);
-          }
-          // vidio & facebook ditangani WebView di buildPlayerView
-        },
-      ),
-    );
   }
 
   Future<void> _enterFullscreen(LivestreamEntity live) async {

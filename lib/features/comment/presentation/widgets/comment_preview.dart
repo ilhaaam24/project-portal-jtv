@@ -31,12 +31,10 @@ class CommentPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          sl<CommentBloc>()..add(LoadComments(idBerita: idBerita)),
+      create: (_) => sl<CommentBloc>()..add(LoadComments(idBerita: idBerita)),
       child: BlocBuilder<CommentBloc, CommentState>(
         builder: (context, state) {
-          if (state.status != CommentStatus.success ||
-              state.comments.isEmpty) {
+          if (state.status != CommentStatus.success || state.comments.isEmpty) {
             // Jangan tampilkan apa-apa kalau belum loaded / kosong
             // Tetap tampilkan tombol lihat komentar
             return _buildContainer(context, state);
@@ -49,8 +47,7 @@ class CommentPreview extends StatelessWidget {
 
   Widget _buildContainer(BuildContext context, CommentState state) {
     final commentCount = state.comments.length;
-    final lastComment =
-        state.comments.isNotEmpty ? state.comments.last : null;
+    final lastComment = state.comments.isNotEmpty ? state.comments.last : null;
 
     return GestureDetector(
       onTap: () {
@@ -82,15 +79,12 @@ class CommentPreview extends StatelessWidget {
               children: [
                 Text(
                   'Lihat $commentCount Komentar',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
-                Icon(
-                  Icons.chevron_right,
-                  color: PortalColors.grey600,
-                ),
+                Icon(Icons.chevron_right, color: PortalColors.grey600),
               ],
             ),
 

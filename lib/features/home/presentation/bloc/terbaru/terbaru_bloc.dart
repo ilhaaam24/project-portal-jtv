@@ -57,7 +57,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final latestResult = await getLatestNews(
         LatestNewsParams(page: 1, limit: 10),
       );
-      final sorotResult = await getSorot(SorotParams(limit: 5));
+      // final sorotResult = await getSorot(SorotParams(limit: 5));
       final videosResult = await getVideos(VideosParams(limit: 5));
 
       // Extract results
@@ -81,17 +81,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         return <dynamic>[];
       }, (data) => data);
 
-      
-
       final latestPaginated = latestResult.fold((failure) {
         errorMessage ??= failure.message;
         return null;
       }, (data) => data);
 
-      final sorot = sorotResult.fold((failure) {
-        errorMessage ??= failure.message;
-        return <dynamic>[];
-      }, (data) => data);
+      // final sorot = sorotResult.fold((failure) {
+      //   errorMessage ??= failure.message;
+      //   return <dynamic>[];
+      // }, (data) => data);
 
       final videos = videosResult.fold((failure) {
         errorMessage ??= failure.message;
@@ -119,7 +117,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           breakingNews: List.from(breaking),
           headlines: List.from(headlines),
           latestNews: latestPaginated?.news ?? [],
-          sorot: List.from(sorot),
+          // sorot: List.from(sorot),
           videos: List.from(videos),
           currentPage: latestPaginated?.currentPage ?? 1,
           hasReachedMax: !(latestPaginated?.hasNextPage ?? false),

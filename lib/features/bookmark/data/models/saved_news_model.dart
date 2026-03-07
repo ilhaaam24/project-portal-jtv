@@ -56,7 +56,7 @@ class SavedNewsBeritaModel extends SavedNewsBeritaEntity {
       idBerita: json['id_berita'] ?? 0,
       title: json['judul_berita'] ?? '', // kolom DB
       seo: json['seo_berita'] ?? '', // kolom DB
-      photo: json['gambar_berita'], // kolom DB
+      photo: json['gambar_depan_berita'], // kolom DB
       summary: json['rangkuman_berita'], // kolom DB
       date: json['date_publish_berita'], // kolom DB
       category: json['nama_kategori_berita'], // kolom DB
@@ -72,7 +72,7 @@ class SavedNewsBeritaModel extends SavedNewsBeritaEntity {
       'id_berita': idBerita,
       'judul_berita': title,
       'seo_berita': seo,
-      'gambar_berita': photo,
+      'gambar_depan_berita': photo,
       'rangkuman_berita': summary,
       'date_publish_berita': date,
       'nama_kategori_berita': category,

@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
+import 'package:portal_jtv/features/news_detail/domain/usecases/get_related_news.dart';
 import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_event.dart';
 import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_state.dart';
 import '../../domain/usecases/get_news_detail.dart';
@@ -13,6 +15,7 @@ class DetailBloc extends Bloc<DetailEvent, DetailState> {
   final CheckBookmarkStatus checkBookmarkStatus;
   final SaveBookmark saveBookmark;
   final RemoveBookmark removeBookmark;
+  final GetRelatedNews getRelatedNews;
 
   // Simpan id_berita untuk bookmark toggle
   int? _currentIdBerita;
@@ -23,6 +26,7 @@ class DetailBloc extends Bloc<DetailEvent, DetailState> {
     required this.checkBookmarkStatus,
     required this.saveBookmark,
     required this.removeBookmark,
+    required this.getRelatedNews,
   }) : super(DetailState.initial()) {
     on<LoadDetail>(_onLoadDetail);
     on<ToggleBookmark>(_onToggleBookmark);
@@ -34,40 +38,60 @@ class DetailBloc extends Bloc<DetailEvent, DetailState> {
   ) async {
     emit(state.copyWith(status: DetailStatus.loading));
 
-    // Fetch detail berita + hit counter secara parallel
-    // final results = await Future.wait([
-    //   getNewsDetail(event.seo),
-    //   sendHitCounter(HitCounterParams(seo: event.seo, tipe: 'mobile')),
-    // ]);
+    try {
+      // 1) Fetch detail berita
+      final detailResult = await getNewsDetail(event.seo);
 
-    final detailResult = await getNewsDetail(event.seo);
-    // hit counter result diabaikan (fire-and-forget)
-
-    await detailResult.fold(
-      (failure) {
+      // Handle detail failure → langsung emit failure & return
+      final detailData = detailResult.fold((failure) {
         emit(
           state.copyWith(
             status: DetailStatus.failure,
             errorMessage: failure.message,
           ),
         );
-      },
-      (detailData) async {
-        // Simpan id_berita untuk bookmark
-        _currentIdBerita = detailData.detail.idBerita;
+        return null;
+      }, (data) => data);
+      if (detailData == null) return;
 
-        emit(
-          state.copyWith(
-            status: DetailStatus.success,
-            detail: detailData.detail,
-            tags: detailData.tags,
-          ),
-        );
+      // Simpan id_berita untuk bookmark
+      _currentIdBerita = detailData.detail.idBerita;
 
-        // Cek bookmark status setelah detail loaded
-        await _checkBookmark(emit);
-      },
-    );
+      // 2) Fetch related news berdasarkan kategori (non-blocking, failure = empty list)
+      final relatedNewsResult = await getRelatedNews(
+        GetRelatedNewsParams(
+          limit: event.limit,
+          seoCategory: event.seoCategory,
+        ),
+      );
+      final allRelated = relatedNewsResult.fold(
+        (_) => <NewsEntity>[],
+        (data) => data,
+      );
+
+      // Filter out berita yang sedang dilihat agar tidak muncul di related news
+      final relatedNews = allRelated.where((n) => n.seo != event.seo).toList();
+
+      // 3) Emit success dengan detail, tags, dan related news
+      emit(
+        state.copyWith(
+          status: DetailStatus.success,
+          detail: detailData.detail,
+          tags: detailData.tags,
+          relatedNews: relatedNews,
+        ),
+      );
+
+      // 4) Cek bookmark status setelah detail loaded
+      await _checkBookmark(emit);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: DetailStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
   }
 
   Future<void> _checkBookmark(Emitter<DetailState> emit) async {

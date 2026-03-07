@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 
@@ -18,32 +19,41 @@ Widget buildSorotSection(HomeState state) {
           itemCount: state.sorot.length,
           itemBuilder: (context, index) {
             final sorot = state.sorot[index];
-            return Container(
-              width: 140,
-              margin: const EdgeInsets.only(right: 12),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.network(
-                      sorot.photo,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Container(color: Colors.grey),
-                    ),
-                    Container(color: Colors.black38),
-                    Center(
-                      child: Text(
-                        sorot.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
+            return GestureDetector(
+              onTap: () {
+                context.pushNamed(
+                  'category-news',
+                  extra: {'seo': sorot.seo, 'title': sorot.title},
+                );
+              },
+              child: Container(
+                width: 140,
+                margin: const EdgeInsets.only(right: 12),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(
+                        sorot.photo,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) =>
+                            Container(color: Colors.grey),
                       ),
-                    ),
-                  ],
+                      Container(color: Colors.black38),
+                      Center(
+                        child: Text(
+                          sorot.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );

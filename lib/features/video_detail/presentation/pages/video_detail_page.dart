@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_jtv/core/helper/format_date.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:portal_jtv/features/home/domain/entities/video_entity.dart';
 import 'package:portal_jtv/features/video_detail/presentation/bloc/video_detail_bloc.dart';
@@ -99,7 +101,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                 );
               },
             );
-          },  
+          },
         ),
       ),
     );
@@ -133,18 +135,21 @@ class _VideoPageItemState extends State<_VideoPageItem> {
   @override
   void initState() {
     super.initState();
-    final videoId = _extractVideoId('RU0COHxejE0');
+    final videoId = widget.video.youtubeId;
     debugPrint(
       '▶ Init YT controller for: $videoId (active: ${widget.isActive})',
     );
 
     _controller = YoutubePlayerController(
-      initialVideoId: 'RU0COHxejE0',
+      initialVideoId: videoId,
+
       flags: YoutubePlayerFlags(
-        autoPlay: widget.isActive,
+        autoPlay: true,
         mute: false,
-        enableCaption: false,
+        enableCaption: true,
         hideControls: false,
+        loop: true,
+
         controlsVisibleAtStart: true,
       ),
     );
@@ -157,13 +162,6 @@ class _VideoPageItemState extends State<_VideoPageItem> {
       setState(() => _isPlayerReady = true);
       debugPrint('✅ YT player ready for: ${widget.video.youtubeId}');
     }
-  }
-
-  /// Extract YouTube video ID dari berbagai format
-  String _extractVideoId(String input) {
-    final extracted = YoutubePlayer.convertUrlToId(input);
-    if (extracted != null) return extracted;
-    return input;
   }
 
   @override
@@ -214,32 +212,50 @@ class _VideoPageItemState extends State<_VideoPageItem> {
               borderRadius: BorderRadius.circular(8),
             ),
             clipBehavior: Clip.antiAlias,
-            child: YoutubePlayerBuilder(
-              player: YoutubePlayer(
-                controller: _controller,
-                showVideoProgressIndicator: true,
-                progressIndicatorColor: Colors.red,
-                progressColors: const ProgressBarColors(
-                  playedColor: Colors.red,
-                  handleColor: Colors.redAccent,
-                ),
-                bottomActions: [
-                  CurrentPosition(),
-                  const SizedBox(width: 8),
-                  ProgressBar(
-                    isExpanded: true,
-                    colors: const ProgressBarColors(
-                      playedColor: Colors.red,
-                      handleColor: Colors.redAccent,
+            child: GestureDetector(
+              onTap: () {
+                // if (_isPlayerReady) {
+                //   _controller.value.isPlaying
+                //       ? _controller.pause()
+                //       : _controller.play();
+                // }
+              },
+              child: Stack(
+                children: [
+                  YoutubePlayerBuilder(
+                    player: YoutubePlayer(
+                      controller: _controller,
+
+                      showVideoProgressIndicator: true,
+                      progressIndicatorColor: PortalColors.white,
+                      progressColors: const ProgressBarColors(
+                        playedColor: PortalColors.white,
+                        handleColor: Colors.redAccent,
+                      ),
+                      bottomActions: [
+                        CurrentPosition(),
+                        const SizedBox(width: 8),
+                        ProgressBar(
+                          isExpanded: true,
+                          colors: const ProgressBarColors(
+                            playedColor: PortalColors.white,
+                            handleColor: PortalColors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        RemainingDuration(),
+                      ],
                     ),
+                    builder: (context, player) {
+                      return player;
+                    },
                   ),
-                  const SizedBox(width: 8),
-                  RemainingDuration(),
+                  if (!_isPlayerReady)
+                    Positioned.fill(
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
                 ],
               ),
-              builder: (context, player) {
-                return player;
-              },
             ),
           ),
 
@@ -272,7 +288,7 @@ class _VideoPageItemState extends State<_VideoPageItem> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      widget.video.date,
+                      formatDate(widget.video.date),
                       style: const TextStyle(
                         color: Colors.white54,
                         fontSize: 13,

@@ -117,7 +117,7 @@ Widget buildContent(
 
               // Comment Preview Section
               CommentPreview(
-                idBerita: args.idBerita,
+                idBerita: state.detail!.idBerita,
                 title: args.title,
                 category: args.category,
                 author: args.author,
@@ -133,4 +133,3 @@ Widget buildContent(
       );
   }
 }
-

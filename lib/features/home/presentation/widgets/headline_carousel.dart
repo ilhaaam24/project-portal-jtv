@@ -2,6 +2,8 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import '../../domain/entities/news_entity.dart';
 
@@ -65,7 +67,8 @@ class _HeadlineCarouselState extends State<HeadlineCarousel> {
                 final news = widget.headlines[index];
                 return GestureDetector(
                   onTap: () {
-                    // Navigate ke detail
+                    final args = DetailArgsEntity.fromNewsEntity(news);
+                    context.pushNamed('detail', extra: args);
                   },
                   child: Stack(
                     fit: StackFit.expand,

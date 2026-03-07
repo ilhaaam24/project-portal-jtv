@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import '../../domain/entities/news_detail_entity.dart';
 import '../../domain/entities/tag_entity.dart';
 
@@ -16,6 +17,9 @@ class DetailState extends Equatable {
   final bool isSaved;
   final bool isBookmarkLoading;
 
+  // Related News
+  final List<NewsEntity> relatedNews;
+
   const DetailState({
     this.status = DetailStatus.initial,
     this.errorMessage,
@@ -23,6 +27,7 @@ class DetailState extends Equatable {
     this.tags = const [],
     this.isSaved = false,
     this.isBookmarkLoading = false,
+    this.relatedNews = const [],
   });
 
   factory DetailState.initial() => const DetailState();
@@ -34,6 +39,7 @@ class DetailState extends Equatable {
     List<TagEntity>? tags,
     bool? isSaved,
     bool? isBookmarkLoading,
+    List<NewsEntity>? relatedNews,
   }) {
     return DetailState(
       status: status ?? this.status,
@@ -42,6 +48,7 @@ class DetailState extends Equatable {
       tags: tags ?? this.tags,
       isSaved: isSaved ?? this.isSaved,
       isBookmarkLoading: isBookmarkLoading ?? this.isBookmarkLoading,
+      relatedNews: relatedNews ?? this.relatedNews,
     );
   }
 
@@ -53,5 +60,6 @@ class DetailState extends Equatable {
     tags,
     isSaved,
     isBookmarkLoading,
+    relatedNews
   ];
 }

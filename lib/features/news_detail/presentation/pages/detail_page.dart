@@ -9,6 +9,7 @@ import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_b
 import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_event.dart';
 import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_state.dart';
 import 'package:portal_jtv/features/news_detail/presentation/widgets/detail_content.dart';
+import 'package:portal_jtv/features/news_detail/presentation/widgets/related_news_content.dart';
 import 'package:portal_jtv/features/news_detail/presentation/widgets/text_size_sheet.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -92,7 +93,7 @@ class DetailPage extends StatelessWidget {
                         state.isSaved ? Icons.bookmark : Icons.bookmark_border,
                         color: state.isSaved
                             ? PortalColors.jtvJingga
-                            : Colors.grey,
+                            : PortalColors.white,
                       ),
                     ),
 
@@ -146,11 +147,14 @@ class DetailPage extends StatelessWidget {
                               ),
                         ),
                         const SizedBox(height: 8),
-                        Image.network(
-                          args.photo,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) =>
-                              Container(color: Colors.grey),
+                        Hero(
+                          tag: '${args.idBerita}',
+                          child: Image.network(
+                            args.photo,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) =>
+                                Container(color: Colors.grey),
+                          ),
                         ),
 
                         // Kategori + Tanggal (dari args, langsung tampil)
@@ -158,6 +162,11 @@ class DetailPage extends StatelessWidget {
 
                         // ===== KONTEN DARI API (loading/success) =====
                         buildContent(context, state, args),
+
+                        const SizedBox(height: 16),
+
+                        if (state.status == DetailStatus.success)
+                          RelatedNewsContent(relatedNews: state.relatedNews),
                       ],
                     ),
                   ),
@@ -171,7 +180,7 @@ class DetailPage extends StatelessWidget {
   }
 
   void _shareArticle(DetailState state) {
-    final url = 'https://yourdomain.com/${args.seo}';
+    final url = 'https://portaljtv.com/news/${args.seo}';
     SharePlus.instance.share(ShareParams(text: '${args.title}\n\n$url'));
   }
 }

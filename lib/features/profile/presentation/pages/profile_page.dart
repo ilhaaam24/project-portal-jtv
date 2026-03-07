@@ -217,25 +217,38 @@ class _ProfileView extends StatelessWidget {
   void _showLanguageDialog(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final languageCubit = context.read<LanguageCubit>();
+    final currentLanguage = languageCubit.state.languageCode;
+
     showDialog(
       context: context,
-      builder: (_) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(l10n.selectLanguage),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: LanguageCubit.supportedLocales.map((locale) {
-              final name = LanguageCubit.localeNames[locale.languageCode]!;
-              return RadioListTile<String?>(
-                title: Text(name),
-                value: locale.languageCode,
-                groupValue: languageCubit.state.languageCode,
-                onChanged: (code) {
-                  context.pop();
-                  languageCubit.changeLanguage(code!);
-                },
-              );
-            }).toList(),
+          // 1. Bungkus konten dengan RadioGroup di sini
+          content: RadioGroup<String>(
+            groupValue:
+                currentLanguage, // Atur nilai yang sedang aktif di sini SATU KALI saja
+            onChanged: (String? code) {
+              if (code != null) {
+                languageCubit.changeLanguage(code);
+                Navigator.pop(dialogContext);
+              }
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: LanguageCubit.supportedLocales.map((locale) {
+                  final name = LanguageCubit.localeNames[locale.languageCode]!;
+
+                  return RadioListTile<String>(
+                    title: Text(name),
+                    value: locale.languageCode, // Nilai unik untuk bahasa ini
+                    // 2. groupValue DIHAPUS karena sudah diurus oleh RadioGroup di atas
+                    // 3. onChanged DIHAPUS karena aksi ketuk sudah diurus RadioGroup
+                  );
+                }).toList(),
+              ),
+            ),
           ),
         );
       },

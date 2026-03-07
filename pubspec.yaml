@@ -76,6 +76,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/onboarding/
     - assets/logos/
     - assets/icons/
     - assets/icons/biro/

@@ -1,4 +1,5 @@
 class RouteNames {
+  static const onboarding = '/onboarding';
   static const home = '/';
   static const live = '/live';
   static const bookmark = '/bookmark';

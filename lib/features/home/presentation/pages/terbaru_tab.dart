@@ -5,7 +5,6 @@ import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_event
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/headline_carousel.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/news_card.dart';
-import 'package:portal_jtv/features/home/presentation/widgets/sorot_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/video_section2.dart';
 
@@ -101,11 +100,11 @@ class _TerbaruTabState extends State<TerbaruTab> {
                                 child: VideoSection(videos: state.videos),
                               ),
 
-                            // 4. Sorot Section
-                            if (state.sorot.isNotEmpty)
-                              SliverToBoxAdapter(
-                                child: buildSorotSection(state),
-                              ),
+                            // // 4. Sorot Section
+                            // if (state.sorot.isNotEmpty)
+                            //   SliverToBoxAdapter(
+                            //     child: buildSorotSection(state),
+                            //   ),
 
                             // 5. Section Title - Berita Terbaru
                             const SliverToBoxAdapter(
@@ -141,7 +140,12 @@ class _TerbaruTabState extends State<TerbaruTab> {
                                 }
 
                                 final news = state.latestNews[index];
-                                return buildNewsCard(news, context);
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: buildNewsCard(news, context),
+                                );
                               }, childCount: state.latestNews.length + 1),
                             ),
                           ],

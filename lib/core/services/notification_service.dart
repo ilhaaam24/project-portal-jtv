@@ -34,6 +34,8 @@ class NotificationService {
     'Berita Portal JTV', // name
     description: 'Notifikasi berita terbaru dari Portal JTV',
     importance: Importance.high,
+    playSound: true,
+    enableVibration: true,
   );
 
   /// Inisialisasi semua komponen notifikasi
@@ -113,8 +115,9 @@ class NotificationService {
         if (response.payload != null) {
           final data = jsonDecode(response.payload!);
           final seo = data['seo'] as String?;
+          final title = data['judul_berita'] as String?;
           if (seo != null && _router != null) {
-            _navigateToDetail(seo);
+            _navigateToDetail(seo, title);
           }
         }
       },
@@ -160,6 +163,24 @@ class NotificationService {
     final notification = message.notification;
     if (notification == null) return;
 
+    // Ambil image URL dari notifikasi FCM
+    final imageUrl =
+        notification.android?.imageUrl ?? notification.apple?.imageUrl;
+
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      // Tampilkan notif dengan gambar (async)
+      _showNotificationWithImage(notification, message.data, imageUrl);
+    } else {
+      // Tampilkan notif biasa tanpa gambar
+      _showSimpleNotification(notification, message.data);
+    }
+  }
+
+  /// Tampilkan local notification biasa (tanpa gambar)
+  void _showSimpleNotification(
+    RemoteNotification notification,
+    Map<String, dynamic> data,
+  ) {
     _localNotif.show(
       notification.hashCode,
       notification.title,
@@ -174,30 +195,78 @@ class NotificationService {
           priority: Priority.high,
         ),
       ),
-      payload: jsonEncode(message.data),
+      payload: jsonEncode(data),
     );
+  }
+
+  /// Tampilkan local notification dengan gambar (Big Picture)
+  Future<void> _showNotificationWithImage(
+    RemoteNotification notification,
+    Map<String, dynamic> data,
+    String imageUrl,
+  ) async {
+    try {
+      // Download gambar dari URL
+      final httpClient = HttpClient();
+      final request = await httpClient.getUrl(Uri.parse(imageUrl));
+      final response = await request.close();
+      final bytes = await consolidateHttpClientResponseBytes(response);
+      httpClient.close();
+
+      final bigPicture = ByteArrayAndroidBitmap(bytes);
+
+      _localNotif.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            _androidChannel.id,
+            _androidChannel.name,
+            channelDescription: _androidChannel.description,
+            icon: '@mipmap/ic_launcher',
+            importance: Importance.high,
+            priority: Priority.high,
+            largeIcon: bigPicture,
+            styleInformation: BigPictureStyleInformation(
+              bigPicture,
+              contentTitle: notification.title,
+              summaryText: notification.body,
+              hideExpandedLargeIcon: true,
+            ),
+          ),
+        ),
+        payload: jsonEncode(data),
+      );
+    } catch (e) {
+      debugPrint('[FCM] Gagal download gambar notif: $e');
+      // Fallback: tampilkan notif tanpa gambar
+      _showSimpleNotification(notification, data);
+    }
   }
 
   /// Handle tap pada notifikasi (background / terminated)
   void _onNotificationTap(RemoteMessage message) {
     debugPrint('[FCM] Notification tapped: ${message.data}');
     final seo = message.data['seo'] as String?;
+    final title = message.data['judul_berita'] as String?;
     if (seo != null) {
-      _navigateToDetail(seo);
+      _navigateToDetail(seo, title);
     }
   }
 
   /// Navigate ke halaman detail berita
-  void _navigateToDetail(String seo) {
+  void _navigateToDetail(String seo, String? title) {
     if (_router == null) return;
 
     final args = DetailArgsEntity(
       idBerita: 0,
       seo: seo,
-      title: '',
+      title: title ?? '',
       photo: '',
       date: '',
       category: '',
+      seoCategory: '',
       author: '',
       picAuthor: '',
     );

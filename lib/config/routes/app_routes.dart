@@ -14,6 +14,7 @@ import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_e
 import 'package:portal_jtv/features/news_detail/presentation/cubit/text_size_cubit.dart';
 import 'package:portal_jtv/features/news_detail/presentation/cubit/text_to_speech_cubit.dart';
 import 'package:portal_jtv/features/news_detail/presentation/pages/detail_page.dart';
+import 'package:portal_jtv/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:portal_jtv/features/profile/domain/entities/profile_entity.dart';
 import 'package:portal_jtv/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:portal_jtv/features/profile/presentation/pages/edit_profile_page.dart';
@@ -29,8 +30,15 @@ import 'package:portal_jtv/features/comment/presentation/bloc/comment_event.dart
 import 'package:portal_jtv/features/comment/presentation/pages/comment_page.dart';
 
 final router = GoRouter(
-  initialLocation: RouteNames.home,
+  initialLocation: RouteNames.onboarding,
   routes: [
+    GoRoute(
+      path: RouteNames.onboarding,
+      name: 'onboarding',
+      builder: (_, state) {
+        return const OnboardingPage();
+      },
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
           MainLayout(navigationShell: navigationShell),
@@ -39,6 +47,7 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: RouteNames.home,
+              name: 'home',
               builder: (context, state) => const HomePage(),
             ),
           ],
@@ -86,7 +95,8 @@ final router = GoRouter(
         return MultiBlocProvider(
           providers: [
             BlocProvider(
-              create: (_) => sl<DetailBloc>()..add(LoadDetail(seo: args.seo)),
+              create: (_) => sl<DetailBloc>()
+                ..add(LoadDetail(seo: args.seo, seoCategory: args.seoCategory)),
             ),
             BlocProvider(create: (_) => sl<TextSizeCubit>()),
             BlocProvider(create: (_) => sl<TextToSpeechCubit>()),

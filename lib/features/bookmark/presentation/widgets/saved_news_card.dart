@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
+import 'package:portal_jtv/features/bookmark/domain/entities/saved_news_entity.dart';
 
 class SavedNewsCard extends StatelessWidget {
-  final dynamic item;
+  final SavedNewsEntity item;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
@@ -158,6 +159,4 @@ class SavedNewsCard extends StatelessWidget {
       ),
     );
   }
-
- 
 }
