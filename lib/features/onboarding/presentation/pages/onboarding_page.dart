@@ -29,6 +29,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: PortalColors.white,
       body: Stack(
         children: [
           // 1. Background dengan AnimatedSwitcher agar transisinya halus (Fade)
@@ -37,7 +38,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             left: 0,
             right: 0,
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 1),
               // Tambahkan layoutBuilder ini agar background tidak 'melompat'
               layoutBuilder:
                   (Widget? currentChild, List<Widget> previousChildren) {
@@ -59,8 +60,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
           Column(
             children: [
-              const SizedBox(height: 32),
-
               // 2. PAGEVIEW: Gambar dan Teks dimasukkan ke sini agar bergeser mengikuti jari
               Expanded(
                 child: PageView.builder(
