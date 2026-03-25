@@ -12,6 +12,7 @@ import 'package:portal_jtv/features/news_detail/presentation/widgets/detail_cont
 import 'package:portal_jtv/features/news_detail/presentation/widgets/related_news_content.dart';
 import 'package:portal_jtv/features/news_detail/presentation/widgets/text_size_sheet.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:portal_jtv/core/utils/auth_guard.dart';
 
 class DetailPage extends StatelessWidget {
   final DetailArgsEntity args;
@@ -50,6 +51,7 @@ class DetailPage extends StatelessWidget {
                     // Tombol Bookmark (optimistic update)
                     GestureDetector(
                       onTap: () {
+                        if (!checkAuthAndPrompt(context)) return;
                         context.read<DetailBloc>().add(const ToggleBookmark());
                         if (!state.isSaved) {
                           ScaffoldMessenger.of(context).showSnackBar(

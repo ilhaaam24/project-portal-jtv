@@ -13,54 +13,66 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   int currentIndex = 0;
   late PageController _controller;
+  late PageController _bgController;
 
   @override
   void initState() {
     _controller = PageController(initialPage: 0);
+    _bgController = PageController(initialPage: 0);
+
+    // Sync background scroll dengan content scroll secara real-time
+    _controller.addListener(_syncBackground);
     super.initState();
+  }
+
+  void _syncBackground() {
+    if (_controller.position.haveDimensions &&
+        _bgController.position.haveDimensions) {
+      _bgController.position.jumpTo(_controller.position.pixels);
+    }
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_syncBackground);
     _controller.dispose();
+    _bgController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: PortalColors.white,
       body: Stack(
         children: [
-          // 1. Background dengan AnimatedSwitcher agar transisinya halus (Fade)
+          // 1. Background yang ikut scroll bersama PageView (smooth & nyambung)
           Positioned.fill(
-            bottom: -4,
+            bottom: 0,
             left: 0,
             right: 0,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 1),
-              // Tambahkan layoutBuilder ini agar background tidak 'melompat'
-              layoutBuilder:
-                  (Widget? currentChild, List<Widget> previousChildren) {
-                    return Stack(
-                      alignment: Alignment.center,
-                      children: <Widget>[...previousChildren, ?currentChild],
-                    );
-                  },
-              child: Image.asset(
-                onboardingList[currentIndex].background,
-                key: ValueKey<int>(currentIndex),
-                fit: BoxFit.cover,
-                // Pastikan ukuran image mengisi seluruh layar
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-              ),
+            child: PageView.builder(
+              controller: _bgController,
+              // Mencegah user scroll background secara terpisah
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: onboardingList.length,
+              itemBuilder: (context, index) {
+                return Image.asset(
+                  onboardingList[index].background,
+                  fit: BoxFit.cover,
+                  width: screenWidth,
+                  height: screenHeight,
+                );
+              },
             ),
           ),
 
           Column(
             children: [
-              // 2. PAGEVIEW: Gambar dan Teks dimasukkan ke sini agar bergeser mengikuti jari
+              // 2. PAGEVIEW: Gambar dan Teks — menggerakkan background secara sinkron
               Expanded(
                 child: PageView.builder(
                   controller: _controller,
@@ -72,22 +84,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   itemCount: onboardingList.length,
                   itemBuilder: (context, index) {
                     return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Gambar Mockup HP
-                        SizedBox(
-                          height:
-                              600, // Saya kurangi sedikit agar teks tidak terpotong (overflow)
-                          child: Image.asset(
-                            onboardingList[index]
-                                .image, // Diperbaiki: Menggunakan 'index', bukan 'currentIndex'
-                            fit: BoxFit.contain,
+                        // Gambar Mockup HP — Expanded agar mengisi sisa ruang
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 40),
+                            child: Image.asset(
+                              onboardingList[index].image,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
 
-                        // Teks Judul & Deskripsi
+                        // Teks Judul & Deskripsi — selalu tampil di bawah gambar
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                           child: Column(
                             children: [
                               Text(
@@ -121,7 +132,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               ),
 
-              // 3. BAGIAN STATIS: Dots & Tombol tetap di bawah dan tidak ikut tergeser
+              // 3. BAGIAN STATIS: Dots & Tombol tetap di bawah
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
@@ -142,8 +153,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     // Tombol
                     SizedBox(
                       width: double.infinity,
-                      height:
-                          50, // Opsional: memberi tinggi standar untuk tombol
+                      height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
@@ -190,7 +200,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   Widget buildDot(int index, BuildContext context) {
     return AnimatedContainer(
-      // Diubah menjadi AnimatedContainer agar perubahannya halus
       duration: const Duration(milliseconds: 200),
       height: 8,
       width: currentIndex == index ? 24 : 8,

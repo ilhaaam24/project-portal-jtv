@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/core/helper/format_date.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
@@ -92,7 +93,10 @@ class _ForYouTabState extends State<ForYouTab>
                 context.read<ForYouBloc>().add(const RefreshForYou());
               },
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
                 itemCount: state.news.length,
                 itemBuilder: (context, index) {
                   final item = state.news[index];
@@ -106,35 +110,40 @@ class _ForYouTabState extends State<ForYouTab>
   }
 
   Widget _buildForYouCard(BuildContext context, ForYouEntity item) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade300, width: 0.5),
+        ),
       ),
-      elevation: 0,
-      shadowColor: Colors.transparent,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: () => _navigateToDetail(context, item),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
+      child: Card(
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        color: Colors.transparent,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: () => _navigateToDetail(context, item),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ─── GAMBAR ───
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  item.photo,
-                  width: 110,
-                  height: 100,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
+              Hero(
+                tag: item.id,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    item.photo,
                     width: 110,
                     height: 100,
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.broken_image, color: Colors.grey),
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Container(
+                      width: 110,
+                      height: 100,
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                    ),
                   ),
                 ),
               ),
@@ -146,36 +155,83 @@ class _ForYouTabState extends State<ForYouTab>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Kategori
-                    Text(
-                      item.categoryName,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: PortalColors.jtvBiru,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    // Judul
                     Text(
                       item.title,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Tanggal
-                    Text(
-                      formatDate(item.date),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
+                    Row(
+                      children: [
+                        SvgPicture.asset('assets/icons/author.svg', height: 18),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            formatDate(item.date),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
+                ),
+              ),
+              SizedBox(
+                height: 100,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      item.categoryName != ""
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: PortalColors.jtvJingga,
+                              ),
+                              child: Text(
+                                item.categoryName,
+                                style: Theme.of(context).textTheme.bodyMedium!
+                                    .copyWith(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: PortalColors.white,
+                                    ),
+                              ),
+                            )
+                          : const SizedBox(),
+                      SizedBox(
+                        width: 50,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Image.asset(
+                              'assets/icons/bookmark-card.png',
+                              height: 18,
+                            ),
+                            Image.asset(
+                              'assets/icons/export-card.png',
+                              height: 18,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

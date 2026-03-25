@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String nama;
@@ -37,7 +38,9 @@ class ProfileHeader extends StatelessWidget {
           SizedBox(
             child: email == "-"
                 ? TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.pushNamed('sign-in', extra: {'fromGuard': true});
+                    },
                     child: Text(
                       "Login",
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(

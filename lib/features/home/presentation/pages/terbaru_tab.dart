@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_event.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
-import 'package:portal_jtv/features/home/presentation/widgets/headline_carousel.dart';
+import 'package:portal_jtv/features/home/presentation/widgets/headline_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/news_card.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/video_section2.dart';
@@ -89,9 +89,7 @@ class _TerbaruTabState extends State<TerbaruTab> {
                             // 2. Headlines Carousel
                             if (state.headlines.isNotEmpty)
                               SliverToBoxAdapter(
-                                child: HeadlineCarousel(
-                                  headlines: state.headlines,
-                                ),
+                                child: buildHeadlinesSection(state),
                               ),
 
                             // 3. Video Section

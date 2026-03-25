@@ -86,6 +86,19 @@ import 'package:portal_jtv/features/comment/domain/usecases/delete_comment.dart'
 import 'package:portal_jtv/features/comment/domain/usecases/toggle_comment_like.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_bloc.dart';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+// ============ AUTH FEATURE ============
+import 'package:portal_jtv/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:portal_jtv/features/auth/data/datasources/auth_local_datasource.dart';
+import 'package:portal_jtv/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:portal_jtv/features/auth/domain/repositories/auth_repository.dart';
+import 'package:portal_jtv/features/auth/domain/usecases/login.dart';
+import 'package:portal_jtv/features/auth/domain/usecases/get_saved_auth.dart';
+import 'package:portal_jtv/features/auth/domain/usecases/logout.dart'
+    as auth_logout;
+import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -167,7 +180,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SaveBookmark(sl()));
   sl.registerLazySingleton(() => RemoveBookmark(sl()));
   sl.registerLazySingleton(() => GetRelatedNews(sl()));
-
 
   // Repository
   sl.registerLazySingleton<DetailRepository>(
@@ -322,5 +334,23 @@ Future<void> init() async {
   // Data Sources
   sl.registerLazySingleton<CommentRemoteDataSource>(
     () => CommentRemoteDataSourceImpl(client: sl()),
+  );
+  // ============ AUTH FEATURE ============
+  sl.registerLazySingleton(() => const FlutterSecureStorage());
+
+  sl.registerLazySingleton<AuthBloc>(
+    () => AuthBloc(login: sl(), getSavedAuth: sl(), logout: sl()),
+  );
+  sl.registerLazySingleton(() => Login(sl()));
+  sl.registerLazySingleton(() => GetSavedAuth(sl()));
+  sl.registerLazySingleton(() => auth_logout.Logout(sl()));
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
+  );
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(client: sl()),
+  );
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(secureStorage: sl()),
   );
 }

@@ -9,7 +9,7 @@ class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     // final token = _prefs.getString('auth_token');
-    final token = "88|QFZ6JgME4OZacOPjBhtacoqQGL9yLjKu1KyhZNj0da9b1620";
+    final token = "89|NqA6vhI5ZY5e60Z8d709Sz9ojbAZ6dnyDK7Jf9Rs247f11b5";
 
     if (token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';

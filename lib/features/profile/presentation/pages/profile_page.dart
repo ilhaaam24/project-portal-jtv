@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/l10n/app_localizations.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_event.dart';
@@ -92,7 +93,7 @@ class _ProfileView extends StatelessWidget {
                         children: [
                           Text(
                             context.read<LanguageCubit>().currentLanguageName,
-                            style: TextStyle(color: Colors.grey[600]),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           const Icon(Icons.chevron_right, color: Colors.grey),
                         ],
@@ -116,7 +117,11 @@ class _ProfileView extends StatelessWidget {
                             context.read<ThemeCubit>().toggleTheme(),
                         thumbIcon: WidgetStateProperty.resolveWith((states) {
                           if (states.contains(WidgetState.selected)) {
-                            return const Icon(Icons.dark_mode, size: 16);
+                            return Icon(
+                              Icons.dark_mode,
+                              color: PortalColors.grey500,
+                              size: 16,
+                            );
                           }
                           return const Icon(Icons.light_mode, size: 16);
                         }),

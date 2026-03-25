@@ -27,9 +27,9 @@ class BottomNavBar extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
             elevation: 4,
             child: SizedBox(
-              height: 60,
+              height: 48,
               child: Row(
-                spacing: 8,
+                spacing: 4,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   // Home
@@ -39,6 +39,7 @@ class BottomNavBar extends StatelessWidget {
                         ? "assets/icons/navigation/home_active_dark.png"
                         : "assets/icons/navigation/home_active.png",
                     label: l10n.navHome,
+
                     isSelected: currentIndex == 0,
                     onTap: () => _onTabTap(context, 0),
                   ),

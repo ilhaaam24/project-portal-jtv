@@ -12,4 +12,6 @@ class RouteNames {
   static const categoryNews = '/category-news';
   static const videoDetail = '/video-detail';
   static const comments = '/comments';
+  static const signIn = '/sign-in';
+  static const signUp = '/sign-up';
 }

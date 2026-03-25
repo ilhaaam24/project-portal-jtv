@@ -9,6 +9,7 @@ import 'package:portal_jtv/features/comment/presentation/bloc/comment_event.dart
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_state.dart';
 import 'package:portal_jtv/features/comment/presentation/widgets/comment_card.dart';
 import 'package:portal_jtv/features/comment/presentation/widgets/comment_input.dart';
+import 'package:portal_jtv/core/utils/auth_guard.dart';
 
 class CommentPage extends StatefulWidget {
   final int idBerita;
@@ -85,6 +86,7 @@ class _CommentPageState extends State<CommentPage> {
                 replyTo: _replyToName,
                 onCancelReply: _cancelReply,
                 onSubmit: (content) {
+                  if (!checkAuthAndPrompt(context)) return;
                   context.read<CommentBloc>().add(
                     PostCommentEvent(
                       idBerita: widget.idBerita,

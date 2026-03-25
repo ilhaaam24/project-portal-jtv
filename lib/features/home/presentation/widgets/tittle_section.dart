@@ -14,10 +14,9 @@ class TittleSection extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.w500),
           ),
         ),
       ],

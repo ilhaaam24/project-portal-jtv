@@ -37,7 +37,7 @@ class NavItem extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            padding: const EdgeInsets.all(2),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -49,9 +49,13 @@ class NavItem extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   label,
+
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: colortext,
-                    fontSize: 10,
+                    fontSize: 9,
+
                     fontWeight: isSelected
                         ? FontWeight.w600
                         : FontWeight.normal,

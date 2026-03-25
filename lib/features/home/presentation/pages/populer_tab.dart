@@ -83,6 +83,7 @@ class _PopulerTabState extends State<PopulerTab>
                 context.read<PopulerBloc>().add(const RefreshPopuler());
               },
               child: ListView.builder(
+                padding: const EdgeInsets.all(16),
                 controller: _scrollController,
                 itemCount: state.hasReachedMax
                     ? state.news.length
@@ -95,10 +96,7 @@ class _PopulerTabState extends State<PopulerTab>
                     );
                   }
 
-                  return buildNewsCard(
-                    state.news[index],
-                    context,
-                  );
+                  return buildNewsCard(state.news[index], context);
                 },
               ),
             );

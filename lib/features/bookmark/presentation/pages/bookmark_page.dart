@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
+import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:portal_jtv/features/bookmark/presentation/widgets/saved_news_card.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
 import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_bloc.dart';
@@ -42,56 +44,12 @@ class _BookmarkView extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.savedNews), centerTitle: true),
-        body: BlocConsumer<BookmarkBloc, BookmarkState>(
-          // Listener untuk SnackBar
-          listener: (context, state) {
-            if (state.lastDeleted != null) {
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.newsDeleted),
-                    duration: const Duration(seconds: 1),
-                  ),
-                );
-            }
-          },
-          builder: (context, state) {
-            switch (state.status) {
-              // ─── LOADING ───
-              case BookmarkStatus.initial:
-              case BookmarkStatus.loading:
-                return const Center(child: CircularProgressIndicator());
-
-              // ─── ERROR ───
-              case BookmarkStatus.failure:
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.grey,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(state.errorMessage ?? l10n.loadFailed),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<BookmarkBloc>().add(
-                            const LoadBookmarks(),
-                          );
-                        },
-                        child: Text(l10n.retry),
-                      ),
-                    ],
-                  ),
-                );
-
-              // ─── EMPTY STATE ───
-              case BookmarkStatus.empty:
-                return Center(
+        body: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            if (authState is! AuthAuthenticated) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -102,52 +60,158 @@ class _BookmarkView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        l10n.noSavedNews,
+                        'Login Diperlukan',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
-                          color: Colors.grey[600],
+                          color: Colors.grey[700],
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        l10n.saveHint,
+                        'Silakan masuk atau daftar untuk menyimpan dan melihat berita favorit Anda.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey[500]),
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            context.pushNamed(
+                              'sign-in',
+                              extra: {'fromGuard': true},
+                            );
+                          },
+                          child: const Text(
+                            'Masuk / Daftar',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                );
+                ),
+              );
+            }
 
-              // ─── SUCCESS (ADA DATA) ───
-              case BookmarkStatus.success:
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<BookmarkBloc>().add(const RefreshBookmarks());
-                  },
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: state.savedNews.length,
-                    itemBuilder: (context, index) {
-                      final item = state.savedNews[index];
-                      return SavedNewsCard(
-                        item: item,
-                        onTap: () {
-                          _navigateToDetail(context, item);
-                        },
-                        onDelete: () {
-                          context.read<BookmarkBloc>().add(
-                            DeleteBookmark(
-                              idBerita: item.idBerita,
-                              index: index,
+            return BlocConsumer<BookmarkBloc, BookmarkState>(
+              // Listener untuk SnackBar
+              listener: (context, state) {
+                if (state.lastDeleted != null) {
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.newsDeleted),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                }
+              },
+              builder: (context, state) {
+                switch (state.status) {
+                  // ─── LOADING ───
+                  case BookmarkStatus.initial:
+                  case BookmarkStatus.loading:
+                    return const Center(child: CircularProgressIndicator());
+
+                  // ─── ERROR ───
+                  case BookmarkStatus.failure:
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(state.errorMessage ?? l10n.loadFailed),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<BookmarkBloc>().add(
+                                const LoadBookmarks(),
+                              );
+                            },
+                            child: Text(l10n.retry),
+                          ),
+                        ],
+                      ),
+                    );
+
+                  // ─── EMPTY STATE ───
+                  case BookmarkStatus.empty:
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.bookmark_border,
+                            size: 80,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            l10n.noSavedNews,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
                             ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.saveHint,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey[500]),
+                          ),
+                        ],
+                      ),
+                    );
+
+                  // ─── SUCCESS (ADA DATA) ───
+                  case BookmarkStatus.success:
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<BookmarkBloc>().add(
+                          const RefreshBookmarks(),
+                        );
+                      },
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: state.savedNews.length,
+                        itemBuilder: (context, index) {
+                          final item = state.savedNews[index];
+                          return SavedNewsCard(
+                            item: item,
+                            onTap: () {
+                              _navigateToDetail(context, item);
+                            },
+                            onDelete: () {
+                              context.read<BookmarkBloc>().add(
+                                DeleteBookmark(
+                                  idBerita: item.idBerita,
+                                  index: index,
+                                ),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                  ),
-                );
-            }
+                      ),
+                    );
+                }
+              },
+            );
           },
         ),
       ),

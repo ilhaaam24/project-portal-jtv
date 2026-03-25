@@ -6,6 +6,7 @@ import 'package:portal_jtv/config/routes/app_routes.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
 import 'package:portal_jtv/core/services/notification_service.dart';
 import 'package:portal_jtv/core/theme/theme.dart';
+import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_event.dart';
 import 'package:portal_jtv/features/profile/presentation/cubit/language_cubit.dart';
@@ -34,6 +35,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => NavigationCubit()),
+        BlocProvider(create: (_) => di.sl<AuthBloc>()..add(CheckAuthStatus())),
         BlocProvider(create: (_) => di.sl<HomeBloc>()..add(LoadHomeData())),
         BlocProvider(create: (_) => di.sl<ThemeCubit>()),
         BlocProvider(create: (_) => di.sl<LanguageCubit>()),

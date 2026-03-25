@@ -20,14 +20,14 @@ List<OnboardingModel> onboardingList = [
     background:
         'assets/images/onboarding/onboarding-bg-1.png', // Ganti dengan path gambar Anda
     description:
-        'Update cepat dan terpercaya dari seluruh penjuru Jawa Timur, langsung di layar Anda.',
+        'Update cepat dan terpercaya dari seluruh penjuru\nJawa Timur, langsung di layar Anda.',
   ),
   OnboardingModel(
     title: 'Berita Sesuai Minat Anda',
     image: 'assets/images/onboarding/onboarding2.png',
     background: 'assets/images/onboarding/onboarding-bg-2.png',
     description:
-        'Jelajahi beragam kanal berita, mulai dari peristiwa hingga gaya hidup.',
+        'Jelajahi beragam kanal berita,\nmulai dari peristiwa hingga gaya hidup.',
   ),
   OnboardingModel(
     title: 'Saksikan JTV\nSecara Langsung',
@@ -41,6 +41,6 @@ List<OnboardingModel> onboardingList = [
     image: 'assets/images/onboarding/onboarding4.png',
     background: 'assets/images/onboarding/onboarding-bg-4.png',
     description:
-        'Tonton liputan dan highlight berita pilihan dalam sajian visual yang informatif.',
+        'Tonton liputan dan highlight berita\npilihan dalam sajian visual yang informatif.',
   ),
 ];

@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/config/injection/injection.dart';
 import 'package:portal_jtv/config/routes/route_names.dart';
 import 'package:portal_jtv/core/widgets/main_layout.dart';
+import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:portal_jtv/features/auth/presentation/pages/auth_page.dart';
 import 'package:portal_jtv/features/bookmark/presentation/pages/bookmark_page.dart';
 import 'package:portal_jtv/features/category/presentation/pages/category_news_page.dart';
 import 'package:portal_jtv/features/category/presentation/pages/category_page.dart';
@@ -37,6 +39,18 @@ final router = GoRouter(
       name: 'onboarding',
       builder: (_, state) {
         return const OnboardingPage();
+      },
+    ),
+    GoRoute(
+      path: RouteNames.signIn,
+      name: 'sign-in',
+      builder: (_, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final fromGuard = extra?['fromGuard'] as bool? ?? false;
+        return BlocProvider.value(
+          value: sl<AuthBloc>(),
+          child: AuthPage(fromGuard: fromGuard),
+        );
       },
     ),
     StatefulShellRoute.indexedStack(
