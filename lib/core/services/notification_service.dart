@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -166,10 +167,12 @@ class NotificationService {
     // Ambil image URL dari notifikasi FCM
     final imageUrl =
         notification.android?.imageUrl ?? notification.apple?.imageUrl;
+    log('link image', name: imageUrl.toString());
+    print('link image $imageUrl');
 
-    if (imageUrl != null && imageUrl.isNotEmpty) {
+    if (imageUrl != null && imageUrl.trim().isNotEmpty) {
       // Tampilkan notif dengan gambar (async)
-      _showNotificationWithImage(notification, message.data, imageUrl);
+      _showNotificationWithImage(notification, message.data, imageUrl.trim());
     } else {
       // Tampilkan notif biasa tanpa gambar
       _showSimpleNotification(notification, message.data);
@@ -206,13 +209,8 @@ class NotificationService {
     String imageUrl,
   ) async {
     try {
-      // Download gambar dari URL
-      final httpClient = HttpClient();
-      final request = await httpClient.getUrl(Uri.parse(imageUrl));
-      final response = await request.close();
-      final bytes = await consolidateHttpClientResponseBytes(response);
-      httpClient.close();
-
+      // Download gambar dari URL dalam bentuk bytes
+      final Uint8List bytes = await _apiClient.getByteArrayFromUrl(imageUrl);
       final bigPicture = ByteArrayAndroidBitmap(bytes);
 
       _localNotif.show(

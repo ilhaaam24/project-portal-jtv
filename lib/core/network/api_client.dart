@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:portal_jtv/core/constants/api_constants.dart';
 import 'package:portal_jtv/core/network/auth_interceptor.dart';
@@ -125,5 +128,21 @@ class ApiClient {
       default:
         return ServerException(message: e.message ?? 'Unknown error');
     }
+  }
+
+  Future<Uint8List> getByteArrayFromUrl(String url) async {
+    // Gunakan instance Dio baru tanpa interceptor/header global 
+    // untuk menghindari kebocoran token ke server luar (seperti Pexels)
+    final dio = Dio(); 
+    final response = await dio.get(
+      url,
+      options: Options(responseType: ResponseType.bytes),
+    );
+    return Uint8List.fromList(response.data);
+  }
+
+  Future<String> getBase64FromUrl(String url) async {
+    final bytes = await getByteArrayFromUrl(url);
+    return base64Encode(bytes);
   }
 }

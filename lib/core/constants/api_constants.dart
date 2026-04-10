@@ -1,9 +1,7 @@
 class ApiConstants {
-  // static const String baseUrl = 'http://10.0.2.2:8000/api'; // Android Emulator
-  static const String baseUrl =
-      'https://cmsportal.jtv.co.id/api'; // Android Emulator
-  // static const String baseUrl = 'https://52a5-114-5-246-205.ngrok-free.app/api';
-  // static const String baseUrl = 'http://localhost:8000/api'; // iOS Simulator
+  static const String baseUrl = 'http://10.0.2.2:8000/api'; // Android Emulator
+  // static const String baseUrl =
+  //     'https://congratulatory-semiconventionally-melva.ngrok-free.dev/api'; // Android Emulator
 
   // Endpoints
   static const String headlines = '/news/headline';

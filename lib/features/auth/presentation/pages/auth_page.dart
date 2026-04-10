@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/auth/presentation/widgets/tab_signin.dart';
-import 'package:portal_jtv/features/auth/presentation/widgets/tab_signup.dart';
 
 class AuthPage extends StatefulWidget {
   final bool fromGuard;
@@ -86,10 +85,7 @@ class _AuthPageState extends State<AuthPage>
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
-                  children: [
-                    TabSignin(fromGuard: widget.fromGuard),
-                    TabSignup(),
-                  ],
+                  children: [TabSignin(fromGuard: widget.fromGuard)],
                 ),
               ),
             ],
