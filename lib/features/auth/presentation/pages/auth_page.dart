@@ -2,30 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/auth/presentation/widgets/tab_signin.dart';
 
-class AuthPage extends StatefulWidget {
+class AuthPage extends StatelessWidget {
   final bool fromGuard;
 
   const AuthPage({super.key, this.fromGuard = false});
-
-  @override
-  State<AuthPage> createState() => _AuthPageState();
-}
-
-class _AuthPageState extends State<AuthPage>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,63 +14,45 @@ class _AuthPageState extends State<AuthPage>
       appBar: AppBar(
         title: Image.asset('assets/logos/logo-jtv-white.png', height: 24),
       ),
-      body: Padding(
-        padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
-        child: Container(
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: PortalColors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          child: Column(
-            children: [
-              TabBar(
-                controller: _tabController,
-                dividerHeight: 4,
-                labelColor: PortalColors.jtvJingga,
-                labelStyle: Theme.of(
-                  context,
-                ).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600),
-
-                indicatorSize: TabBarIndicatorSize.tab,
-                automaticIndicatorColorAdjustment: true,
-                indicatorColor: PortalColors.jtvJingga,
-                dividerColor: Colors.transparent,
-
-                tabs: [
-                  Container(
-                    padding: EdgeInsets.all(14),
-                    child: Text(
-                      'Masuk',
-                      // style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      //   fontWeight: FontWeight.w600,
-                      // ),
-                    ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: const BoxDecoration(
+                  color: PortalColors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
                   ),
-                  Container(
-                    padding: EdgeInsets.all(14),
-                    child: Text(
-                      'Daftar',
-                      // style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      //   fontWeight: FontWeight.w600,
-                      // ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Text(
+                        'Masuk',
+                        style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                          color: PortalColors.jtvJingga,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [TabSignin(fromGuard: widget.fromGuard)],
+                    const Divider(color: PortalColors.jtvJingga, thickness: 2),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: TabSignin(fromGuard: fromGuard),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

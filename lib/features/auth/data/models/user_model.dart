@@ -5,6 +5,10 @@ class UserModel extends UserEntity {
     required super.id,
     required super.email,
     required super.name,
+    required super.seo,
+    required super.biodata,
+    required super.photo,
+    required super.phone,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -14,10 +18,22 @@ class UserModel extends UserEntity {
           : int.tryParse(json['id'].toString()) ?? 0,
       email: json['email'] ?? '',
       name: json['name'] ?? '',
+      seo: json['seo'] ?? '',
+      biodata: json['biodata'] ?? '',
+      photo: json['photo'] ?? '',
+      phone: json['phone'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'email': email, 'name': name};
+    return {
+      'id': id,
+      'email': email,
+      'name': name,
+      'seo': seo,
+      'biodata': biodata,
+      'photo': photo,
+      'phone': phone,
+    };
   }
 }

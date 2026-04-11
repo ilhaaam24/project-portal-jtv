@@ -11,6 +11,10 @@ import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_bloc.d
 import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_event.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_state.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:portal_jtv/core/utils/auth_guard.dart';
+import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_bloc.dart';
+import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_event.dart';
 
 class ForYouTab extends StatefulWidget {
   const ForYouTab({super.key});
@@ -219,13 +223,34 @@ class _ForYouTabState extends State<ForYouTab>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Image.asset(
-                              'assets/icons/bookmark-card.png',
-                              height: 18,
+                            GestureDetector(
+                              onTap: () {
+                                if (checkAuthAndPrompt(context)) {
+                                  context.read<BookmarkBloc>().add(
+                                    AddBookmark(item.id),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Berita disimpan'),
+                                      duration: Duration(seconds: 1),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Image.asset(
+                                'assets/icons/bookmark-card.png',
+                                height: 18,
+                              ),
                             ),
-                            Image.asset(
-                              'assets/icons/export-card.png',
-                              height: 18,
+                            GestureDetector(
+                              onTap: () {
+                                final url = 'https://portaljtv.com/news/${item.seo}';
+                                Share.share('${item.title}\n\n$url');
+                              },
+                              child: Image.asset(
+                                'assets/icons/export-card.png',
+                                height: 18,
+                              ),
                             ),
                           ],
                         ),

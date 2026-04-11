@@ -125,7 +125,7 @@ class _CategoryNewsViewState extends State<_CategoryNewsView> {
               );
             }
 
-            return buildNewsCard(state.news[index], context);
+            return NewsCard(news: state.news[index]);
           },
         );
     }

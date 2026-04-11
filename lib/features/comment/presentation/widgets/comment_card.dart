@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
+import 'package:portal_jtv/core/utils/string_utils.dart';
 import 'package:portal_jtv/features/comment/domain/entities/comment_entity.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_bloc.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_event.dart';
@@ -25,10 +26,7 @@ class CommentCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(
-              color: PortalColors.grey200,
-              width: 0.5,
-            ),
+            bottom: BorderSide(color: PortalColors.grey200, width: 0.5),
           ),
         ),
         child: Column(
@@ -44,16 +42,14 @@ class CommentCard extends StatelessWidget {
                   backgroundImage: comment.user?.pic != null
                       ? NetworkImage(comment.user!.pic!)
                       : null,
-                  child: comment.user?.pic == null
-                      ? Text(
-                          _getInitials(comment.user?.nama ?? 'A'),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      : null,
+                  child: Text(
+                    StringUtils.getInitials(comment.user?.nama ?? 'A'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 // Name + Time
@@ -64,15 +60,15 @@ class CommentCard extends StatelessWidget {
                       Text(
                         comment.user?.nama ?? 'Anonim',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       Text(
                         _timeAgo(comment.createdAt),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: PortalColors.grey500,
-                              fontSize: 11,
-                            ),
+                          color: PortalColors.grey500,
+                          fontSize: 11,
+                        ),
                       ),
                     ],
                   ),
@@ -107,9 +103,9 @@ class CommentCard extends StatelessWidget {
                 // Like Button
                 InkWell(
                   onTap: () {
-                    context
-                        .read<CommentBloc>()
-                        .add(ToggleLikeCommentEvent(commentId: comment.id));
+                    context.read<CommentBloc>().add(
+                      ToggleLikeCommentEvent(commentId: comment.id),
+                    );
                   },
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
@@ -131,12 +127,12 @@ class CommentCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '${comment.likesCount}',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: comment.isLiked
-                                        ? PortalColors.jtvJingga
-                                        : PortalColors.grey600,
-                                  ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: comment.isLiked
+                                    ? PortalColors.jtvJingga
+                                    : PortalColors.grey600,
+                              ),
                         ),
                       ],
                     ),
@@ -158,9 +154,9 @@ class CommentCard extends StatelessWidget {
                       child: Text(
                         'Balas',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: PortalColors.grey600,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          color: PortalColors.grey600,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -171,36 +167,28 @@ class CommentCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  String _getInitials(String name) {
-    final parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+String _timeAgo(String dateStr) {
+  try {
+    final date = DateTime.parse(dateStr);
+    final now = DateTime.now();
+    final diff = now.difference(date);
+
+    if (diff.inDays > 365) {
+      return '${(diff.inDays / 365).floor()} tahun yang lalu';
+    } else if (diff.inDays > 30) {
+      return '${(diff.inDays / 30).floor()} bulan yang lalu';
+    } else if (diff.inDays > 0) {
+      return '${diff.inDays} hari yang lalu';
+    } else if (diff.inHours > 0) {
+      return '${diff.inHours} jam yang lalu';
+    } else if (diff.inMinutes > 0) {
+      return '${diff.inMinutes} menit yang lalu';
+    } else {
+      return 'Baru saja';
     }
-    return parts[0][0].toUpperCase();
-  }
-
-  String _timeAgo(String dateStr) {
-    try {
-      final date = DateTime.parse(dateStr);
-      final now = DateTime.now();
-      final diff = now.difference(date);
-
-      if (diff.inDays > 365) {
-        return '${(diff.inDays / 365).floor()} tahun yang lalu';
-      } else if (diff.inDays > 30) {
-        return '${(diff.inDays / 30).floor()} bulan yang lalu';
-      } else if (diff.inDays > 0) {
-        return '${diff.inDays} hari yang lalu';
-      } else if (diff.inHours > 0) {
-        return '${diff.inHours} jam yang lalu';
-      } else if (diff.inMinutes > 0) {
-        return '${diff.inMinutes} menit yang lalu';
-      } else {
-        return 'Baru saja';
-      }
-    } catch (_) {
-      return dateStr;
-    }
+  } catch (_) {
+    return dateStr;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:portal_jtv/core/error/failures.dart';
+import 'package:portal_jtv/core/error/exceptions.dart';
 import 'package:portal_jtv/features/auth/domain/entities/auth_entity.dart';
 import 'package:portal_jtv/features/auth/domain/repositories/auth_repository.dart';
 import 'package:portal_jtv/features/auth/data/datasources/auth_remote_datasource.dart';
@@ -27,8 +28,8 @@ class AuthRepositoryImpl implements AuthRepository {
       // Save token and user info locally upon successful login
       await localDataSource.saveAuth(remoteAuth);
       return Right(remoteAuth);
-    } on ServerException {
-      return const Left(ServerFailure(message: 'Gagal melakukan login'));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
     } catch (e) {
       // Typically handling network/connection errors, assuming NetworkFailure exists or using ServerFailure
       return const Left(
@@ -63,6 +64,3 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 }
-
-// Define CacheFailure in your exceptions/failures mapping if not present.
-class ServerException implements Exception {}

@@ -20,7 +20,9 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
     if (authJsonString != null && authJsonString.isNotEmpty) {
       try {
-        return AuthModel.fromJsonString(authJsonString);
+        final authModel = AuthModel.fromJsonString(authJsonString);
+
+        return authModel;
       } catch (e) {
         return null;
       }
@@ -30,10 +32,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<void> saveAuth(AuthModel authToCache) async {
-    await secureStorage.write(
-      key: cachedAuthDataKey,
-      value: authToCache.toJsonString(),
-    );
+    final jsonString = authToCache.toJsonString();
+    await secureStorage.write(key: cachedAuthDataKey, value: jsonString);
   }
 
   @override

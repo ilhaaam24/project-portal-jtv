@@ -5,6 +5,7 @@ class SharedPreferencesService {
   const SharedPreferencesService(this.prefs);
 
   static const String notificationKey = "IS_NOTIFICATION_ACTIVE";
+  static const String onboardingKey = "IS_ONBOARDING_COMPLETED";
 
   Future<void> saveNotificationSetting(bool value) async {
     try {
@@ -16,5 +17,17 @@ class SharedPreferencesService {
 
   bool getNotificationSetting() {
     return prefs.getBool(notificationKey) ?? true;
+  }
+
+  Future<void> setOnboardingCompleted() async {
+    try {
+      await prefs.setBool(onboardingKey, true);
+    } catch (e) {
+      throw ('Error saving onboarding status: $e');
+    }
+  }
+
+  bool isOnboardingCompleted() {
+    return prefs.getBool(onboardingKey) ?? false;
   }
 }

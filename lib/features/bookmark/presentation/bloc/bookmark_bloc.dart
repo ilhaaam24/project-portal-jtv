@@ -4,19 +4,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_jtv/core/usecase/usecase.dart';
 import '../../domain/usecases/get_saved_news_list.dart';
 import '../../domain/usecases/delete_saved_news.dart';
+import '../../../news_detail/domain/usecases/save_bookmark.dart';
 import 'bookmark_event.dart';
 import 'bookmark_state.dart';
 
 class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
   final GetSavedNewsList getSavedNewsList;
   final DeleteSavedNews deleteSavedNews;
+  final SaveBookmark saveBookmark;
 
-  BookmarkBloc({required this.getSavedNewsList, required this.deleteSavedNews})
-    : super(BookmarkState.initial()) {
+  BookmarkBloc({
+    required this.getSavedNewsList,
+    required this.deleteSavedNews,
+    required this.saveBookmark,
+  }) : super(BookmarkState.initial()) {
     on<LoadBookmarks>(_onLoadBookmarks);
     on<RefreshBookmarks>(_onRefreshBookmarks);
     on<DeleteBookmark>(_onDeleteBookmark);
     on<UndoDeleteBookmark>(_onUndoDelete);
+    on<AddBookmark>(_onAddBookmark);
   }
 
   Future<void> _onLoadBookmarks(
@@ -121,5 +127,26 @@ class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
 
     // todo: Re-save ke backend (POST /saved-news/{id})
     // Karena kita tadi sudah DELETE, perlu save ulang
+    add(AddBookmark(state.lastDeleted!.idBerita));
+  }
+
+  Future<void> _onAddBookmark(
+    AddBookmark event,
+    Emitter<BookmarkState> emit,
+  ) async {
+    // Note: Kita tidak melakukan optimistic update untuk 'Add' karena data berita lengkap
+    // tidak tersedia di event (hanya ID). Setelah berhasil, kita refresh list.
+
+    final result = await saveBookmark(event.idBerita);
+
+    result.fold(
+      (failure) {
+        emit(state.copyWith(errorMessage: failure.message));
+      },
+      (_) {
+        // Berhasil simpan? Refresh list agar item baru muncul
+        add(const RefreshBookmarks());
+      },
+    );
   }
 }

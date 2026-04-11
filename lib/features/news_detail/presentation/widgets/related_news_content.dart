@@ -65,7 +65,7 @@ class RelatedNewsContent extends StatelessWidget {
             itemCount: relatedNews.length,
             itemBuilder: (context, index) {
               final news = relatedNews[index];
-              return buildNewsCard(news, context);
+              return NewsCard(news: news);
             },
           ),
       ],

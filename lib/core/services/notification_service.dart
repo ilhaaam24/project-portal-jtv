@@ -168,7 +168,6 @@ class NotificationService {
     final imageUrl =
         notification.android?.imageUrl ?? notification.apple?.imageUrl;
     log('link image', name: imageUrl.toString());
-    print('link image $imageUrl');
 
     if (imageUrl != null && imageUrl.trim().isNotEmpty) {
       // Tampilkan notif dengan gambar (async)

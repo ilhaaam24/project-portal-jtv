@@ -96,7 +96,7 @@ class _PopulerTabState extends State<PopulerTab>
                     );
                   }
 
-                  return buildNewsCard(state.news[index], context);
+                  return NewsCard(news: state.news[index]);
                 },
               ),
             );

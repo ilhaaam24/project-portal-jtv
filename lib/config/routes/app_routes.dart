@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/config/injection/injection.dart';
 import 'package:portal_jtv/config/routes/route_names.dart';
 import 'package:portal_jtv/core/widgets/main_layout.dart';
+import 'package:portal_jtv/core/services/shared_preferences_service.dart';
 import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:portal_jtv/features/auth/presentation/pages/auth_page.dart';
 import 'package:portal_jtv/features/bookmark/presentation/pages/bookmark_page.dart';
@@ -32,7 +33,9 @@ import 'package:portal_jtv/features/comment/presentation/bloc/comment_event.dart
 import 'package:portal_jtv/features/comment/presentation/pages/comment_page.dart';
 
 final router = GoRouter(
-  initialLocation: RouteNames.onboarding,
+  initialLocation: sl<SharedPreferencesService>().isOnboardingCompleted()
+      ? RouteNames.home
+      : RouteNames.onboarding,
   routes: [
     GoRoute(
       path: RouteNames.onboarding,

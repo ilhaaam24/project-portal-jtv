@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
+import 'package:portal_jtv/core/utils/string_utils.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String nama;
@@ -25,13 +27,18 @@ class ProfileHeader extends StatelessWidget {
           // Avatar
           CircleAvatar(
             radius: 48,
-            backgroundColor: Colors.grey[300],
+            backgroundColor: PortalColors.jtvBiru,
             backgroundImage: photo.isNotEmpty
                 ? CachedNetworkImageProvider(photo)
                 : null,
-            child: photo.isEmpty
-                ? Icon(Icons.person, size: 48, color: Colors.grey[600])
-                : null,
+            child: Text(
+              StringUtils.getInitials(nama),
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
           const SizedBox(height: 16),
 

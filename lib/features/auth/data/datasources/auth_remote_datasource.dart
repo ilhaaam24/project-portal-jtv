@@ -1,5 +1,7 @@
 import 'package:portal_jtv/features/auth/data/models/auth_model.dart';
 import 'package:portal_jtv/core/network/api_client.dart';
+import 'package:portal_jtv/core/constants/api_constants.dart';
+import 'package:portal_jtv/core/error/exceptions.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthModel> login({required String email, required String password});
@@ -17,22 +19,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) async {
     try {
       final response = await client.post(
-        '/login', // Replace with actual login endpoint
+        ApiConstants.login,
         data: {'email': email, 'password': password},
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Assume API returns data inside a 'data' object or directly
-        final responseData = response.data['data'] ?? response.data;
-        return AuthModel.fromJson(responseData);
+      final responseMap = response.data as Map<String, dynamic>;
+
+      if (responseMap['status'] == 'success') {
+        return AuthModel.fromJson(responseMap);
       } else {
-        throw ServerException();
+        throw ServerException(
+          message: responseMap['message'] ?? 'Gagal masuk akun',
+        );
       }
+    } on ServerException {
+      rethrow;
     } catch (e) {
-      throw ServerException();
+      throw ServerException(message: e.toString());
     }
   }
 }
-
-// Ensure this Exception class exists or is created in your core/error folder
-class ServerException implements Exception {}

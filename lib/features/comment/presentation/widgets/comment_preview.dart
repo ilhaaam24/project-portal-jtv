@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/config/injection/injection.dart';
 import 'package:portal_jtv/config/routes/route_names.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
+import 'package:portal_jtv/core/utils/string_utils.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_bloc.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_event.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_state.dart';
@@ -95,13 +96,13 @@ class CommentPreview extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 12,
-                    backgroundColor: PortalColors.jtvJingga,
+                    backgroundColor: PortalColors.jtvBiru,
                     backgroundImage: lastComment.user?.pic != null
                         ? NetworkImage(lastComment.user!.pic!)
                         : null,
                     child: lastComment.user?.pic == null
                         ? Text(
-                            (lastComment.user?.nama ?? 'A')[0].toUpperCase(),
+                            StringUtils.getInitials(lastComment.user?.nama ?? 'A'),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10,

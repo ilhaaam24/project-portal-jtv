@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
+import 'package:portal_jtv/config/injection/injection.dart';
+import 'package:portal_jtv/core/services/shared_preferences_service.dart';
 import 'package:portal_jtv/features/onboarding/data/models/onboarding_model.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -168,6 +170,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                         onPressed: () {
                           if (currentIndex == onboardingList.length - 1) {
+                            sl<SharedPreferencesService>().setOnboardingCompleted();
                             context.pushReplacementNamed('home');
                           } else {
                             _controller.nextPage(

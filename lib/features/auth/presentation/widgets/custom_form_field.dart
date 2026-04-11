@@ -46,18 +46,28 @@ class _CustomFormFieldState extends State<CustomFormField> {
         TextFormField(
           controller: widget.controller,
           obscureText: _isObsecure,
+          style: const TextStyle(
+            color: PortalColors.black,
+          ), // Teks input berwarna hitam
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: PortalColors.grey500, width: 1),
+              borderSide: const BorderSide(
+                color: PortalColors.grey500,
+                width: 1,
+              ),
             ),
             hintText: widget.placeholder,
+            hintStyle: const TextStyle(
+              color: PortalColors.grey500,
+            ), // Hint berwarna abu-abu
             fillColor: Colors.transparent,
             suffixIcon: widget.isObsecure
                 ? IconButton(
                     icon: Icon(
                       _isObsecure ? Icons.visibility : Icons.visibility_off,
+                      color: PortalColors.grey600, // Warna icon mata
                     ),
                     onPressed: () {
                       setState(() {

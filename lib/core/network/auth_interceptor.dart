@@ -1,15 +1,18 @@
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:portal_jtv/features/auth/data/datasources/auth_local_datasource.dart';
 
 class AuthInterceptor extends Interceptor {
-  final SharedPreferences _prefs;
+  final AuthLocalDataSource _localDataSource;
 
-  AuthInterceptor(this._prefs);
+  AuthInterceptor(this._localDataSource);
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // final token = _prefs.getString('auth_token');
-    final token = "89|NqA6vhI5ZY5e60Z8d709Sz9ojbAZ6dnyDK7Jf9Rs247f11b5";
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    final authModel = await _localDataSource.getAuth();
+    final token = authModel?.accessToken ?? '';
 
     if (token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
@@ -19,11 +22,11 @@ class AuthInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     // Handle 401 Unauthorized
     if (err.response?.statusCode == 401) {
       // Token expired / invalid
-      _prefs.remove('auth_token');
+      await _localDataSource.clearAuth();
     }
 
     handler.next(err);

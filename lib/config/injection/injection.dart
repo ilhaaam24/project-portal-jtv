@@ -111,9 +111,6 @@ Future<void> init() async {
   sl.registerLazySingleton<SharedPreferencesService>(
     () => SharedPreferencesService(sl()),
   );
-  // Core
-  sl.registerLazySingleton<ApiClient>(() => ApiClient(sl()));
-
   sl.registerLazySingleton<TextSizePreferences>(
     () => TextSizePreferences(sl()),
   );
@@ -196,7 +193,11 @@ Future<void> init() async {
   //============================================================
   // Bloc
   sl.registerFactory<BookmarkBloc>(
-    () => BookmarkBloc(getSavedNewsList: sl(), deleteSavedNews: sl()),
+    () => BookmarkBloc(
+      getSavedNewsList: sl(),
+      deleteSavedNews: sl(),
+      saveBookmark: sl(),
+    ),
   );
   // Use Cases
   sl.registerLazySingleton(() => GetSavedNewsList(sl()));
@@ -233,7 +234,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Logout(sl()));
   // Repository
   sl.registerLazySingleton<ProfileRepository>(
-    () => ProfileRepositoryImpl(remoteDataSource: sl()),
+    () => ProfileRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
   );
   // Data Sources
   sl.registerLazySingleton<ProfileRemoteDataSource>(
@@ -353,4 +354,7 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(secureStorage: sl()),
   );
+
+  // Core (Registered here to ensure all dependencies like AuthLocalDataSource are available)
+  sl.registerLazySingleton<ApiClient>(() => ApiClient(sl()));
 }
