@@ -1,4 +1,3 @@
-
 import 'package:portal_jtv/features/news_detail/domain/entities/news_detail_entity.dart';
 
 class NewsDetailModel extends NewsDetailEntity {

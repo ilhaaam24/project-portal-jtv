@@ -35,10 +35,11 @@ class AuthPage extends StatelessWidget {
                       padding: const EdgeInsets.all(14),
                       child: Text(
                         'Masuk',
-                        style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                          color: PortalColors.jtvJingga,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall!
+                            .copyWith(
+                              color: PortalColors.jtvJingga,
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                     ),
                     const Divider(color: PortalColors.jtvJingga, thickness: 2),

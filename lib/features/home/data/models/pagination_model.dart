@@ -1,4 +1,3 @@
-
 class PaginationMeta {
   final int currentPage;
   final int lastPage;

@@ -1,4 +1,3 @@
-
 import 'package:portal_jtv/features/category/domain/entities/biro_entity.dart';
 
 class BiroModel extends BiroEntity {

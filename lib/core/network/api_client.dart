@@ -131,9 +131,9 @@ class ApiClient {
   }
 
   Future<Uint8List> getByteArrayFromUrl(String url) async {
-    // Gunakan instance Dio baru tanpa interceptor/header global 
+    // Gunakan instance Dio baru tanpa interceptor/header global
     // untuk menghindari kebocoran token ke server luar (seperti Pexels)
-    final dio = Dio(); 
+    final dio = Dio();
     final response = await dio.get(
       url,
       options: Options(responseType: ResponseType.bytes),

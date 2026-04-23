@@ -26,10 +26,7 @@ class CommentEntity extends Equatable {
     required this.isLiked,
   });
 
-  CommentEntity copyWith({
-    int? likesCount,
-    bool? isLiked,
-  }) {
+  CommentEntity copyWith({int? likesCount, bool? isLiked}) {
     return CommentEntity(
       id: id,
       idBerita: idBerita,
@@ -46,15 +43,15 @@ class CommentEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        idBerita,
-        userId,
-        content,
-        parentId,
-        status,
-        createdAt,
-        user,
-        likesCount,
-        isLiked,
-      ];
+    id,
+    idBerita,
+    userId,
+    content,
+    parentId,
+    status,
+    createdAt,
+    user,
+    likesCount,
+    isLiked,
+  ];
 }

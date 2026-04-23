@@ -22,7 +22,7 @@ class VideoRepositoryImpl implements VideoRepository {
       );
       return Right(result);
     } on ServerException catch (e) {
-      return Left(ServerFailure(message:e.message));
+      return Left(ServerFailure(message: e.message));
     }
   }
 }

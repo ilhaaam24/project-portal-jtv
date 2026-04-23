@@ -24,8 +24,7 @@ class PortalButtonTheme {
     return TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: PortalColors.jtvBiru,
-        backgroundColor: PortalColors.jtvBiru,
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
@@ -65,9 +64,8 @@ class PortalButtonTheme {
   static TextButtonThemeData get darkTextButtonTheme {
     return TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: PortalColors.jtvBiru,
-        backgroundColor: PortalColors.jtvJingga,
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+        foregroundColor: PortalColors.jtvJingga,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );

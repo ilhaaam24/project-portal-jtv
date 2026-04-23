@@ -15,6 +15,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:portal_jtv/core/utils/auth_guard.dart';
 import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_bloc.dart';
 import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_event.dart';
+import 'package:portal_jtv/core/services/toast_service.dart';
 
 class ForYouTab extends StatefulWidget {
   const ForYouTab({super.key});
@@ -229,12 +230,7 @@ class _ForYouTabState extends State<ForYouTab>
                                   context.read<BookmarkBloc>().add(
                                     AddBookmark(item.id),
                                   );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Berita disimpan'),
-                                      duration: Duration(seconds: 1),
-                                    ),
-                                  );
+                                  ToastService.showSuccess(context, 'Berita disimpan');
                                 }
                               },
                               child: Image.asset(
@@ -244,7 +240,8 @@ class _ForYouTabState extends State<ForYouTab>
                             ),
                             GestureDetector(
                               onTap: () {
-                                final url = 'https://portaljtv.com/news/${item.seo}';
+                                final url =
+                                    'https://portaljtv.com/news/${item.seo}';
                                 Share.share('${item.title}\n\n$url');
                               },
                               child: Image.asset(

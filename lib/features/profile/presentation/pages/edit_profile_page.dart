@@ -6,6 +6,7 @@ import '../../domain/entities/profile_entity.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_event.dart';
 import '../bloc/profile_state.dart';
+import '../../../../core/services/toast_service.dart';
 
 class EditProfilePage extends StatefulWidget {
   final ProfileEntity profile;
@@ -48,20 +49,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         listenWhen: (prev, curr) => prev.updateStatus != curr.updateStatus,
         listener: (context, state) {
           if (state.updateStatus == UpdateStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.updateMessage ?? 'Berhasil!'),
-                backgroundColor: Colors.green,
-              ),
-            );
+            ToastService.showSuccess(context, state.updateMessage ?? 'Berhasil!');
             Navigator.pop(context);
           } else if (state.updateStatus == UpdateStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.updateMessage ?? 'Gagal update'),
-                backgroundColor: Colors.red,
-              ),
-            );
+            ToastService.showError(context, state.updateMessage ?? 'Gagal update');
           }
         },
         child: SingleChildScrollView(

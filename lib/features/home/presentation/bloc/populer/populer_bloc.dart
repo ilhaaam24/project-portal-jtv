@@ -17,7 +17,7 @@ class PopulerBloc extends Bloc<PopulerEvent, PopulerState> {
   Future<void> _onLoad(LoadPopuler event, Emitter<PopulerState> emit) async {
     emit(state.copyWith(status: PopulerStatus.loading));
 
-    final result = await getPopuler( PopulerParams(page: 1, limit: 10));
+    final result = await getPopuler(PopulerParams(page: 1, limit: 10));
 
     result.fold(
       (failure) => emit(

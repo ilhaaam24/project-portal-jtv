@@ -46,6 +46,11 @@ class CommentState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [status, comments, errorMessage, sortOrder, isPosting];
+  List<Object?> get props => [
+    status,
+    comments,
+    errorMessage,
+    sortOrder,
+    isPosting,
+  ];
 }

@@ -60,6 +60,6 @@ class DetailState extends Equatable {
     tags,
     isSaved,
     isBookmarkLoading,
-    relatedNews
+    relatedNews,
   ];
 }

@@ -5,6 +5,7 @@ import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:portal_jtv/features/auth/presentation/widgets/custom_form_field.dart';
 import 'package:portal_jtv/features/auth/presentation/widgets/divider_widget.dart';
+import 'package:portal_jtv/core/services/toast_service.dart';
 
 class TabSignin extends StatefulWidget {
   final bool fromGuard;
@@ -51,12 +52,7 @@ class _TabSigninState extends State<TabSignin> {
                 context.pushNamed('home');
               }
             } else if (state is AuthError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              ToastService.showError(context, state.message);
             }
           },
           builder: (context, state) {

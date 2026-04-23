@@ -1,4 +1,3 @@
-
 import 'package:portal_jtv/core/error/exceptions.dart';
 import 'package:portal_jtv/core/network/api_client.dart';
 import 'package:portal_jtv/features/home/data/models/news_model.dart';

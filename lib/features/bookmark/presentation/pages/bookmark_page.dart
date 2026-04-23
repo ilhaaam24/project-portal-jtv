@@ -15,6 +15,7 @@ import '../bloc/bookmark_bloc.dart';
 import '../bloc/bookmark_event.dart';
 import '../bloc/bookmark_state.dart';
 import 'package:portal_jtv/config/injection/injection.dart' as di;
+import 'package:portal_jtv/core/services/toast_service.dart';
 
 class BookmarkPage extends StatelessWidget {
   const BookmarkPage({super.key});
@@ -106,14 +107,7 @@ class _BookmarkView extends StatelessWidget {
               // Listener untuk SnackBar
               listener: (context, state) {
                 if (state.lastDeleted != null) {
-                  ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      SnackBar(
-                        content: Text(l10n.newsDeleted),
-                        duration: const Duration(seconds: 1),
-                      ),
-                    );
+                  ToastService.showInfo(context, l10n.newsDeleted);
                 }
               },
               builder: (context, state) {

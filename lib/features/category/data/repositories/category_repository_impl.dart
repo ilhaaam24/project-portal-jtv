@@ -23,7 +23,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
         ),
       );
     } on ServerException catch (e) {
-      return Left(ServerFailure(message:e.message));
+      return Left(ServerFailure(message: e.message));
     }
   }
 
@@ -48,7 +48,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
         ),
       );
     } on ServerException catch (e) {
-      return Left(ServerFailure(message:e.message));
+      return Left(ServerFailure(message: e.message));
     }
   }
 
@@ -73,7 +73,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
         ),
       );
     } on ServerException catch (e) {
-      return Left(ServerFailure(message:e.message));
+      return Left(ServerFailure(message: e.message));
     }
   }
 }

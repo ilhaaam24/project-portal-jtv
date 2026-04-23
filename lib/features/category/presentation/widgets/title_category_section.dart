@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 
 class TitleCategorySection extends StatelessWidget {
-    final String title;
+  final String title;
   const TitleCategorySection({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
-     return Row(
+    return Row(
       children: [
         Container(width: 4, height: 24, color: PortalColors.jtvJingga),
         const SizedBox(width: 8),

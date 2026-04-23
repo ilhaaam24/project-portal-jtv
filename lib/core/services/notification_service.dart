@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -12,11 +11,15 @@ import 'package:portal_jtv/core/constants/api_constants.dart';
 import 'package:portal_jtv/core/network/api_client.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
 
-/// Top-level function — WAJIB top-level (bukan method di class)
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Pastikan Firebase diinisialisasi untuk background process
   await Firebase.initializeApp();
-  debugPrint('[FCM] Background message: ${message.messageId}');
+  debugPrint('[FCM] Handling background message: ${message.messageId}');
+
+  // Jika Anda ingin melakukan sesuatu saat notifikasi masuk di background,
+  // misalnya mengupdate database lokal atau memicu background fetch,
+  // lakukan di sini.
 }
 
 class NotificationService {
@@ -71,10 +74,10 @@ class NotificationService {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // 5. Get & register FCM token
-    await _registerToken();
+    await registerToken();
 
     // 6. Listen token refresh
-    _messaging.onTokenRefresh.listen((_) => _registerToken());
+    _messaging.onTokenRefresh.listen((_) => registerToken());
 
     // 7. Listen foreground messages
     FirebaseMessaging.onMessage.listen((message) {
@@ -135,25 +138,32 @@ class NotificationService {
   }
 
   /// Dapatkan FCM token dan kirim ke backend
-  Future<void> _registerToken() async {
+  Future<void> registerToken() async {
     try {
       final token = await _messaging.getToken();
       if (token == null) {
         debugPrint('[FCM] Token null, skip register');
         return;
       }
-      debugPrint('[FCM] Token: $token');
+      debugPrint('[FCM] Token obtained from Firebase: $token');
 
-      await _apiClient.post(
+      final response = await _apiClient.post(
         ApiConstants.fcmRegister,
         data: {
           'token': token,
           'device_type': Platform.isAndroid ? 'android' : 'ios',
         },
       );
-      debugPrint('[FCM] Token registered to backend ✅');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('[FCM] Token registered to backend ✅');
+      } else {
+        debugPrint(
+          '[FCM] Token registration returned unexpected status code: ${response.statusCode}',
+        );
+      }
     } catch (e) {
-      debugPrint('[FCM] Gagal register token: $e');
+      debugPrint('[FCM] Gagal register token ke backend: $e');
     }
   }
 
@@ -166,8 +176,9 @@ class NotificationService {
 
     // Ambil image URL dari notifikasi FCM
     final imageUrl =
-        notification.android?.imageUrl ?? notification.apple?.imageUrl;
-    log('link image', name: imageUrl.toString());
+        message.data['image'] ??
+        notification.android?.imageUrl ??
+        notification.apple?.imageUrl;
 
     if (imageUrl != null && imageUrl.trim().isNotEmpty) {
       // Tampilkan notif dengan gambar (async)

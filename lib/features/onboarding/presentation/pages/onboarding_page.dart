@@ -170,7 +170,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                         onPressed: () {
                           if (currentIndex == onboardingList.length - 1) {
-                            sl<SharedPreferencesService>().setOnboardingCompleted();
+                            sl<SharedPreferencesService>()
+                                .setOnboardingCompleted();
                             context.pushReplacementNamed('home');
                           } else {
                             _controller.nextPage(

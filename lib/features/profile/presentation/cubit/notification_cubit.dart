@@ -1,4 +1,3 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_jtv/core/services/shared_preferences_service.dart';
 
@@ -10,12 +9,12 @@ class NotificationCubit extends Cubit<bool> {
   void toggle() {
     final newValue = !state;
     emit(newValue);
-    _prefs.saveNotificationSetting( newValue);
+    _prefs.saveNotificationSetting(newValue);
   }
 
   void setEnabled(bool enabled) {
     emit(enabled);
-    _prefs.saveNotificationSetting( enabled);
+    _prefs.saveNotificationSetting(enabled);
   }
 
   bool getNotificationSetting() {

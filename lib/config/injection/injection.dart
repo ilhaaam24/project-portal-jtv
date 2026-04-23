@@ -340,7 +340,12 @@ Future<void> init() async {
   sl.registerLazySingleton(() => const FlutterSecureStorage());
 
   sl.registerLazySingleton<AuthBloc>(
-    () => AuthBloc(login: sl(), getSavedAuth: sl(), logout: sl()),
+    () => AuthBloc(
+      login: sl(),
+      getSavedAuth: sl(),
+      logout: sl(),
+      notificationService: sl(),
+    ),
   );
   sl.registerLazySingleton(() => Login(sl()));
   sl.registerLazySingleton(() => GetSavedAuth(sl()));

@@ -142,7 +142,7 @@ class _TerbaruTabState extends State<TerbaruTab> {
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                   ),
-                                child: NewsCard(news: news),
+                                  child: NewsCard(news: news),
                                 );
                               }, childCount: state.latestNews.length + 1),
                             ),

@@ -13,6 +13,7 @@ import 'package:portal_jtv/features/news_detail/presentation/widgets/related_new
 import 'package:portal_jtv/features/news_detail/presentation/widgets/text_size_sheet.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:portal_jtv/core/utils/auth_guard.dart';
+import 'package:portal_jtv/core/services/toast_service.dart';
 
 class DetailPage extends StatelessWidget {
   final DetailArgsEntity args;
@@ -54,41 +55,36 @@ class DetailPage extends StatelessWidget {
                         if (!checkAuthAndPrompt(context)) return;
                         context.read<DetailBloc>().add(const ToggleBookmark());
                         if (!state.isSaved) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: [
-                                  Text('Berita disimpan'),
-                                  BlocBuilder<NavigationCubit, int>(
-                                    builder: (context, state) {
-                                      return TextButton(
-                                        onPressed: () {
-                                          context
-                                              .read<NavigationCubit>()
-                                              .changeIndex(3);
-                                          context.go('/bookmark');
-                                        },
-                                        child: Text(
-                                          'Lihat',
-                                          style: TextStyle(
-                                            color: PortalColors.jtvJingga,
-                                          ),
-                                        ),
-                                      );
-                                    },
+                          ToastService.showSuccess(
+                            context,
+                            'Berita disimpan',
+                            action: BlocBuilder<NavigationCubit, int>(
+                              builder: (context, state) {
+                                return TextButton(
+                                  onPressed: () {
+                                    context
+                                        .read<NavigationCubit>()
+                                        .changeIndex(3);
+                                    context.go('/bookmark');
+                                  },
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: const Size(0, 30),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
-                                ],
-                              ),
-                              duration: Duration(seconds: 1),
+                                  child: Text(
+                                    'Lihat',
+                                    style: TextStyle(
+                                      color: PortalColors.jtvJingga,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Berita dihapus dari simpanan'),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
+                          ToastService.showInfo(context, 'Berita dihapus dari simpanan');
                         }
                       },
                       child: Icon(

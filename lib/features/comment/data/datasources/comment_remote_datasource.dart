@@ -69,10 +69,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   }
 
   @override
-  Future<bool> updateComment({
-    required int id,
-    required String content,
-  }) async {
+  Future<bool> updateComment({required int id, required String content}) async {
     try {
       final response = await client.put(
         '${ApiConstants.commentAction}/$id',
@@ -87,9 +84,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   @override
   Future<bool> deleteComment(int id) async {
     try {
-      final response = await client.delete(
-        '${ApiConstants.commentAction}/$id',
-      );
+      final response = await client.delete('${ApiConstants.commentAction}/$id');
       return response.data['success'] == true;
     } catch (e) {
       throw ServerException(message: e.toString());

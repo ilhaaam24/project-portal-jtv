@@ -12,9 +12,7 @@ class CommentRepositoryImpl implements CommentRepository {
   CommentRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<CommentEntity>>> getComments(
-    int idBerita,
-  ) async {
+  Future<Either<Failure, List<CommentEntity>>> getComments(int idBerita) async {
     try {
       final models = await remoteDataSource.getComments(idBerita);
       final entities = models.map((m) => m.toEntity()).toList();

@@ -1,4 +1,3 @@
-
 import 'package:portal_jtv/features/home/domain/entities/for_you_entity.dart';
 
 class ForYouModel extends ForYouEntity {

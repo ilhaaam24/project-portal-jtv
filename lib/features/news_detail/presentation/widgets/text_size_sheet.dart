@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/core/utils/text_size_preferences.dart';
 import 'package:portal_jtv/features/news_detail/presentation/cubit/text_size_cubit.dart';
 
@@ -51,7 +52,16 @@ void showTextSizeSheet(BuildContext context) {
                   ),
                   TextButton(
                     onPressed: () => ctx.read<TextSizeCubit>().reset(),
-                    child: const Text('Reset ke Default'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: PortalColors.jtvJingga,
+                    ),
+                    child: Text(
+                      'Reset ke Default',
+                      style: Theme.of(ctx).textTheme.titleSmall?.copyWith(
+                        color: PortalColors.jtvJingga,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               );

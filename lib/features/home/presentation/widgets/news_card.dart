@@ -10,6 +10,7 @@ import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_event.da
 import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:portal_jtv/core/services/toast_service.dart';
 
 class NewsCard extends StatelessWidget {
   final NewsEntity news;
@@ -136,12 +137,7 @@ class NewsCard extends StatelessWidget {
                                   context.read<BookmarkBloc>().add(
                                     AddBookmark(news.idBerita),
                                   );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Berita disimpan'),
-                                      duration: Duration(seconds: 1),
-                                    ),
-                                  );
+                                  ToastService.showSuccess(context, 'Berita disimpan');
                                 }
                               },
                               child: Image.asset(

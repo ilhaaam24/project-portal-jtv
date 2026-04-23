@@ -68,18 +68,14 @@ class _CommentInputState extends State<CommentInput> {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.reply,
-                    size: 14,
-                    color: PortalColors.jtvBiru,
-                  ),
+                  Icon(Icons.reply, size: 14, color: PortalColors.jtvBiru),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       'Membalas ${widget.replyTo}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: PortalColors.jtvBiru,
-                          ),
+                        color: PortalColors.jtvBiru,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

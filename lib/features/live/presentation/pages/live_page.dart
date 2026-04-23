@@ -6,7 +6,6 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/l10n/app_localizations.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import '../bloc/live_bloc.dart';
 import '../bloc/live_event.dart';
 import '../bloc/live_state.dart';
@@ -489,27 +488,17 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
   }
 
   Widget _buildPlayerView(LivestreamEntity live) {
-    if (_activeSource == 'jtv' || _activeSource == 'youtube') {
-      // Native player untuk HLS stream
-      return Video(
-        controller: _videoController,
-        filterQuality: FilterQuality.medium,
-        aspectRatio: 16 / 9,
-        onEnterFullscreen: () => _enterFullscreen(live),
-        onExitFullscreen: () async {
-          await _exitFullscreen();
-          if (mounted) Navigator.pop(context);
-        },
-      );
-    } else {
-      // WebView untuk embed (Vidio, Facebook)
-      final url = _activeSource == 'vidio' ? live.vidio : live.facebook;
-      return WebViewWidget(
-        controller: WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..loadRequest(Uri.parse(url)),
-      );
-    }
+    // Native player untuk HLS stream
+    return Video(
+      controller: _videoController,
+      filterQuality: FilterQuality.medium,
+      aspectRatio: 16 / 9,
+      onEnterFullscreen: () => _enterFullscreen(live),
+      onExitFullscreen: () async {
+        await _exitFullscreen();
+        if (mounted) Navigator.pop(context);
+      },
+    );
   }
 
   Future<void> _enterFullscreen(LivestreamEntity live) async {

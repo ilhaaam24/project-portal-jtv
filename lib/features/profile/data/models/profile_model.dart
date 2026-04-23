@@ -1,5 +1,3 @@
-
-
 import 'package:portal_jtv/features/profile/domain/entities/profile_entity.dart';
 
 class ProfileModel extends ProfileEntity {

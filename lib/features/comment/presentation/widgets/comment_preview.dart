@@ -102,7 +102,9 @@ class CommentPreview extends StatelessWidget {
                         : null,
                     child: lastComment.user?.pic == null
                         ? Text(
-                            StringUtils.getInitials(lastComment.user?.nama ?? 'A'),
+                            StringUtils.getInitials(
+                              lastComment.user?.nama ?? 'A',
+                            ),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10,
