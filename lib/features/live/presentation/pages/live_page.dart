@@ -60,8 +60,34 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _player = Player();
-    _videoController = VideoController(_player);
+    _player = Player(
+      configuration: const PlayerConfiguration(
+        bufferSize: 1024 * 1024 * 10, // 10MB buffer for smoother live stream
+      ),
+    );
+
+    _videoController = VideoController(
+      _player,
+      configuration: const VideoControllerConfiguration(
+        enableHardwareAcceleration: true,
+      ),
+    );
+
+    // Listener untuk debug track video
+    _player.stream.tracks.listen((tracks) {
+      debugPrint('[LivePlayer] Tracks updated:');
+      debugPrint('[LivePlayer] Video tracks: ${tracks.video.length}');
+      debugPrint('[LivePlayer] Audio tracks: ${tracks.audio.length}');
+      
+      if (tracks.video.isEmpty && tracks.audio.isNotEmpty) {
+        debugPrint('[LivePlayer] WARNING: Audio track found but NO Video track found!');
+      }
+    });
+
+    _player.stream.error.listen((error) {
+      debugPrint('[LivePlayer] Player Error: $error');
+    });
+
     WidgetsBinding.instance.addObserver(this); // App lifecycle
   }
 
@@ -492,7 +518,7 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
     return Video(
       controller: _videoController,
       filterQuality: FilterQuality.medium,
-      aspectRatio: 16 / 9,
+      fit: BoxFit.contain,
       onEnterFullscreen: () => _enterFullscreen(live),
       onExitFullscreen: () async {
         await _exitFullscreen();

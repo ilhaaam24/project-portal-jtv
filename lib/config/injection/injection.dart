@@ -227,7 +227,9 @@ Future<void> init() async {
   // Cubits (Singleton — shared across app)
   sl.registerLazySingleton<ThemeCubit>(() => ThemeCubit(sl()));
   sl.registerLazySingleton<LanguageCubit>(() => LanguageCubit(sl()));
-  sl.registerLazySingleton<NotificationCubit>(() => NotificationCubit(sl()));
+  sl.registerLazySingleton<NotificationCubit>(
+    () => NotificationCubit(sl(), sl()),
+  );
   // Use Cases
   sl.registerLazySingleton(() => GetProfile(sl()));
   sl.registerLazySingleton(() => UpdateProfile(sl()));
@@ -308,7 +310,7 @@ Future<void> init() async {
 
   // ============ NOTIFICATION SERVICE ============
   sl.registerLazySingleton<NotificationService>(
-    () => NotificationService(sl()),
+    () => NotificationService(sl(), sl()),
   );
 
   // ============ COMMENT FEATURE ============

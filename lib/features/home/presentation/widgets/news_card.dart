@@ -47,12 +47,12 @@ class NewsCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   child: Image.network(
                     news.photo,
-                    width: 110,
-                    height: 100,
+                    width: 90,
+                    height: 90,
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) => Container(
-                      width: 110,
-                      height: 100,
+                      width: 90,
+                      height: 90,
                       color: Colors.grey.shade200,
                       child: const Icon(Icons.broken_image, color: Colors.grey),
                     ),
@@ -65,6 +65,7 @@ class NewsCard extends StatelessWidget {
               // ─── TEKS ───
               Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -72,7 +73,7 @@ class NewsCard extends StatelessWidget {
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontSize: 18,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -107,6 +108,9 @@ class NewsCard extends StatelessWidget {
                     children: [
                       news.category != ""
                           ? Container(
+                              width: 70,
+
+                              alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 6,
                                 vertical: 4,
@@ -117,6 +121,8 @@ class NewsCard extends StatelessWidget {
                               ),
                               child: Text(
                                 news.category,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                                 style: Theme.of(context).textTheme.bodyMedium!
                                     .copyWith(
                                       fontSize: 10,
@@ -137,7 +143,10 @@ class NewsCard extends StatelessWidget {
                                   context.read<BookmarkBloc>().add(
                                     AddBookmark(news.idBerita),
                                   );
-                                  ToastService.showSuccess(context, 'Berita disimpan');
+                                  ToastService.showSuccess(
+                                    context,
+                                    'Berita disimpan',
+                                  );
                                 }
                               },
                               child: Image.asset(

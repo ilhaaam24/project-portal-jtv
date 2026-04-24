@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/config/routes/route_names.dart';
 import 'package:portal_jtv/core/constants/api_constants.dart';
 import 'package:portal_jtv/core/network/api_client.dart';
+import 'package:portal_jtv/core/services/shared_preferences_service.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
 
 @pragma('vm:entry-point')
@@ -27,10 +28,11 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _localNotif =
       FlutterLocalNotificationsPlugin();
   final ApiClient _apiClient;
+  final SharedPreferencesService _prefs;
 
   GoRouter? _router;
 
-  NotificationService(this._apiClient);
+  NotificationService(this._apiClient, this._prefs);
 
   /// Channel ID untuk Android
   static const _androidChannel = AndroidNotificationChannel(
@@ -51,6 +53,7 @@ class NotificationService {
       alert: true,
       badge: true,
       sound: true,
+      criticalAlert: true,
     );
     debugPrint('[FCM] Permission: ${settings.authorizationStatus}');
 
@@ -139,6 +142,14 @@ class NotificationService {
 
   /// Dapatkan FCM token dan kirim ke backend
   Future<void> registerToken() async {
+    // Check if notification is active
+    if (!_prefs.getNotificationSetting()) {
+      debugPrint('[FCM] Notification is inactive, skip token registration');
+      // Optional: Delete token if we want to be sure
+      // await _messaging.deleteToken();
+      return;
+    }
+
     try {
       final token = await _messaging.getToken();
       if (token == null) {
@@ -169,6 +180,14 @@ class NotificationService {
 
   /// Handle pesan saat app di foreground → tampilkan local notif
   void _onForegroundMessage(RemoteMessage message) {
+    // Check if notification is active
+    if (!_prefs.getNotificationSetting()) {
+      debugPrint(
+        '[FCM] Notification is inactive, skip showing foreground message',
+      );
+      return;
+    }
+
     debugPrint('[FCM] Foreground message: ${message.notification?.title}');
 
     final notification = message.notification;
@@ -280,5 +299,22 @@ class NotificationService {
     );
 
     _router!.push(RouteNames.detail, extra: args);
+  }
+
+  /// Toggle notification active status
+  Future<void> toggleNotifications(bool active) async {
+    await _prefs.saveNotificationSetting(active);
+    if (active) {
+      await registerToken();
+    } else {
+      // If disabling, we can optionally delete the token from Firebase
+      // so the backend can't send anything even if it tries.
+      try {
+        await _messaging.deleteToken();
+        debugPrint('[FCM] Token deleted because notifications disabled');
+      } catch (e) {
+        debugPrint('[FCM] Failed to delete token: $e');
+      }
+    }
   }
 }

@@ -62,15 +62,16 @@ class DetailPage extends StatelessWidget {
                               builder: (context, state) {
                                 return TextButton(
                                   onPressed: () {
-                                    context
-                                        .read<NavigationCubit>()
-                                        .changeIndex(3);
+                                    context.read<NavigationCubit>().changeIndex(
+                                      3,
+                                    );
                                     context.go('/bookmark');
                                   },
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
                                     minimumSize: const Size(0, 30),
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: Text(
                                     'Lihat',
@@ -84,7 +85,10 @@ class DetailPage extends StatelessWidget {
                             ),
                           );
                         } else {
-                          ToastService.showInfo(context, 'Berita dihapus dari simpanan');
+                          ToastService.showInfo(
+                            context,
+                            'Berita dihapus dari simpanan',
+                          );
                         }
                       },
                       child: Icon(

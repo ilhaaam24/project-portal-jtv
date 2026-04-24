@@ -45,6 +45,9 @@ class ProfileHeader extends StatelessWidget {
           SizedBox(
             child: email == "-"
                 ? TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: PortalColors.jtvBiru,
+                    ),
                     onPressed: () {
                       context.pushNamed('sign-in', extra: {'fromGuard': true});
                     },
