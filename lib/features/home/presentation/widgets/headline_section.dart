@@ -1,42 +1,22 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/core/helper/format_date.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
+import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
 
 Widget buildHeadlinesSection(HomeState state) {
-  // Use a PageController with viewportFraction so the next card peeks in
   final PageController pageController = PageController(viewportFraction: 0.9);
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      // "Headline" Title row (orange vertical bar and text)
       Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 12.0),
-        child: Row(
-          children: [
-            Container(
-              width: 4,
-              height: 24,
-              decoration: BoxDecoration(
-                color: PortalColors.jtvJingga,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Headline',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: PortalColors.jtvBiru,
-              ),
-            ),
-          ],
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: TittleSection(title: 'Headline'),
       ),
       SizedBox(
         height: 340, // Total height to accommodate the card content
@@ -50,7 +30,7 @@ Widget buildHeadlinesSection(HomeState state) {
               child: Card(
                 color: Colors.transparent,
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.grey.shade300),
+                  side: BorderSide(color: Colors.grey.shade300, width: .5),
                   borderRadius: BorderRadius.circular(24),
                 ),
                 elevation: 0,
@@ -65,22 +45,24 @@ Widget buildHeadlinesSection(HomeState state) {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // --- GAMBAR ---
-                      Hero(
-                        tag:
-                            'headline_${headline.idBerita}', // custom tag prevents conflict with the same news in latest
-                        child: Image.network(
-                          headline.photo,
-                          width: double.infinity,
+                      CachedNetworkImage(
+                        imageUrl: headline.photo,
+                        width: double.infinity,
+                        height: 180,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
                           height: 180,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => Container(
-                            height: 180,
-                            color: Colors.grey.shade200,
-                            child: const Icon(
-                              Icons.broken_image,
-                              color: Colors.grey,
-                            ),
+                          color: Colors.grey.shade200,
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          height: 180,
+                          color: Colors.grey.shade200,
+                          child: const Icon(
+                            Icons.broken_image,
+                            color: Colors.grey,
                           ),
                         ),
                       ),

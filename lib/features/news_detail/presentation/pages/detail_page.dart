@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -151,10 +152,17 @@ class DetailPage extends StatelessWidget {
                         const SizedBox(height: 8),
                         Hero(
                           tag: '${args.idBerita}',
-                          child: Image.network(
-                            args.photo,
+                          child: CachedNetworkImage(
+                            imageUrl: args.photo,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) =>
+                            placeholder: (context, url) => Container(
+                              height: 200,
+                              color: Colors.grey.shade200,
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
                                 Container(color: Colors.grey),
                           ),
                         ),

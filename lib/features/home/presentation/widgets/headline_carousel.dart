@@ -1,6 +1,7 @@
 // lib/features/home/presentation/widgets/headline_carousel.dart
 
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
@@ -54,7 +55,7 @@ class _HeadlineCarouselState extends State<HeadlineCarousel> {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          TittleSection(title: 'Headline'),
+          TittleSection(title: 'Headline 12'),
           const SizedBox(height: 12),
 
           SizedBox(
@@ -76,10 +77,16 @@ class _HeadlineCarouselState extends State<HeadlineCarousel> {
                       // Image
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          news.photo,
+                        child: CachedNetworkImage(
+                          imageUrl: news.photo,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => Container(
+                          placeholder: (context, url) => Container(
+                            color: Colors.grey[200],
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
                             color: Colors.grey[300],
                             child: const Icon(Icons.image, size: 48),
                           ),

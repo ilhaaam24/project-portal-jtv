@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/bookmark/domain/entities/saved_news_entity.dart';
@@ -73,12 +74,24 @@ class SavedNewsCard extends StatelessWidget {
                 // Thumbnail
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    item.berita.photo ?? '',
+                  child: CachedNetworkImage(
+                    imageUrl: item.berita.photo ?? '',
                     width: 100,
                     height: 75,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Container(
+                    placeholder: (context, url) => Container(
+                      width: 100,
+                      height: 75,
+                      color: Colors.grey[200],
+                      child: const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
                       width: 100,
                       height: 75,
                       color: Colors.grey[300],

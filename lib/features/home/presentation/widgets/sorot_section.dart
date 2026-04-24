@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
@@ -34,10 +35,13 @@ Widget buildSorotSection(HomeState state) {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network(
-                        sorot.photo,
+                      CachedNetworkImage(
+                        imageUrl: sorot.photo,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) =>
+                        placeholder: (context, url) => Container(
+                          color: Colors.grey.shade200,
+                        ),
+                        errorWidget: (context, url, error) =>
                             Container(color: Colors.grey),
                       ),
                       Container(color: Colors.black38),

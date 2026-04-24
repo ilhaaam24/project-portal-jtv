@@ -22,7 +22,7 @@ Widget buildContent(
       // Shimmer / loading placeholder
       return Column(
         children: List.generate(
-          5,
+          10,
           (_) => Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Container(
@@ -85,7 +85,14 @@ Widget buildContent(
               const Divider(height: 24),
               Html(
                 data: state.detail!.content,
-                style: {'body': Style(fontSize: FontSize(fontSize))},
+                style: {
+                  'body': Style(
+                    fontSize: FontSize(fontSize),
+                    textAlign: TextAlign.justify,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    // wordSpacing: 2,
+                  ),
+                },
               ),
 
               const SizedBox(height: 8),
