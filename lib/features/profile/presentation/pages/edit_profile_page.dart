@@ -49,10 +49,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
         listenWhen: (prev, curr) => prev.updateStatus != curr.updateStatus,
         listener: (context, state) {
           if (state.updateStatus == UpdateStatus.success) {
-            ToastService.showSuccess(context, state.updateMessage ?? 'Berhasil!');
+            ToastService.showSuccess(
+              context,
+              state.updateMessage ?? 'Berhasil!',
+            );
             Navigator.pop(context);
           } else if (state.updateStatus == UpdateStatus.failure) {
-            ToastService.showError(context, state.updateMessage ?? 'Gagal update');
+            ToastService.showError(
+              context,
+              state.updateMessage ?? 'Gagal update',
+            );
           }
         },
         child: SingleChildScrollView(

@@ -7,6 +7,7 @@ import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 Widget buildHeadlinesSection(HomeState state) {
   final PageController pageController = PageController(viewportFraction: 0.9);
@@ -83,23 +84,26 @@ Widget buildHeadlinesSection(HomeState state) {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: PortalColors.jtvJingga,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
+                                      Skeleton.leaf(
+                                        enabled: true,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 4,
                                           ),
-                                        ),
-                                        child: Text(
-                                          headline.category,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
+                                          decoration: BoxDecoration(
+                                            color: PortalColors.jtvJingga,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            headline.category,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
                                         ),
                                       ),

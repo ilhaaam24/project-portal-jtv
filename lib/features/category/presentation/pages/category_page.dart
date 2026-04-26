@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../bloc/category_bloc.dart';
 import '../bloc/category_event.dart';
 import '../bloc/category_state.dart';
@@ -40,7 +41,13 @@ class _CategoryViewState extends State<_CategoryView> {
           switch (state.status) {
             case CategoryStatus.initial:
             case CategoryStatus.loading:
-              return const Center(child: CircularProgressIndicator());
+              return Skeletonizer(
+                enabled: true,
+                child: _buildBodyContent(
+                  biros: _dummyBiros,
+                  categories: _dummyCategories,
+                ),
+              );
 
             case CategoryStatus.failure:
               return Center(
@@ -66,36 +73,45 @@ class _CategoryViewState extends State<_CategoryView> {
               );
 
             case CategoryStatus.success:
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ─── BIRO DROPDOWN ───
-                    _DropdownSection(
-                      title: 'Biro',
-                      isExpanded: _isBiroExpanded,
-                      onToggle: () =>
-                          setState(() => _isBiroExpanded = !_isBiroExpanded),
-                      child: _buildBiroGrid(context, state.biros),
-                    ),
-
-                    const Divider(),
-                    const SizedBox(height: 4),
-
-                    // ─── KANAL DROPDOWN ───
-                    _DropdownSection(
-                      title: 'Kanal',
-                      isExpanded: _isKanalExpanded,
-                      onToggle: () =>
-                          setState(() => _isKanalExpanded = !_isKanalExpanded),
-                      child: _buildCategoryGrid(context, state.categories),
-                    ),
-                  ],
-                ),
+              return _buildBodyContent(
+                biros: state.biros,
+                categories: state.categories,
               );
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildBodyContent({
+    required List<BiroEntity> biros,
+    required List<CategoryEntity> categories,
+  }) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ─── BIRO DROPDOWN ───
+          _DropdownSection(
+            title: 'Biro',
+            isExpanded: _isBiroExpanded,
+            onToggle: () => setState(() => _isBiroExpanded = !_isBiroExpanded),
+            child: _buildBiroGrid(context, biros),
+          ),
+
+          const Divider(),
+          const SizedBox(height: 4),
+
+          // ─── KANAL DROPDOWN ───
+          _DropdownSection(
+            title: 'Kanal',
+            isExpanded: _isKanalExpanded,
+            onToggle: () =>
+                setState(() => _isKanalExpanded = !_isKanalExpanded),
+            child: _buildCategoryGrid(context, categories),
+          ),
+        ],
       ),
     );
   }
@@ -229,6 +245,28 @@ class _CategoryViewState extends State<_CategoryView> {
     );
   }
 }
+
+const _dummyBiros = [
+  BiroEntity(title: 'Jember', seo: 'jember'),
+  BiroEntity(title: 'Kediri', seo: 'kediri'),
+  BiroEntity(title: 'Banyuwangi', seo: 'banyuwangi'),
+  BiroEntity(title: 'Pacitan', seo: 'pacitan'),
+  BiroEntity(title: 'Madiun', seo: 'madiun'),
+  BiroEntity(title: 'Madura', seo: 'madura'),
+  BiroEntity(title: 'Malang', seo: 'malang'),
+  BiroEntity(title: 'Bojonegoro', seo: 'bojonegoro'),
+];
+
+const _dummyCategories = [
+  CategoryEntity(id: 1, title: 'Peristiwa', seo: 'peristiwa', seq: 1),
+  CategoryEntity(id: 2, title: 'Politik', seo: 'politik', seq: 2),
+  CategoryEntity(id: 3, title: 'Hukum', seo: 'hukum', seq: 3),
+  CategoryEntity(id: 4, title: 'Ekbis', seo: 'ekbis', seq: 4),
+  CategoryEntity(id: 5, title: 'Olahraga', seo: 'olahraga', seq: 5),
+  CategoryEntity(id: 6, title: 'Pendidikan', seo: 'pendidikan', seq: 6),
+  CategoryEntity(id: 7, title: 'Kesehatan', seo: 'kesehatan', seq: 7),
+  CategoryEntity(id: 8, title: 'Nasional', seo: 'nasional', seq: 8),
+];
 
 /// Widget reusable untuk section dropdown (Biro / Kanal)
 class _DropdownSection extends StatelessWidget {

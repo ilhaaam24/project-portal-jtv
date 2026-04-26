@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/news_detail/presentation/cubit/text_to_speech_cubit.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 /// Widget tombol TTS untuk membacakan konten berita
 /// Mendukung 3 aksi: Play, Pause, Resume
@@ -72,18 +73,22 @@ class TtsSection extends StatelessWidget {
   }
 
   Widget _buildIndicator(BuildContext context, NewsTtsStatus status) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: status == NewsTtsStatus.playing
-            ? PortalColors.jtvJingga
-            : PortalColors.jtvBiru,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        status == NewsTtsStatus.playing ? Icons.graphic_eq : Icons.headset,
-        color: Colors.white,
-        size: 20,
+    return Skeleton.replace(
+      width: 40,
+      height: 40,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: status == NewsTtsStatus.playing
+              ? PortalColors.jtvJingga
+              : PortalColors.jtvBiru,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          status == NewsTtsStatus.playing ? Icons.graphic_eq : Icons.headset,
+          color: Colors.white,
+          size: 20,
+        ),
       ),
     );
   }
@@ -162,7 +167,8 @@ class TtsSection extends StatelessWidget {
       style: TextStyle(
         fontSize: 12,
         color: color,
-        fontWeight: status == NewsTtsStatus.playing || status == NewsTtsStatus.paused
+        fontWeight:
+            status == NewsTtsStatus.playing || status == NewsTtsStatus.paused
             ? FontWeight.w500
             : FontWeight.normal,
       ),

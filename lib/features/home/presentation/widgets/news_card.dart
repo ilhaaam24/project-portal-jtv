@@ -12,6 +12,7 @@ import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:portal_jtv/core/services/toast_service.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class NewsCard extends StatelessWidget {
   final NewsEntity news;
@@ -117,28 +118,31 @@ class NewsCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       news.category != ""
-                          ? Container(
-                              width: 70,
+                          ? Skeleton.leaf(
+                              enabled: true,
+                              child: Container(
+                                width: 70,
 
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                color: PortalColors.jtvJingga,
-                              ),
-                              child: Text(
-                                news.category,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: Theme.of(context).textTheme.bodyMedium!
-                                    .copyWith(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                      color: PortalColors.white,
-                                    ),
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  color: PortalColors.jtvJingga,
+                                ),
+                                child: Text(
+                                  news.category,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: Theme.of(context).textTheme.bodyMedium!
+                                      .copyWith(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        color: PortalColors.white,
+                                      ),
+                                ),
                               ),
                             )
                           : const SizedBox(),

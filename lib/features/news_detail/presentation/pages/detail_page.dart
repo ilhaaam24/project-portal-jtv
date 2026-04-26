@@ -150,22 +150,7 @@ class DetailPage extends StatelessWidget {
                               ),
                         ),
                         const SizedBox(height: 8),
-                        Hero(
-                          tag: '${args.idBerita}',
-                          child: CachedNetworkImage(
-                            imageUrl: args.photo,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              height: 200,
-                              color: Colors.grey.shade200,
-                              child: const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                Container(color: Colors.grey),
-                          ),
-                        ),
+                        
 
                         // Kategori + Tanggal (dari args, langsung tampil)
                         const SizedBox(height: 16),

@@ -7,7 +7,7 @@ class NotificationCubit extends Cubit<bool> {
   final NotificationService _notificationService;
 
   NotificationCubit(this._prefs, this._notificationService)
-      : super(_prefs.getNotificationSetting());
+    : super(_prefs.getNotificationSetting());
 
   Future<void> toggle() async {
     final newValue = !state;

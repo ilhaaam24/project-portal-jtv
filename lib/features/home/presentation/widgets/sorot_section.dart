@@ -38,9 +38,8 @@ Widget buildSorotSection(HomeState state) {
                       CachedNetworkImage(
                         imageUrl: sorot.photo,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Colors.grey.shade200,
-                        ),
+                        placeholder: (context, url) =>
+                            Container(color: Colors.grey.shade200),
                         errorWidget: (context, url, error) =>
                             Container(color: Colors.grey),
                       ),

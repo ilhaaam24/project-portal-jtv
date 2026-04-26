@@ -43,7 +43,6 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
   late final VideoController _videoController;
 
   // Track sumber aktif
-  final String _activeSource = 'jtv';
   static const int _liveTabIndex = 2;
 
   // Nama hari
@@ -78,9 +77,11 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
       debugPrint('[LivePlayer] Tracks updated:');
       debugPrint('[LivePlayer] Video tracks: ${tracks.video.length}');
       debugPrint('[LivePlayer] Audio tracks: ${tracks.audio.length}');
-      
+
       if (tracks.video.isEmpty && tracks.audio.isNotEmpty) {
-        debugPrint('[LivePlayer] WARNING: Audio track found but NO Video track found!');
+        debugPrint(
+          '[LivePlayer] WARNING: Audio track found but NO Video track found!',
+        );
       }
     });
 

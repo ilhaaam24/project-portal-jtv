@@ -8,6 +8,7 @@ import 'package:portal_jtv/core/utils/string_utils.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_bloc.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_event.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_state.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class CommentPreview extends StatelessWidget {
   final int idBerita;
@@ -94,24 +95,28 @@ class CommentPreview extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor: PortalColors.jtvBiru,
-                    backgroundImage: lastComment.user?.pic != null
-                        ? NetworkImage(lastComment.user!.pic!)
-                        : null,
-                    child: lastComment.user?.pic == null
-                        ? Text(
-                            StringUtils.getInitials(
-                              lastComment.user?.nama ?? 'A',
-                            ),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        : null,
+                  Skeleton.replace(
+                    width: 24,
+                    height: 24,
+                    child: CircleAvatar(
+                      radius: 12,
+                      backgroundColor: PortalColors.jtvBiru,
+                      backgroundImage: lastComment.user?.pic != null
+                          ? NetworkImage(lastComment.user!.pic!)
+                          : null,
+                      child: lastComment.user?.pic == null
+                          ? Text(
+                              StringUtils.getInitials(
+                                lastComment.user?.nama ?? 'A',
+                              ),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          : null,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
