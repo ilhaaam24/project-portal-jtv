@@ -1,6 +1,8 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get_it/get_it.dart';
 import 'package:portal_jtv/core/network/api_client.dart';
+import 'package:portal_jtv/core/network/connectivity_cubit.dart';
+import 'package:portal_jtv/core/services/connectivity_service.dart';
 import 'package:portal_jtv/core/services/notification_service.dart';
 import 'package:portal_jtv/core/services/shared_preferences_service.dart';
 import 'package:portal_jtv/core/utils/text_size_preferences.dart';
@@ -363,5 +365,7 @@ Future<void> init() async {
   );
 
   // Core (Registered here to ensure all dependencies like AuthLocalDataSource are available)
+  sl.registerLazySingleton<ConnectivityService>(() => ConnectivityService());
+  sl.registerLazySingleton<ConnectivityCubit>(() => ConnectivityCubit(sl()));
   sl.registerLazySingleton<ApiClient>(() => ApiClient(sl()));
 }

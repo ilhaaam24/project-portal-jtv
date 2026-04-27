@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/core/network/connectivity_cubit.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../bloc/category_bloc.dart';
 import '../bloc/category_event.dart';
@@ -36,49 +37,56 @@ class _CategoryViewState extends State<_CategoryView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Kategori'), centerTitle: true),
-      body: BlocBuilder<CategoryBloc, CategoryState>(
-        builder: (context, state) {
-          switch (state.status) {
-            case CategoryStatus.initial:
-            case CategoryStatus.loading:
-              return Skeletonizer(
-                enabled: true,
-                child: _buildBodyContent(
-                  biros: _dummyBiros,
-                  categories: _dummyCategories,
-                ),
-              );
-
-            case CategoryStatus.failure:
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(state.errorMessage ?? 'Gagal memuat'),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => context.read<CategoryBloc>().add(
-                        const LoadCategories(),
-                      ),
-                      child: const Text('Coba Lagi'),
-                    ),
-                  ],
-                ),
-              );
-
-            case CategoryStatus.success:
-              return _buildBodyContent(
-                biros: state.biros,
-                categories: state.categories,
-              );
+      body: BlocListener<ConnectivityCubit, ConnectivityState>(
+        listener: (context, state) {
+          if (state.isConnected) {
+            context.read<CategoryBloc>().add(const LoadCategories());
           }
         },
+        child: BlocBuilder<CategoryBloc, CategoryState>(
+          builder: (context, state) {
+            switch (state.status) {
+              case CategoryStatus.initial:
+              case CategoryStatus.loading:
+                return Skeletonizer(
+                  enabled: true,
+                  child: _buildBodyContent(
+                    biros: _dummyBiros,
+                    categories: _dummyCategories,
+                  ),
+                );
+
+              case CategoryStatus.failure:
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(state.errorMessage ?? 'Gagal memuat'),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => context.read<CategoryBloc>().add(
+                          const LoadCategories(),
+                        ),
+                        child: const Text('Coba Lagi'),
+                      ),
+                    ],
+                  ),
+                );
+
+              case CategoryStatus.success:
+                return _buildBodyContent(
+                  biros: state.biros,
+                  categories: state.categories,
+                );
+            }
+          },
+        ),
       ),
     );
   }

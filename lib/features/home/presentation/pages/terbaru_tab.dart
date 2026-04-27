@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_jtv/core/network/connectivity_cubit.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/home/domain/entities/video_entity.dart';
@@ -47,112 +48,125 @@ class _TerbaruTabState extends State<TerbaruTab> {
       body: Column(
         children: [
           Expanded(
-            child: BlocBuilder<HomeBloc, HomeState>(
-              builder: (context, state) {
-                if (state.status == HomeStatus.failure) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(state.errorMessage ?? 'Terjadi kesalahan'),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                            context.read<HomeBloc>().add(const LoadHomeData());
-                          },
-                          child: const Text('Coba Lagi'),
-                        ),
-                      ],
-                    ),
-                  );
+            child: BlocListener<ConnectivityCubit, ConnectivityState>(
+              listener: (context, state) {
+                if (state.isConnected) {
+                  context.read<HomeBloc>().add(const LoadHomeData());
                 }
-
-                final isLoading =
-                    state.status == HomeStatus.loading ||
-                    state.status == HomeStatus.initial;
-
-                return Skeletonizer(
-                  enabled: isLoading,
-                  child: RefreshIndicator(
-                    onRefresh: () async {
-                      context.read<HomeBloc>().add(const RefreshHomeData());
-                    },
-                    child: Scrollbar(
-                      radius: const Radius.circular(20),
-                      child: CustomScrollView(
-                        controller: _scrollController,
-                        slivers: [
-                          // 2. Headlines Carousel
-                          if (isLoading || state.headlines.isNotEmpty)
-                            SliverToBoxAdapter(
-                              child: buildHeadlinesSection(
-                                isLoading ? _dummyHomeState : state,
-                              ),
-                            ),
-
-                          // 3. Video Section
-                          if (isLoading || state.videos.isNotEmpty)
-                            SliverToBoxAdapter(
-                              child: VideoSection(
-                                videos: isLoading ? _dummyVideos : state.videos,
-                              ),
-                            ),
-
-                          // 5. Section Title - Berita Terbaru
-                          const SliverToBoxAdapter(
-                            child: Padding(
-                              padding: EdgeInsets.all(16),
-                              child: TittleSection(title: "Berita Terbaru"),
-                            ),
-                          ),
-
-                          // 6. Latest News List (Infinite Scroll)
-                          SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                final newsList = isLoading
-                                    ? _dummyLatestNews
-                                    : state.latestNews;
-
-                                if (index >= newsList.length) {
-                                  if (isLoading) return const SizedBox.shrink();
-                                  // Loading indicator di bottom
-                                  return state.hasReachedMax
-                                      ? const Padding(
-                                          padding: EdgeInsets.all(16),
-                                          child: Center(
-                                            child: Text(
-                                              'Semua berita sudah ditampilkan',
-                                            ),
-                                          ),
-                                        )
-                                      : const Padding(
-                                          padding: EdgeInsets.all(16),
-                                          child: Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        );
-                                }
-
-                                final news = newsList[index];
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  child: NewsCard(news: news),
-                                );
-                              },
-                              childCount: isLoading
-                                  ? _dummyLatestNews.length
-                                  : state.latestNews.length + 1,
-                            ),
+              },
+              child: BlocBuilder<HomeBloc, HomeState>(
+                builder: (context, state) {
+                  if (state.status == HomeStatus.failure) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(state.errorMessage ?? 'Terjadi kesalahan'),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<HomeBloc>().add(
+                                const LoadHomeData(),
+                              );
+                            },
+                            child: const Text('Coba Lagi'),
                           ),
                         ],
                       ),
+                    );
+                  }
+
+                  final isLoading =
+                      state.status == HomeStatus.loading ||
+                      state.status == HomeStatus.initial;
+
+                  return Skeletonizer(
+                    enabled: isLoading,
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<HomeBloc>().add(const RefreshHomeData());
+                      },
+                      child: Scrollbar(
+                        radius: const Radius.circular(20),
+                        child: CustomScrollView(
+                          controller: _scrollController,
+                          slivers: [
+                            // 2. Headlines Carousel
+                            if (isLoading || state.headlines.isNotEmpty)
+                              SliverToBoxAdapter(
+                                child: buildHeadlinesSection(
+                                  isLoading ? _dummyHomeState : state,
+                                ),
+                              ),
+
+                            // 3. Video Section
+                            if (isLoading || state.videos.isNotEmpty)
+                              SliverToBoxAdapter(
+                                child: VideoSection(
+                                  videos: isLoading
+                                      ? _dummyVideos
+                                      : state.videos,
+                                ),
+                              ),
+
+                            // 5. Section Title - Berita Terbaru
+                            const SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: TittleSection(title: "Berita Terbaru"),
+                              ),
+                            ),
+
+                            // 6. Latest News List (Infinite Scroll)
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  final newsList = isLoading
+                                      ? _dummyLatestNews
+                                      : state.latestNews;
+
+                                  if (index >= newsList.length) {
+                                    if (isLoading)
+                                      return const SizedBox.shrink();
+                                    // Loading indicator di bottom
+                                    return state.hasReachedMax
+                                        ? const Padding(
+                                            padding: EdgeInsets.all(16),
+                                            child: Center(
+                                              child: Text(
+                                                'Semua berita sudah ditampilkan',
+                                              ),
+                                            ),
+                                          )
+                                        : const Padding(
+                                            padding: EdgeInsets.all(16),
+                                            child: Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          );
+                                  }
+
+                                  final news = newsList[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: NewsCard(news: news),
+                                  );
+                                },
+                                childCount: isLoading
+                                    ? _dummyLatestNews.length
+                                    : state.latestNews.length + 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ],

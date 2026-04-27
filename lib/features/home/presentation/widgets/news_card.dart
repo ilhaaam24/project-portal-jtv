@@ -109,10 +109,11 @@ class NewsCard extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
               SizedBox(
                 height: 100,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

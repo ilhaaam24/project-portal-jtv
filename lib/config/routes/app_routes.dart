@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/config/injection/injection.dart';
@@ -31,8 +32,10 @@ import 'package:portal_jtv/features/video_detail/presentation/pages/video_detail
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_bloc.dart';
 import 'package:portal_jtv/features/comment/presentation/bloc/comment_event.dart';
 import 'package:portal_jtv/features/comment/presentation/pages/comment_page.dart';
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
+  navigatorKey: rootNavigatorKey,
   initialLocation: sl<SharedPreferencesService>().isOnboardingCompleted()
       ? RouteNames.home
       : RouteNames.onboarding,

@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:portal_jtv/config/routes/app_routes.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
+import 'package:portal_jtv/core/network/connectivity_cubit.dart';
 import 'package:portal_jtv/core/services/notification_service.dart';
+import 'package:portal_jtv/core/services/toast_service.dart';
 import 'package:portal_jtv/core/theme/theme.dart';
 import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_bloc.dart';
@@ -45,6 +47,7 @@ void main() async {
         BlocProvider(create: (_) => di.sl<ThemeCubit>()),
         BlocProvider(create: (_) => di.sl<LanguageCubit>()),
         BlocProvider(create: (_) => di.sl<NotificationCubit>()),
+        BlocProvider(create: (_) => di.sl<ConnectivityCubit>()),
       ],
       child: MyApp(),
     ),
@@ -69,6 +72,25 @@ class MyApp extends StatelessWidget {
               theme: PortalTheme.lightTheme,
               darkTheme: PortalTheme.darkTheme,
               routerConfig: router,
+              builder: (context, child) {
+                return BlocListener<ConnectivityCubit, ConnectivityState>(
+                  listener: (context, state) {
+                    final navigatorContext = rootNavigatorKey.currentContext;
+                    if (navigatorContext == null) return;
+
+                    if (!state.isConnected) {
+                      ToastService.showError(
+                        navigatorContext,
+                        'Koneksi Terputus',
+                        description: 'Silakan periksa koneksi internet Anda',
+                      );
+                    } else {
+                      ToastService.showSuccess(navigatorContext, 'Kembali Online');
+                    }
+                  },
+                  child: child!,
+                );
+              },
             );
           },
         );
