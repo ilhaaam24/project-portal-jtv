@@ -173,7 +173,12 @@ class NewsCard extends StatelessWidget {
                               onTap: () {
                                 final url =
                                     'https://portaljtv.com/${news.seoCategory}/${news.seo}';
-                                Share.share('${news.title}\n\n$url');
+                                SharePlus.instance.share(
+                                  ShareParams(
+                                    uri: Uri.parse(url),
+                                    subject: news.title,
+                                  ),
+                                );
                               },
                               child: Image.asset(
                                 'assets/icons/export-card.png',

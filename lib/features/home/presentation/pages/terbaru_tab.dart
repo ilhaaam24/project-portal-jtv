@@ -133,9 +133,9 @@ class _TerbaruTabState extends State<TerbaruTab> {
                                       : state.latestNews;
 
                                   if (index >= newsList.length) {
-                                    if (isLoading)
+                                    if (isLoading) {
                                       return const SizedBox.shrink();
-                                    // Loading indicator di bottom
+                                    }
                                     return state.hasReachedMax
                                         ? const Padding(
                                             padding: EdgeInsets.all(16),
