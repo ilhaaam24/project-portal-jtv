@@ -6,6 +6,8 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/l10n/app_localizations.dart';
+import 'package:portal_jtv/core/network/connectivity_cubit.dart';
+import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
 import '../bloc/live_bloc.dart';
 import '../bloc/live_event.dart';
 import '../bloc/live_state.dart';
@@ -157,53 +159,69 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
           title: Text(AppLocalizations.of(context)!.liveStreaming),
           centerTitle: true,
         ),
-        body: BlocConsumer<LiveBloc, LiveState>(
-          listener: (context, state) {
-            // Auto-play saat data loaded
-            if (state.status == LiveStatus.success &&
-                state.livestream != null) {
-              final live = state.livestream!;
-              if (live.isLive && live.hasJtv) {
-                _playStream(live.jtv);
+        body: BlocListener<ConnectivityCubit, ConnectivityState>(
+          listener: (context, connState) {
+            if (connState.isConnected) {
+              final todayIndex = DateTime.now().weekday - 1;
+              context.read<LiveBloc>().add(const LoadLivestream());
+              context.read<LiveBloc>().add(LoadSchedule(todayIndex));
+            }
+          },
+          child: BlocConsumer<LiveBloc, LiveState>(
+            listener: (context, state) {
+              // Auto-play saat data loaded
+              if (state.status == LiveStatus.success &&
+                  state.livestream != null) {
+                final live = state.livestream!;
+                if (live.isLive && live.hasJtv) {
+                  _playStream(live.jtv);
+                }
               }
-            }
-          },
-          builder: (context, state) {
-            switch (state.status) {
-              case LiveStatus.initial:
-              case LiveStatus.loading:
-                return const Center(child: CircularProgressIndicator());
-
-              case LiveStatus.failure:
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 48,
-                        color: Colors.grey,
+            },
+            builder: (context, state) {
+              switch (state.status) {
+                case LiveStatus.initial:
+                case LiveStatus.loading:
+                  return const Center(child: CircularProgressIndicator());
+  
+                case LiveStatus.failure:
+                  if (state.errorMessage == "No internet connection") {
+                    return NoInternetWidget(
+                      onRetry: () => context.read<LiveBloc>().add(
+                        const LoadLivestream(),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        state.errorMessage ??
-                            AppLocalizations.of(context)!.loadFailed,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => context.read<LiveBloc>().add(
-                          const LoadLivestream(),
+                    );
+                  }
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 48,
+                          color: Colors.grey,
                         ),
-                        child: Text(AppLocalizations.of(context)!.retry),
-                      ),
-                    ],
-                  ),
-                );
-
-              case LiveStatus.success:
-                return _buildLiveContent(state, todayIndex);
-            }
-          },
+                        const SizedBox(height: 16),
+                        Text(
+                          state.errorMessage ??
+                              AppLocalizations.of(context)!.loadFailed,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => context.read<LiveBloc>().add(
+                            const LoadLivestream(),
+                          ),
+                          child: Text(AppLocalizations.of(context)!.retry),
+                        ),
+                      ],
+                    ),
+                  );
+  
+                case LiveStatus.success:
+                  return _buildLiveContent(state, todayIndex);
+              }
+            },
+          ),
         ),
       ),
     );

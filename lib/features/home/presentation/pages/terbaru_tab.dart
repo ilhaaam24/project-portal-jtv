@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_jtv/core/network/connectivity_cubit.dart';
+import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/home/domain/entities/video_entity.dart';
@@ -57,6 +58,12 @@ class _TerbaruTabState extends State<TerbaruTab> {
               child: BlocBuilder<HomeBloc, HomeState>(
                 builder: (context, state) {
                   if (state.status == HomeStatus.failure) {
+                    if (state.errorMessage == "No internet connection") {
+                      return NoInternetWidget(
+                        onRetry: () =>
+                            context.read<HomeBloc>().add(const LoadHomeData()),
+                      );
+                    }
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -66,7 +73,7 @@ class _TerbaruTabState extends State<TerbaruTab> {
                           ElevatedButton(
                             onPressed: () {
                               context.read<HomeBloc>().add(
-                                const LoadHomeData(),
+                                const RefreshHomeData(),
                               );
                             },
                             child: const Text('Coba Lagi'),

@@ -15,13 +15,7 @@ class NoInternetWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Lottie.network(
-              'https://assets10.lottiefiles.com/packages/lf20_0s6tfbuc.json', // No Internet animation
-              height: 200,
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(Icons.wifi_off, size: 80, color: Colors.grey);
-              },
-            ),
+            Lottie.asset('assets/lotties/no_internet.json', height: 200),
             const SizedBox(height: 24),
             Text(
               'Koneksi Terputus',
@@ -32,7 +26,7 @@ class NoInternetWidget extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               message ??
-                  'Pastikan Wi-Fi atau data seluler Anda menyala, lalu coba lagi.',
+                  'Pastikan Wi-Fi atau data seluler Anda\nmenyala, lalu coba lagi.',
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,
@@ -41,7 +35,7 @@ class NoInternetWidget extends StatelessWidget {
             const SizedBox(height: 32),
             if (onRetry != null)
               SizedBox(
-                width: double.infinity,
+                width: 150,
                 child: ElevatedButton(
                   onPressed: onRetry,
                   style: ElevatedButton.styleFrom(

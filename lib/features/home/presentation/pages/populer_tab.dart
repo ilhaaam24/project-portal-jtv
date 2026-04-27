@@ -6,6 +6,7 @@ import 'package:portal_jtv/core/network/connectivity_cubit.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/news_card.dart';
+import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
 import '../bloc/populer/populer_bloc.dart';
 import '../bloc/populer/populer_event.dart';
 import '../bloc/populer/populer_state.dart';
@@ -63,6 +64,12 @@ class _PopulerTabState extends State<PopulerTab>
           child: BlocBuilder<PopulerBloc, PopulerState>(
             builder: (context, state) {
               if (state.status == PopulerStatus.failure) {
+                if (state.errorMessage == "No internet connection") {
+                  return NoInternetWidget(
+                    onRetry: () =>
+                        context.read<PopulerBloc>().add(const LoadPopuler()),
+                  );
+                }
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

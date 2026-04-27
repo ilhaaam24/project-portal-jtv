@@ -81,6 +81,7 @@ flutter:
     - assets/icons/biro/
     - assets/icons/category/
     - assets/icons/navigation/
+    - assets/lotties/
   fonts:
     - family: Inter
       fonts:

@@ -8,6 +8,7 @@ import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_bloc.d
 import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_event.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_state.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/news_card.dart';
+import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
 
 class ForYouTab extends StatefulWidget {
   const ForYouTab({super.key});
@@ -33,6 +34,12 @@ class _ForYouTabState extends State<ForYouTab>
       child: BlocBuilder<ForYouBloc, ForYouState>(
         builder: (context, state) {
           if (state.status == ForYouStatus.failure) {
+            if (state.errorMessage == "No internet connection") {
+              return NoInternetWidget(
+                onRetry: () =>
+                    context.read<ForYouBloc>().add(const LoadForYou()),
+              );
+            }
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -50,11 +57,11 @@ class _ForYouTabState extends State<ForYouTab>
               ),
             );
           }
-      
+
           final isLoading =
               state.status == ForYouStatus.loading ||
               state.status == ForYouStatus.initial;
-      
+
           if (!isLoading && state.status == ForYouStatus.empty) {
             return Center(
               child: Column(
@@ -76,9 +83,9 @@ class _ForYouTabState extends State<ForYouTab>
               ),
             );
           }
-      
+
           final newsList = isLoading ? _dummyForYouNews : state.news;
-      
+
           return Skeletonizer(
             enabled: isLoading,
             child: RefreshIndicator(
@@ -86,7 +93,10 @@ class _ForYouTabState extends State<ForYouTab>
                 context.read<ForYouBloc>().add(const RefreshForYou());
               },
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
                 itemCount: newsList.length,
                 itemBuilder: (context, index) {
                   final item = newsList[index];

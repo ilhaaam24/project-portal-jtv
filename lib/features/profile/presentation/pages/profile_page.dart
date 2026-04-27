@@ -293,13 +293,11 @@ class _ProfileView extends StatelessWidget {
                 context.read<NavigationCubit>().changeIndex(0);
               }
             },
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
-            ),
+            style: TextButton.styleFrom(foregroundColor: PortalColors.error),
             child: Text(
               l10n.logout,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: Colors.white,
+                color: PortalColors.error,
                 fontWeight: FontWeight.w600,
               ),
             ),

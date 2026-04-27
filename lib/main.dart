@@ -84,8 +84,6 @@ class MyApp extends StatelessWidget {
                         'Koneksi Terputus',
                         description: 'Silakan periksa koneksi internet Anda',
                       );
-                    } else {
-                      ToastService.showSuccess(navigatorContext, 'Kembali Online');
                     }
                   },
                   child: child!,

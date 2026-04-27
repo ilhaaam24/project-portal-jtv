@@ -8,6 +8,7 @@ import '../bloc/category_event.dart';
 import '../bloc/category_state.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/biro_entity.dart';
+import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
 import 'package:portal_jtv/config/injection/injection.dart' as di;
 
 class CategoryPage extends StatelessWidget {
@@ -57,6 +58,13 @@ class _CategoryViewState extends State<_CategoryView> {
                 );
 
               case CategoryStatus.failure:
+                if (state.errorMessage == "No internet connection") {
+                  return NoInternetWidget(
+                    onRetry: () => context.read<CategoryBloc>().add(
+                      const LoadCategories(),
+                    ),
+                  );
+                }
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
