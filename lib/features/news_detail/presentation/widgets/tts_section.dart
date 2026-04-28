@@ -15,57 +15,60 @@ class TtsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TextToSpeechCubit, NewsTtsStatus>(
       builder: (context, status) {
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 16),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: status == NewsTtsStatus.playing
-                ? PortalColors.jtvBiru.withValues(alpha: 0.05)
-                : PortalColors.grey100,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
+        return Skeleton.leaf(
+          enabled: true,
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
               color: status == NewsTtsStatus.playing
-                  ? PortalColors.jtvBiru.withValues(alpha: 0.1)
-                  : PortalColors.grey200,
-              width: 1,
+                  ? PortalColors.jtvBiru.withValues(alpha: 0.05)
+                  : PortalColors.grey100,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: status == NewsTtsStatus.playing
+                    ? PortalColors.jtvBiru.withValues(alpha: 0.1)
+                    : PortalColors.grey200,
+                width: 1,
+              ),
             ),
-          ),
-          child: Row(
-            children: [
-              // Icon Indikator
-              _buildIndicator(context, status),
-              const SizedBox(width: 12),
+            child: Row(
+              children: [
+                // Icon Indikator
+                _buildIndicator(context, status),
+                const SizedBox(width: 12),
 
-              // Info Teks
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                // Info Teks
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Dengarkan Berita',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: PortalColors.jtvBiru,
+                        ),
+                      ),
+                      _buildStatusLabel(context, status),
+                    ],
+                  ),
+                ),
+
+                // Kontrol (Play/Pause & Stop)
+                Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'Dengarkan Berita',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: PortalColors.jtvBiru,
-                      ),
-                    ),
-                    _buildStatusLabel(context, status),
+                    _buildPlayPauseButton(context, status),
+                    if (status == NewsTtsStatus.playing ||
+                        status == NewsTtsStatus.paused)
+                      _buildStopButton(context),
                   ],
                 ),
-              ),
-
-              // Kontrol (Play/Pause & Stop)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildPlayPauseButton(context, status),
-                  if (status == NewsTtsStatus.playing ||
-                      status == NewsTtsStatus.paused)
-                    _buildStopButton(context),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

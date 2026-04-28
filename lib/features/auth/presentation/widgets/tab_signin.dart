@@ -6,6 +6,8 @@ import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:portal_jtv/features/auth/presentation/widgets/custom_form_field.dart';
 import 'package:portal_jtv/features/auth/presentation/widgets/divider_widget.dart';
 import 'package:portal_jtv/core/services/toast_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:portal_jtv/core/constants/api_constants.dart';
 
 class TabSignin extends StatefulWidget {
   final bool fromGuard;
@@ -20,6 +22,18 @@ class _TabSigninState extends State<TabSignin> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  Future<void> _launchRegisterUrl() async {
+    final Uri url = Uri.parse(ApiConstants.registerUrl);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ToastService.showError(
+          context,
+          'Tidak dapat membuka halaman pendaftaran',
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -121,10 +135,12 @@ class _TabSigninState extends State<TabSignin> {
                     children: [
                       Text('Tidak memiliki akun?'),
                       SizedBox(width: 8),
-                      Text(
-                        'Daftar sekarang',
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: PortalColors.jtvJingga,
+                      GestureDetector(
+                        onTap: _launchRegisterUrl,
+                        child: Text(
+                          'Daftar sekarang',
+                          style: Theme.of(context).textTheme.bodyMedium!
+                              .copyWith(color: PortalColors.jtvJingga),
                         ),
                       ),
                     ],

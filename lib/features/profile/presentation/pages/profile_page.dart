@@ -7,6 +7,7 @@ import 'package:portal_jtv/l10n/app_localizations.dart';
 import 'package:portal_jtv/config/routes/route_names.dart';
 import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart'
     hide LogoutRequested;
+import 'package:skeletonizer/skeletonizer.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_event.dart';
 import '../bloc/profile_state.dart';
@@ -192,9 +193,12 @@ class _ProfileView extends StatelessWidget {
   // ─── HEADER ───
   Widget _buildHeader(ProfileState state) {
     if (state.status == ProfileStatus.loading) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 48),
-        child: CircularProgressIndicator(),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 48),
+        child: Skeleton.leaf(
+          enabled: true,
+          child: SizedBox(width: 50, height: 50),
+        ),
       );
     }
 

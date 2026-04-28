@@ -76,8 +76,9 @@ class _ContentBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (detail.photo.isNotEmpty)
-          CachedNetworkImage(
+        Skeleton.leaf(
+          enabled: true,
+          child: CachedNetworkImage(
             imageUrl: detail.photo,
             fit: BoxFit.cover,
             placeholder: (context, url) => AspectRatio(
@@ -91,12 +92,13 @@ class _ContentBody extends StatelessWidget {
               aspectRatio: 16 / 9,
               child: Container(color: Colors.grey),
             ),
-          )
-        else
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(color: Colors.grey.shade200),
           ),
+        ),
+        // else
+        //   AspectRatio(
+        //     aspectRatio: 16 / 9,
+        //     child: Container(color: Colors.grey.shade200),
+        //   ),
         // Views + Editor
         const SizedBox(height: 16),
         Row(
@@ -182,16 +184,15 @@ class _ContentBody extends StatelessWidget {
           ),
 
         // Comment Preview Section
-        CommentPreview(
-          idBerita: detail.idBerita,
-          title: args.title,
-          category: args.category,
-          author: args.author,
-          date: args.date,
-          photo: args.photo,
-          seo: args.seo,
-        ),
-
+        // CommentPreview(
+        //   idBerita: detail.idBerita,
+        //   title: args.title,
+        //   category: args.category,
+        //   author: args.author,
+        //   date: args.date,
+        //   photo: args.photo,
+        //   seo: args.seo,
+        // ),
         const SizedBox(height: 16),
       ],
     );

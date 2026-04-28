@@ -46,24 +46,27 @@ Widget buildHeadlinesSection(HomeState state) {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CachedNetworkImage(
-                        imageUrl: headline.photo,
-                        width: double.infinity,
-                        height: 180,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
+                      Skeleton.leaf(
+                        enabled: true,
+                        child: CachedNetworkImage(
+                          imageUrl: headline.photo,
+                          width: double.infinity,
                           height: 180,
-                          color: Colors.grey.shade200,
-                          child: const Center(
-                            child: CircularProgressIndicator(),
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            height: 180,
+                            color: Colors.grey.shade200,
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
                           ),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          height: 180,
-                          color: Colors.grey.shade200,
-                          child: const Icon(
-                            Icons.broken_image,
-                            color: Colors.grey,
+                          errorWidget: (context, url, error) => Container(
+                            height: 180,
+                            color: Colors.grey.shade200,
+                            child: const Icon(
+                              Icons.broken_image,
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
                       ),

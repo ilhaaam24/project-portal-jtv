@@ -14,6 +14,7 @@ import '../bloc/live_state.dart';
 import '../../domain/entities/livestream_entity.dart';
 import '../../domain/entities/schedule_entity.dart';
 import 'package:portal_jtv/config/injection/injection.dart' as di;
+import 'package:skeletonizer/skeletonizer.dart';
 
 class LivePage extends StatelessWidget {
   const LivePage({super.key});
@@ -182,14 +183,23 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
               switch (state.status) {
                 case LiveStatus.initial:
                 case LiveStatus.loading:
-                  return const Center(child: CircularProgressIndicator());
-  
+                  return Skeletonizer(
+                    enabled: true,
+                    child: _buildLiveContent(
+                      state.copyWith(
+                        livestream: _dummyLivestream,
+                        schedules: _dummySchedules,
+                        scheduleStatus: ScheduleStatus.success,
+                      ),
+                      todayIndex,
+                    ),
+                  );
+
                 case LiveStatus.failure:
                   if (state.errorMessage == "No internet connection") {
                     return NoInternetWidget(
-                      onRetry: () => context.read<LiveBloc>().add(
-                        const LoadLivestream(),
-                      ),
+                      onRetry: () =>
+                          context.read<LiveBloc>().add(const LoadLivestream()),
                     );
                   }
                   return Center(
@@ -216,7 +226,7 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
                       ],
                     ),
                   );
-  
+
                 case LiveStatus.success:
                   return _buildLiveContent(state, todayIndex);
               }
@@ -286,11 +296,13 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
                   color: live.isLive ? Colors.red : Colors.grey,
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  live.liveTitle,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Text(
+                    live.liveTitle,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -402,9 +414,16 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
     switch (state.scheduleStatus) {
       case ScheduleStatus.initial:
       case ScheduleStatus.loading:
-        return const Padding(
-          padding: EdgeInsets.symmetric(vertical: 32),
-          child: Center(child: CircularProgressIndicator()),
+        return Skeletonizer(
+          enabled: true,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            itemCount: 5,
+            separatorBuilder: (_, _) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              return _buildScheduleItem(_dummySchedules[index], false);
+            },
+          ),
         );
 
       case ScheduleStatus.failure:
@@ -583,3 +602,23 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
   }
 }
+
+const _dummyLivestream = LivestreamEntity(
+  youtube: '-',
+  facebook: '-',
+  vidio: '-',
+  jtv: '-',
+  liveStatus: 1,
+  liveTitle: 'Judul Live Streaming JTV Portal Sedang Dimuat',
+  liveLink: '',
+);
+
+final _dummySchedules = List.generate(
+  5,
+  (index) => ScheduleEntity(
+    id: index.toString(),
+    jamMulai: '00:00',
+    jamBerakhir: '00:00',
+    nama: 'Nama Program Acara JTV Sedang Dimuat',
+  ),
+);

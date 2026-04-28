@@ -25,25 +25,29 @@ class NewsModel extends NewsEntity {
 
   factory NewsModel.fromJson(Map<String, dynamic> json) {
     return NewsModel(
-      idBerita: json['id_berita'] ?? 0,
-      title: json['title'] ?? '',
-      seo: json['seo'] ?? '',
-      seoBiro: json['seo_biro'] ?? '',
-      status: json['status'] ?? '',
-      photo: json['photo'] ?? '',
-      summary: json['summary'] ?? '',
-      caption: json['caption'] ?? '',
-      city: json['city'] ?? '',
-      date: json['date'] ?? '',
-      category: json['category'] ?? '',
-      seoCategory: json['seo_category'] ?? '',
-      tag: json['tag'],
-      author: json['author'] ?? '',
-      jabatanAuthor: json['jabatan_author'],
-      seoAuthor: json['seo_author'] ?? '',
-      editor: json['editor'],
-      picAuthor: json['pic_author'] ?? '',
-      isYoutube: json['is_youtube'] ?? false,
+      idBerita: json['id_berita'] is int
+          ? json['id_berita']
+          : int.tryParse(json['id_berita']?.toString() ?? '0') ?? 0,
+      title: json['title']?.toString() ?? '',
+      seo: json['seo']?.toString() ?? '',
+      seoBiro: json['seo_biro']?.toString() ?? '',
+      status: json['status']?.toString() ?? '',
+      photo: json['photo']?.toString() ?? '',
+      summary: json['summary']?.toString() ?? '',
+      caption: json['caption']?.toString() ?? '',
+      city: json['city']?.toString() ?? '',
+      date: json['date']?.toString() ?? '',
+      category: json['category']?.toString() ?? '',
+      seoCategory: json['seo_category']?.toString() ?? '',
+      tag: json['tag']?.toString(),
+      author: json['author']?.toString() ?? '',
+      jabatanAuthor: json['jabatan_author']?.toString(),
+      seoAuthor: json['seo_author']?.toString() ?? '',
+      editor: json['editor']?.toString(),
+      picAuthor: json['pic_author']?.toString() ?? '',
+      isYoutube: json['is_youtube'] == 1 ||
+          json['is_youtube'] == true ||
+          json['is_youtube']?.toString().toLowerCase() == 'true',
     );
   }
 

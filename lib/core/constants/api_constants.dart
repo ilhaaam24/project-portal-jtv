@@ -5,6 +5,8 @@ class ApiConstants {
   // static const String baseUrl =
   //     'https://congratulatory-semiconventionally-melva.ngrok-free.dev/api'; // Android Emulator
 
+  static const String registerUrl = 'https://hub.jtv.co.id/register';
+
   // Endpoints
   static const String login = '/auth/sign-in';
   static const String headlines = '/news/headline';

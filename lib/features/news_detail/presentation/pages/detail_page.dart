@@ -155,7 +155,6 @@ class DetailPage extends StatelessWidget {
 
                         // ===== KONTEN DARI API (loading/success) =====
                         buildContent(context, state, args),
-
                         const SizedBox(height: 16),
 
                         if (state.status == DetailStatus.success)
