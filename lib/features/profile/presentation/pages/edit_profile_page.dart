@@ -83,30 +83,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 // Email
                 TextFormField(
+                  enabled: false,
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined),
                     border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF5F5F5),
+                    filled: true,
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (val) {
-                    if (val == null || val.isEmpty) return 'Email wajib diisi';
-                    if (!val.contains('@')) return 'Email tidak valid';
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 16),
 
                 // Phone
                 TextFormField(
+                  enabled: false,
                   controller: _phoneController,
                   decoration: const InputDecoration(
                     labelText: 'No. Telepon',
                     prefixIcon: Icon(Icons.phone_outlined),
                     border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF5F5F5),
+                    filled: true,
                   ),
-                  keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 16),
 
