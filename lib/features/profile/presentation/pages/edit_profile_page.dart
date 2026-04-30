@@ -88,9 +88,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(),
-                    fillColor: Color(0xFFF5F5F5),
-                    filled: true,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -102,9 +99,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   decoration: const InputDecoration(
                     labelText: 'No. Telepon',
                     prefixIcon: Icon(Icons.phone_outlined),
-                    border: OutlineInputBorder(),
-                    fillColor: Color(0xFFF5F5F5),
-                    filled: true,
                   ),
                 ),
                 const SizedBox(height: 16),

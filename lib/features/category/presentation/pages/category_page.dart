@@ -138,7 +138,7 @@ class _CategoryViewState extends State<_CategoryView> {
   ) {
     final categoryIcons = <String, String>{
       'peristiwa': 'assets/icons/category/peristiwa.png',
-      'politik': 'assets/icons/category/politik.png',
+      '3': 'assets/icons/category/politik.png',
       'hukum': 'assets/icons/category/hukum.png',
       'ekbis': 'assets/icons/category/ekbis.png',
       'olahraga': 'assets/icons/category/olahraga.png',
@@ -161,7 +161,7 @@ class _CategoryViewState extends State<_CategoryView> {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        final icon = categoryIcons[category.seo];
+        final icon = categoryIcons[category.id];
 
         return icon != null
             ? GestureDetector(

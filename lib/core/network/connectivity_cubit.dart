@@ -30,14 +30,15 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
 
   void _init() async {
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     final connected = await _connectivityService.isConnected;
     emit(ConnectivityChanged(connected));
 
-    _subscription = _connectivityService.connectivityStream.listen((results) async {
-      
+    _subscription = _connectivityService.connectivityStream.listen((
+      results,
+    ) async {
       final isNowConnected = await _connectivityService.isConnected;
-      
+
       if (isNowConnected != state.isConnected) {
         emit(ConnectivityChanged(isNowConnected));
       }

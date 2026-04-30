@@ -216,14 +216,14 @@ class _BookmarkView extends StatelessWidget {
     // Buat args dari data bookmark untuk pre-populated detail
     final args = DetailArgsEntity(
       idBerita: item.idBerita,
-      seo: item.berita.seo,
-      title: item.berita.title,
-      photo: item.berita.photo ?? '',
-      date: item.berita.date ?? '',
-      category: item.berita.category ?? '',
-      seoCategory: item.berita.seoCategory ?? '',
-      author: item.berita.author ?? '',
-      picAuthor: item.berita.picAuthor ?? '',
+      seo: item.seo,
+      title: item.title,
+      photo: item.photo ?? '',
+      date: item.date ?? '',
+      category: item.category ?? '',
+      seoCategory: item.seoCategory ?? '',
+      author: item.author ?? '',
+      picAuthor: item.picAuthor ?? '',
     );
 
     // Navigate ke detail page

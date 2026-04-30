@@ -125,14 +125,11 @@ Widget buildHeadlinesSection(HomeState state) {
                                     headline.title,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          height: 1.3,
-                                        ),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.3,
+                                    ),
                                   ),
                                 ],
                               ),

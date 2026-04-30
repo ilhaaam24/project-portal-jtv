@@ -108,11 +108,10 @@ class _ForYouTabState extends State<ForYouTab>
                     photo: item.photo,
                     date: item.date,
                     category: item.categoryName,
-                    author:
-                        'Portal JTV', // Default author as it's missing in ForYouEntity
+                    author: item.author,
                     picAuthor: '',
                     seoAuthor: '',
-                    seoCategory: '',
+                    seoCategory: item.seoCategory,
                     seoBiro: '',
                     status: 'published',
                     summary: '',
@@ -137,7 +136,9 @@ const _dummyForYou = ForYouEntity(
   seo: '',
   photo: '',
   date: '2024-01-01',
+  author: "Portal JTV",
   categoryName: 'Rekomendasi',
+  seoCategory: "umum",
   score: 0,
 );
 

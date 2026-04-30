@@ -184,15 +184,15 @@ class _ContentBody extends StatelessWidget {
           ),
 
         // Comment Preview Section
-        // CommentPreview(
-        //   idBerita: detail.idBerita,
-        //   title: args.title,
-        //   category: args.category,
-        //   author: args.author,
-        //   date: args.date,
-        //   photo: args.photo,
-        //   seo: args.seo,
-        // ),
+        CommentPreview(
+          idBerita: detail.idBerita,
+          title: detail.title,
+          category: detail.category,
+          author: detail.author,
+          date: detail.date,
+          photo: detail.photo,
+          seo: detail.seo,
+        ),
         const SizedBox(height: 16),
       ],
     );

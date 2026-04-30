@@ -121,7 +121,7 @@ class DetailPage extends StatelessWidget {
                           args.category,
                           style: Theme.of(context).textTheme.headlineSmall!
                               .copyWith(
-                                color: PortalColors.jtvBiru,
+                                color: Theme.of(context).colorScheme.primary,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),

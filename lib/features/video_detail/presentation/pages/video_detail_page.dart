@@ -250,10 +250,6 @@ class _VideoPageItemState extends State<_VideoPageItem> {
                       return player;
                     },
                   ),
-                  if (!_isPlayerReady)
-                    Positioned.fill(
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
                 ],
               ),
             ),

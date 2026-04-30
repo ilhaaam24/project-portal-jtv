@@ -7,7 +7,9 @@ class ForYouModel extends ForYouEntity {
     required super.seo,
     required super.photo,
     required super.date,
+    required super.author,
     required super.categoryName,
+    required super.seoCategory,
     required super.score,
   });
 
@@ -20,7 +22,9 @@ class ForYouModel extends ForYouEntity {
       seo: json['seo'] ?? '',
       photo: json['photo'] ?? '',
       date: json['date'] ?? '',
+      author: json['author'] ?? '',
       categoryName: json['category_name'] ?? 'Umum',
+      seoCategory: json['seo_category'] ?? 'umum',
       score: json['score'] ?? 0,
     );
   }

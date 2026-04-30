@@ -25,9 +25,9 @@ class NewsModel extends NewsEntity {
 
   factory NewsModel.fromJson(Map<String, dynamic> json) {
     return NewsModel(
-      idBerita: json['id_berita'] is int
-          ? json['id_berita']
-          : int.tryParse(json['id_berita']?.toString() ?? '0') ?? 0,
+      idBerita: json['id'] is int
+          ? json['id']
+          : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
       title: json['title']?.toString() ?? '',
       seo: json['seo']?.toString() ?? '',
       seoBiro: json['seo_biro']?.toString() ?? '',
@@ -45,7 +45,8 @@ class NewsModel extends NewsEntity {
       seoAuthor: json['seo_author']?.toString() ?? '',
       editor: json['editor']?.toString(),
       picAuthor: json['pic_author']?.toString() ?? '',
-      isYoutube: json['is_youtube'] == 1 ||
+      isYoutube:
+          json['is_youtube'] == 1 ||
           json['is_youtube'] == true ||
           json['is_youtube']?.toString().toLowerCase() == 'true',
     );
