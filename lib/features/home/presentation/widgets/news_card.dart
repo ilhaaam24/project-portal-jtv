@@ -6,10 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/core/helper/format_date.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/core/utils/auth_guard.dart';
+import 'package:portal_jtv/features/bookmark/domain/usecases/delete_saved_news.dart';
 import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_bloc.dart';
 import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_event.dart';
+import 'package:portal_jtv/features/bookmark/presentation/bloc/bookmark_state.dart';
 import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
+import 'package:portal_jtv/features/news_detail/domain/usecases/remove_bookmark.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:portal_jtv/core/services/toast_service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -155,22 +158,48 @@ class NewsCard extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                if (checkAuthAndPrompt(context)) {
-                                  context.read<BookmarkBloc>().add(
-                                    AddBookmark(news.idBerita),
-                                  );
-                                  ToastService.showSuccess(
-                                    context,
-                                    'Berita disimpan',
-                                  );
-                                }
+                            BlocBuilder<BookmarkBloc, BookmarkState>(
+                              builder: (context, state) {
+                                final isSaved = state.savedNews.any(
+                                  (item) => item.idBerita == news.idBerita,
+                                );
+                                return GestureDetector(
+                                  onTap: () {
+                                    if (checkAuthAndPrompt(context)) {
+                                      if (isSaved) {
+                                        context.read<BookmarkBloc>().add(
+                                          DeleteBookmark(
+                                            idBerita: news.idBerita,
+                                            index: state.savedNews.indexWhere(
+                                              (item) =>
+                                                  item.idBerita ==
+                                                  news.idBerita,
+                                            ),
+                                          ),
+                                        );
+                                        ToastService.showInfo(
+                                          context,
+                                          'Berita berhasil dihapus dari daftar simpan',
+                                        );
+                                      } else {
+                                        context.read<BookmarkBloc>().add(
+                                          AddBookmark(news.idBerita),
+                                        );
+                                        ToastService.showSuccess(
+                                          context,
+                                          'Berita disimpan',
+                                        );
+                                      }
+                                    }
+                                  },
+                                  child: Image.asset(
+                                    isSaved
+                                        ? 'assets/icons/bookmark-active.png'
+                                        : 'assets/icons/bookmark-card.png',
+                                    height: 18,
+                                  ),
+                                );
                               },
-                              child: Image.asset(
-                                'assets/icons/bookmark-card.png',
-                                height: 18,
-                              ),
                             ),
                             GestureDetector(
                               onTap: () {

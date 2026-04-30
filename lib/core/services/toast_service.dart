@@ -23,6 +23,7 @@ class ToastService {
       animationType: AnimationType.fromTop,
       toastPosition: Position.top,
       autoDismiss: true,
+      toastDuration: const Duration(milliseconds: 1500),
     ).show(context);
   }
 
@@ -55,6 +56,7 @@ class ToastService {
       animationType: AnimationType.fromTop,
       toastPosition: Position.top,
       autoDismiss: true,
+      toastDuration: const Duration(milliseconds: 1500),
     ).show(context);
   }
 
@@ -87,6 +89,7 @@ class ToastService {
       animationType: AnimationType.fromTop,
       toastPosition: Position.top,
       autoDismiss: true,
+      toastDuration: const Duration(milliseconds: 1500),
     ).show(context);
   }
 
@@ -119,6 +122,7 @@ class ToastService {
       animationType: AnimationType.fromTop,
       toastPosition: Position.top,
       autoDismiss: true,
+      toastDuration: const Duration(milliseconds: 1500),
     ).show(context);
   }
 }

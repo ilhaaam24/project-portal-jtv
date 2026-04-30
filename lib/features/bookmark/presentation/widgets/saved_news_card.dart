@@ -195,15 +195,15 @@ class SavedNewsCard extends StatelessWidget {
                               // Tombol Hapus (Pengganti Bookmark)
                               GestureDetector(
                                 onTap: onDelete,
-                                child: const Icon(
-                                  Icons.bookmark,
-                                  color: PortalColors.jtvJingga,
-                                  size: 18,
+                                child: Image.asset(
+                                  'assets/icons/bookmark-active.png',
+                                  height: 18,
                                 ),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  final url = 'https://portaljtv.com/${item.seoCategory}/${item.seo}';
+                                  final url =
+                                      'https://portaljtv.com/${item.seoCategory}/${item.seo}';
                                   SharePlus.instance.share(
                                     ShareParams(
                                       uri: Uri.parse(url),
