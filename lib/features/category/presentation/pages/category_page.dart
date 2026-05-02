@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -161,35 +162,58 @@ class _CategoryViewState extends State<_CategoryView> {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        final icon = categoryIcons[category.seo];
 
-        return icon != null
-            ? GestureDetector(
-                onTap: () => _navigateToNews(
-                  context,
-                  seo: category.seo,
-                  title: category.title,
-                  isBiro: false,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(icon, width: 48, height: 48),
-                    const SizedBox(height: 6),
-                    Text(
-                      category.title,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
+        return GestureDetector(
+          onTap: () => _navigateToNews(
+            context,
+            seo: category.seo,
+            title: category.title,
+            isBiro: false,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (category.imageUrl != '')
+                CachedNetworkImage(
+                  imageUrl: category.imageUrl!,
+                  width: 48,
+                  height: 48,
+                  errorWidget: (context, url, error) => Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ],
+                    child: const Icon(Icons.not_interested, size: 24),
+                  ),
+                )
+              else
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.not_interested,
+                    size: 24,
+                    color: Colors.grey,
+                  ),
                 ),
-              )
-            : null;
+              const SizedBox(height: 6),
+              Text(
+                category.title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -275,14 +299,62 @@ const _dummyBiros = [
 ];
 
 const _dummyCategories = [
-  CategoryEntity(id: 1, title: 'Peristiwa', seo: 'peristiwa', seq: 1),
-  CategoryEntity(id: 2, title: 'Politik', seo: 'politik', seq: 2),
-  CategoryEntity(id: 3, title: 'Hukum', seo: 'hukum', seq: 3),
-  CategoryEntity(id: 4, title: 'Ekbis', seo: 'ekbis', seq: 4),
-  CategoryEntity(id: 5, title: 'Olahraga', seo: 'olahraga', seq: 5),
-  CategoryEntity(id: 6, title: 'Pendidikan', seo: 'pendidikan', seq: 6),
-  CategoryEntity(id: 7, title: 'Kesehatan', seo: 'kesehatan', seq: 7),
-  CategoryEntity(id: 8, title: 'Nasional', seo: 'nasional', seq: 8),
+  CategoryEntity(
+    id: 1,
+    title: 'Peristiwa',
+    seo: 'peristiwa',
+    seq: 1,
+    imageUrl: "assets/icons/category/peristiwa.png",
+  ),
+  CategoryEntity(
+    id: 2,
+    title: 'Politik',
+    seo: 'politik',
+    seq: 2,
+    imageUrl: "assets/icons/category/politik.png",
+  ),
+  CategoryEntity(
+    id: 3,
+    title: 'Hukum',
+    seo: 'hukum',
+    seq: 3,
+    imageUrl: "assets/icons/category/hukum.png",
+  ),
+  CategoryEntity(
+    id: 4,
+    title: 'Ekbis',
+    seo: 'ekbis',
+    seq: 4,
+    imageUrl: "assets/icons/category/ekbis.png",
+  ),
+  CategoryEntity(
+    id: 5,
+    title: 'Olahraga',
+    seo: 'olahraga',
+    seq: 5,
+    imageUrl: "",
+  ),
+  CategoryEntity(
+    id: 6,
+    title: 'Pendidikan',
+    seo: 'pendidikan',
+    seq: 6,
+    imageUrl: "",
+  ),
+  CategoryEntity(
+    id: 7,
+    title: 'Kesehatan',
+    seo: 'kesehatan',
+    seq: 7,
+    imageUrl: "",
+  ),
+  CategoryEntity(
+    id: 8,
+    title: 'Nasional',
+    seo: 'nasional',
+    seq: 8,
+    imageUrl: "",
+  ),
 ];
 
 /// Widget reusable untuk section dropdown (Biro / Kanal)
