@@ -138,7 +138,7 @@ class _CategoryViewState extends State<_CategoryView> {
   ) {
     final categoryIcons = <String, String>{
       'peristiwa': 'assets/icons/category/peristiwa.png',
-      '3': 'assets/icons/category/politik.png',
+      'politik': 'assets/icons/category/politik.png',
       'hukum': 'assets/icons/category/hukum.png',
       'ekbis': 'assets/icons/category/ekbis.png',
       'olahraga': 'assets/icons/category/olahraga.png',
@@ -161,7 +161,7 @@ class _CategoryViewState extends State<_CategoryView> {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        final icon = categoryIcons[category.id];
+        final icon = categoryIcons[category.seo];
 
         return icon != null
             ? GestureDetector(
@@ -182,7 +182,7 @@ class _CategoryViewState extends State<_CategoryView> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -238,9 +238,10 @@ class _CategoryViewState extends State<_CategoryView> {
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
