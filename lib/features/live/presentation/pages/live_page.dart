@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,7 +7,6 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/l10n/app_localizations.dart';
-import 'package:portal_jtv/core/network/connectivity_cubit.dart';
 import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
 import '../bloc/live_bloc.dart';
 import '../bloc/live_event.dart';
@@ -21,13 +21,8 @@ class LivePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Hitung hari ini: DateTime.monday = 1 → dayIndex 0, dst.
-    final todayIndex = DateTime.now().weekday - 1; // 0=Senin, 6=Minggu
-
     return BlocProvider(
-      create: (_) => di.sl<LiveBloc>()
-        ..add(const LoadLivestream())
-        ..add(LoadSchedule(todayIndex)),
+      create: (_) => di.sl<LiveBloc>()..add(const LoadLivestream()),
       child: const _LiveView(),
     );
   }
@@ -44,6 +39,11 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
   // media_kit player & controller
   late final Player _player;
   late final VideoController _videoController;
+  final todayIndex = DateTime.now().weekday - 1;
+
+  // Stream subscriptions — harus di-cancel saat dispose
+  final List<StreamSubscription> _subscriptions = [];
+  bool _disposed = false;
 
   // Track sumber aktif
   static const int _liveTabIndex = 2;
@@ -62,6 +62,9 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
+    context.read<LiveBloc>().add(LoadSchedule(todayIndex));
+
     _player = Player(
       configuration: const PlayerConfiguration(
         bufferSize: 1024 * 1024 * 10, // 10MB buffer for smoother live stream
@@ -75,30 +78,46 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
       ),
     );
 
-    // Listener untuk debug track video
-    _player.stream.tracks.listen((tracks) {
-      debugPrint('[LivePlayer] Tracks updated:');
-      debugPrint('[LivePlayer] Video tracks: ${tracks.video.length}');
-      debugPrint('[LivePlayer] Audio tracks: ${tracks.audio.length}');
+    // Listener untuk debug track video — simpan subscription agar bisa di-cancel
+    _subscriptions.add(
+      _player.stream.tracks.listen((tracks) {
+        if (_disposed) return;
+        debugPrint('[LivePlayer] Tracks updated:');
+        debugPrint('[LivePlayer] Video tracks: ${tracks.video.length}');
+        debugPrint('[LivePlayer] Audio tracks: ${tracks.audio.length}');
 
-      if (tracks.video.isEmpty && tracks.audio.isNotEmpty) {
-        debugPrint(
-          '[LivePlayer] WARNING: Audio track found but NO Video track found!',
-        );
-      }
-    });
+        if (tracks.video.isEmpty && tracks.audio.isNotEmpty) {
+          debugPrint(
+            '[LivePlayer] WARNING: Audio track found but NO Video track found!',
+          );
+        }
+      }),
+    );
 
-    _player.stream.error.listen((error) {
-      debugPrint('[LivePlayer] Player Error: $error');
-    });
+    _subscriptions.add(
+      _player.stream.error.listen((error) {
+        if (_disposed) return;
+        debugPrint('[LivePlayer] Player Error: $error');
+      }),
+    );
 
     WidgetsBinding.instance.addObserver(this); // App lifecycle
   }
 
   @override
   void dispose() {
+    _disposed = true;
     WidgetsBinding.instance.removeObserver(this);
+
+    // Cancel semua stream subscriptions terlebih dahulu
+    for (final sub in _subscriptions) {
+      sub.cancel();
+    }
+    _subscriptions.clear();
+
     try {
+      // Stop player sebelum dispose agar MPV core thread selesai
+      _player.stop();
       _player.dispose();
     } catch (e) {
       debugPrint('Player dispose error: $e');
@@ -109,6 +128,7 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
   // ✅ Pause saat app ke background
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_disposed) return;
     if (state == AppLifecycleState.paused) {
       _player.pause();
     }
@@ -116,6 +136,7 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
 
   /// Play HLS stream via media_kit
   void _playStream(String url) {
+    if (_disposed) return;
     _player.open(Media(url));
   }
 
@@ -145,8 +166,6 @@ class _LiveViewState extends State<_LiveView> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final todayIndex = DateTime.now().weekday - 1;
-
     return BlocListener<NavigationCubit, int>(
       listener: (context, currentTab) {
         if (currentTab != _liveTabIndex) {

@@ -137,18 +137,6 @@ class _CategoryViewState extends State<_CategoryView> {
     BuildContext context,
     List<CategoryEntity> categories,
   ) {
-    final categoryIcons = <String, String>{
-      'peristiwa': 'assets/icons/category/peristiwa.png',
-      'politik': 'assets/icons/category/politik.png',
-      'hukum': 'assets/icons/category/hukum.png',
-      'ekbis': 'assets/icons/category/ekbis.png',
-      'olahraga': 'assets/icons/category/olahraga.png',
-      'pendidikan': 'assets/icons/category/pendidikan.png',
-      'kesehatan': 'assets/icons/category/kesehatan.png',
-      'nasional': 'assets/icons/category/nasional.png',
-      'gaya-hidup': 'assets/icons/category/gaya-hidup.png',
-      'komunitas': 'assets/icons/category/komunitas.png',
-    };
 
     return GridView.builder(
       shrinkWrap: true,
