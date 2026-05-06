@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:portal_jtv/features/home/domain/entities/category_entity.dart';
 import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';

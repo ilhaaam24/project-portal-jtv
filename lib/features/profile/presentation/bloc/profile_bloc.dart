@@ -92,9 +92,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     result.fold(
       (failure) => emit(state.copyWith(logoutStatus: LogoutStatus.failure)),
       (_) {
-        // Hapus token dari lokal
-        prefs.remove('auth_token');
-
         emit(state.copyWith(logoutStatus: LogoutStatus.success));
       },
     );

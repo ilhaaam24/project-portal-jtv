@@ -12,7 +12,10 @@ abstract class HomeRepository {
 
   Future<Either<Failure, List<NewsEntity>>> getHeadlines({int limit = 5});
 
-  Future<Either<Failure, PaginatedNews>> getPopulerNews({int page = 1, int? limit});
+  Future<Either<Failure, PaginatedNews>> getPopulerNews({
+    int page = 1,
+    int? limit,
+  });
 
   Future<Either<Failure, PaginatedNews>> getLatestNews({
     int page = 1,
@@ -26,7 +29,6 @@ abstract class HomeRepository {
   Future<Either<Failure, List<ForYouEntity>>> getForYou({int? limit});
 
   Future<Either<Failure, List<CategoryEntity>>> getCategories();
-
 }
 
 class PaginatedNews extends Equatable {

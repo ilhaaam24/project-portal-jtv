@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
 
@@ -28,10 +29,12 @@ Widget buildVideosSection(HomeState state) {
                   Expanded(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        video.thumbnail,
+                      child: CachedNetworkImage(
+                        imageUrl: video.thumbnail,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) =>
+                        placeholder: (context, url) =>
+                            Container(color: Colors.grey.shade200),
+                        errorWidget: (context, url, error) =>
                             Container(color: Colors.grey),
                       ),
                     ),

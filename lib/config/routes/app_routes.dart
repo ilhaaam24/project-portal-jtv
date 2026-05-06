@@ -1,8 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/config/injection/injection.dart';
 import 'package:portal_jtv/config/routes/route_names.dart';
 import 'package:portal_jtv/core/widgets/main_layout.dart';
+import 'package:portal_jtv/core/services/shared_preferences_service.dart';
+import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:portal_jtv/features/auth/presentation/pages/auth_page.dart';
 import 'package:portal_jtv/features/bookmark/presentation/pages/bookmark_page.dart';
 import 'package:portal_jtv/features/category/presentation/pages/category_news_page.dart';
 import 'package:portal_jtv/features/category/presentation/pages/category_page.dart';
@@ -14,6 +18,7 @@ import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_e
 import 'package:portal_jtv/features/news_detail/presentation/cubit/text_size_cubit.dart';
 import 'package:portal_jtv/features/news_detail/presentation/cubit/text_to_speech_cubit.dart';
 import 'package:portal_jtv/features/news_detail/presentation/pages/detail_page.dart';
+import 'package:portal_jtv/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:portal_jtv/features/profile/domain/entities/profile_entity.dart';
 import 'package:portal_jtv/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:portal_jtv/features/profile/presentation/pages/edit_profile_page.dart';
@@ -21,10 +26,40 @@ import 'package:portal_jtv/features/profile/presentation/pages/faq_page.dart';
 import 'package:portal_jtv/features/profile/presentation/pages/profile_page.dart';
 import 'package:portal_jtv/features/search/presentation/bloc/search_bloc.dart';
 import 'package:portal_jtv/features/search/presentation/pages/search_page.dart';
+import 'package:portal_jtv/features/home/domain/entities/video_entity.dart';
+import 'package:portal_jtv/features/video_detail/presentation/bloc/video_detail_bloc.dart';
+import 'package:portal_jtv/features/video_detail/presentation/pages/video_detail_page.dart';
+import 'package:portal_jtv/features/comment/presentation/bloc/comment_bloc.dart';
+import 'package:portal_jtv/features/comment/presentation/bloc/comment_event.dart';
+import 'package:portal_jtv/features/comment/presentation/pages/comment_page.dart';
+
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
-  initialLocation: RouteNames.home,
+  navigatorKey: rootNavigatorKey,
+  initialLocation: sl<SharedPreferencesService>().isOnboardingCompleted()
+      ? RouteNames.home
+      : RouteNames.onboarding,
   routes: [
+    GoRoute(
+      path: RouteNames.onboarding,
+      name: 'onboarding',
+      builder: (_, state) {
+        return const OnboardingPage();
+      },
+    ),
+    GoRoute(
+      path: RouteNames.signIn,
+      name: 'sign-in',
+      builder: (_, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final fromGuard = extra?['fromGuard'] as bool? ?? false;
+        return BlocProvider.value(
+          value: sl<AuthBloc>(),
+          child: AuthPage(fromGuard: fromGuard),
+        );
+      },
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
           MainLayout(navigationShell: navigationShell),
@@ -33,6 +68,7 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: RouteNames.home,
+              name: 'home',
               builder: (context, state) => const HomePage(),
             ),
           ],
@@ -80,7 +116,8 @@ final router = GoRouter(
         return MultiBlocProvider(
           providers: [
             BlocProvider(
-              create: (_) => sl<DetailBloc>()..add(LoadDetail(seo: args.seo)),
+              create: (_) => sl<DetailBloc>()
+                ..add(LoadDetail(seo: args.seo, seoCategory: args.seoCategory)),
             ),
             BlocProvider(create: (_) => sl<TextSizeCubit>()),
             BlocProvider(create: (_) => sl<TextToSpeechCubit>()),
@@ -124,6 +161,38 @@ final router = GoRouter(
         return BlocProvider(
           create: (_) => sl<SearchBloc>(),
           child: const SearchPage(),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteNames.videoDetail,
+      name: 'video-detail',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        final videos = args['videos'] as List<VideoEntity>;
+        final index = args['initialIndex'] as int;
+        return BlocProvider(
+          create: (_) => sl<VideoDetailBloc>(),
+          child: VideoDetailPage(initialVideos: videos, initialIndex: index),
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteNames.comments,
+      name: 'comments',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        final idBerita = args['idBerita'] as int;
+        return BlocProvider(
+          create: (_) =>
+              sl<CommentBloc>()..add(LoadComments(idBerita: idBerita)),
+          child: CommentPage(
+            idBerita: idBerita,
+            title: args['title'] as String,
+            category: args['category'] as String,
+            author: args['author'] as String,
+            date: args['date'] as String,
+          ),
         );
       },
     ),

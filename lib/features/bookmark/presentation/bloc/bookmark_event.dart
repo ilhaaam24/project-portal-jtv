@@ -32,3 +32,12 @@ class DeleteBookmark extends BookmarkEvent {
 class UndoDeleteBookmark extends BookmarkEvent {
   const UndoDeleteBookmark();
 }
+
+/// Tambah ke bookmark
+class AddBookmark extends BookmarkEvent {
+  final int idBerita;
+  const AddBookmark(this.idBerita);
+
+  @override
+  List<Object?> get props => [idBerita];
+}

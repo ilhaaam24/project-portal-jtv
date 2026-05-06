@@ -1,7 +1,10 @@
 // lib/features/home/presentation/widgets/video_section.dart
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../domain/entities/video_entity.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -29,7 +32,10 @@ class VideoSection extends StatelessWidget {
               final video = videos[index];
               return GestureDetector(
                 onTap: () {
-                  // Navigate ke video player / YouTube
+                  context.pushNamed(
+                    'video-detail',
+                    extra: {'videos': videos, 'initialIndex': index},
+                  );
                 },
                 child: Container(
                   width: 200,
@@ -43,16 +49,33 @@ class VideoSection extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                         child: Stack(
                           children: [
-                            Image.network(
-                              video.thumbnail,
-                              width: 200,
-                              height: 110,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => Container(
+                            Skeleton.leaf(
+                              enabled: true,
+                              child: CachedNetworkImage(
+                                imageUrl: video.thumbnail,
                                 width: 200,
                                 height: 110,
-                                color: Colors.grey[300],
-                                child: const Icon(Icons.videocam),
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Container(
+                                  width: 200,
+                                  height: 110,
+                                  color: Colors.grey[200],
+                                  child: const Center(
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  width: 200,
+                                  height: 110,
+                                  color: Colors.grey[300],
+                                  child: const Icon(Icons.videocam),
+                                ),
                               ),
                             ),
                             // Play button overlay

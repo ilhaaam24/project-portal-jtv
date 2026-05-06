@@ -1,13 +1,16 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:portal_jtv/core/constants/api_constants.dart';
 import 'package:portal_jtv/core/network/auth_interceptor.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:portal_jtv/features/auth/data/datasources/auth_local_datasource.dart';
 import '../error/exceptions.dart';
 
 class ApiClient {
   late final Dio _dio;
 
-  ApiClient(SharedPreferences prefs) {
+  ApiClient(AuthLocalDataSource localDataSource) {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
@@ -20,7 +23,7 @@ class ApiClient {
       ),
     );
 
-    _dio.interceptors.add(AuthInterceptor(prefs));
+    _dio.interceptors.add(AuthInterceptor(localDataSource));
 
     // Interceptor untuk logging (optional, untuk debug)
     _dio.interceptors.add(
@@ -73,6 +76,24 @@ class ApiClient {
     }
   }
 
+  // PUT Request
+  Future<Response> put(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      final response = await _dio.put(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+      );
+      return response;
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
   Future<Response> delete(
     String path, {
     dynamic data,
@@ -107,5 +128,21 @@ class ApiClient {
       default:
         return ServerException(message: e.message ?? 'Unknown error');
     }
+  }
+
+  Future<Uint8List> getByteArrayFromUrl(String url) async {
+    // Gunakan instance Dio baru tanpa interceptor/header global
+    // untuk menghindari kebocoran token ke server luar (seperti Pexels)
+    final dio = Dio();
+    final response = await dio.get(
+      url,
+      options: Options(responseType: ResponseType.bytes),
+    );
+    return Uint8List.fromList(response.data);
+  }
+
+  Future<String> getBase64FromUrl(String url) async {
+    final bytes = await getByteArrayFromUrl(url);
+    return base64Encode(bytes);
   }
 }

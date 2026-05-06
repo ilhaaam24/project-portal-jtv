@@ -1,10 +1,14 @@
-// lib/features/home/presentation/widgets/for_you_tab.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_jtv/core/network/connectivity_cubit.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:portal_jtv/features/home/domain/entities/for_you_entity.dart';
+import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_event.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/foryou/for_you_state.dart';
+import 'package:portal_jtv/features/home/presentation/widgets/news_card.dart';
+import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
 
 class ForYouTab extends StatefulWidget {
   const ForYouTab({super.key});
@@ -21,15 +25,21 @@ class _ForYouTabState extends State<ForYouTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
-    return BlocBuilder<ForYouBloc, ForYouState>(
-      builder: (context, state) {
-        switch (state.status) {
-          case ForYouStatus.initial:
-          case ForYouStatus.loading:
-            return const Center(child: CircularProgressIndicator());
-
-          case ForYouStatus.failure:
+    return BlocListener<ConnectivityCubit, ConnectivityState>(
+      listener: (context, state) {
+        if (state.isConnected) {
+          context.read<ForYouBloc>().add(const LoadForYou());
+        }
+      },
+      child: BlocBuilder<ForYouBloc, ForYouState>(
+        builder: (context, state) {
+          if (state.status == ForYouStatus.failure) {
+            if (state.errorMessage == "No internet connection") {
+              return NoInternetWidget(
+                onRetry: () =>
+                    context.read<ForYouBloc>().add(const LoadForYou()),
+              );
+            }
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -46,8 +56,13 @@ class _ForYouTabState extends State<ForYouTab>
                 ],
               ),
             );
+          }
 
-          case ForYouStatus.empty:
+          final isLoading =
+              state.status == ForYouStatus.loading ||
+              state.status == ForYouStatus.initial;
+
+          if (!isLoading && state.status == ForYouStatus.empty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -67,54 +82,64 @@ class _ForYouTabState extends State<ForYouTab>
                 ],
               ),
             );
+          }
 
-          case ForYouStatus.success:
-            return RefreshIndicator(
+          final newsList = isLoading ? _dummyForYouNews : state.news;
+
+          return Skeletonizer(
+            enabled: isLoading,
+            child: RefreshIndicator(
               onRefresh: () async {
                 context.read<ForYouBloc>().add(const RefreshForYou());
               },
               child: ListView.builder(
-                itemCount: state.news.length,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
+                itemCount: newsList.length,
                 itemBuilder: (context, index) {
-                  final item = state.news[index];
-                  return ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        item.photo,
-                        width: 80,
-                        height: 60,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Container(
-                          width: 80,
-                          height: 60,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.image),
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      item.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    subtitle: Text(
-                      '${item.categoryName} • ${item.date}',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    onTap: () {
-                      // Navigate ke detail
-                    },
+                  final item = newsList[index];
+                  // Map ForYouEntity to NewsEntity to use shared NewsCard
+                  final news = NewsEntity(
+                    idBerita: item.id,
+                    title: item.title,
+                    seo: item.seo,
+                    photo: item.photo,
+                    date: item.date,
+                    category: item.categoryName,
+                    author: item.author,
+                    picAuthor: '',
+                    seoAuthor: '',
+                    seoCategory: item.seoCategory,
+                    seoBiro: '',
+                    status: 'published',
+                    summary: '',
+                    caption: '',
+                    city: '',
+                    isYoutube: false,
                   );
+                  return NewsCard(news: news);
                 },
               ),
-            );
-        }
-      },
+            ),
+          );
+        },
+      ),
     );
   }
 }
+
+const _dummyForYou = ForYouEntity(
+  id: 0,
+  title: 'Judul berita rekomendasi untuk Anda yang sedang dimuat oleh sistem',
+  seo: '',
+  photo: '',
+  date: '2024-01-01',
+  author: "Portal JTV",
+  categoryName: 'Rekomendasi',
+  seoCategory: "umum",
+  score: 0,
+);
+
+final _dummyForYouNews = List.generate(5, (index) => _dummyForYou);

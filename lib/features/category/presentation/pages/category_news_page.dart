@@ -2,10 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:portal_jtv/features/category/presentation/bloc/category_news/category_news_bloc.dart';
 import 'package:portal_jtv/features/category/presentation/bloc/category_news/category_news_event.dart';
 import 'package:portal_jtv/features/category/presentation/bloc/category_news/category_news_state.dart';
+import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import '../../../home/presentation/widgets/news_card.dart'; // Reuse
+import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
 import 'package:portal_jtv/config/injection/injection.dart' as di;
 
 class CategoryNewsPage extends StatelessWidget {
@@ -83,9 +86,31 @@ class _CategoryNewsViewState extends State<_CategoryNewsView> {
     switch (state.status) {
       case CategoryNewsStatus.initial:
       case CategoryNewsStatus.loading:
-        return const Center(child: CircularProgressIndicator());
+        return Skeletonizer(
+          enabled: true,
+          child: ListView.builder(
+            itemCount: 7,
+            itemBuilder: (context, index) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: NewsCard(news: _dummyNews),
+              );
+            },
+          ),
+        );
 
       case CategoryNewsStatus.failure:
+        if (state.errorMessage?.contains('internet') ?? false) {
+          return NoInternetWidget(
+            onRetry: () => context.read<CategoryNewsBloc>().add(
+              LoadCategoryNews(
+                seo: state.seo,
+                title: state.title,
+                isBiro: state.isBiro,
+              ),
+            ),
+          );
+        }
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -125,9 +150,31 @@ class _CategoryNewsViewState extends State<_CategoryNewsView> {
               );
             }
 
-            return buildNewsCard(state.news[index], context);
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: NewsCard(news: state.news[index]),
+            );
           },
         );
     }
   }
 }
+
+const _dummyNews = NewsEntity(
+  idBerita: 0,
+  title: 'Judul berita yang sedang dimuat oleh sistem JTV Portal',
+  seo: '',
+  seoBiro: '',
+  status: '',
+  photo: '',
+  summary: '',
+  caption: '',
+  city: 'Surabaya',
+  date: '2024-01-01',
+  category: 'Kategori',
+  seoCategory: '',
+  author: 'Author',
+  seoAuthor: '',
+  picAuthor: '',
+  isYoutube: false,
+);

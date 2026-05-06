@@ -6,6 +6,7 @@ class CategoryModel extends CategoryEntity {
     required super.title,
     required super.seo,
     required super.seq,
+    super.imageUrl,
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +15,7 @@ class CategoryModel extends CategoryEntity {
       title: json['title'] ?? '',
       seo: json['seo'] ?? '',
       seq: json['seq'] ?? 0,
+      imageUrl: json['image_url'] ?? '',
     );
   }
 

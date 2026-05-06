@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:portal_jtv/core/constants/api_constants.dart';
 import 'package:portal_jtv/core/error/exceptions.dart';
 import 'package:portal_jtv/core/network/api_client.dart';
@@ -28,16 +29,26 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   @override
   Future<List<NewsModel>> getBreakingNews({int limit = 3}) async {
     try {
+      developer.log('🔍 [DEBUG] BaseURL: ${ApiConstants.baseUrl}');
+      developer.log('🔍 [DEBUG] Calling: ${ApiConstants.breaking}/portal-jtv');
       final response = await client.get(
         '${ApiConstants.breaking}/portal-jtv',
         queryParameters: {'limit': limit},
       );
+      developer.log('✅ [DEBUG] Breaking status: ${response.statusCode}');
+      developer.log(
+        '✅ [DEBUG] Breaking response keys: ${(response.data as Map?)?.keys}',
+      );
 
       final data = response.data['data'] as List?;
+      developer.log('✅ [DEBUG] Breaking data count: ${data?.length}');
       if (data == null) return [];
 
       return data.map((json) => NewsModel.fromJson(json)).toList();
-    } catch (e) {
+    } catch (e, stackTrace) {
+      developer.log('❌ [DEBUG] Breaking ERROR: $e');
+      developer.log('❌ [DEBUG] Breaking ERROR type: ${e.runtimeType}');
+      developer.log('❌ [DEBUG] StackTrace: $stackTrace');
       throw ServerException(message: e.toString());
     }
   }

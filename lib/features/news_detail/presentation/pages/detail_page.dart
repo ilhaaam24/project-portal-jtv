@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/core/helper/format_date.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/features/news_detail/domain/entities/detail_args_entity.dart';
@@ -8,8 +9,11 @@ import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_b
 import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_event.dart';
 import 'package:portal_jtv/features/news_detail/presentation/bloc/news_details_state.dart';
 import 'package:portal_jtv/features/news_detail/presentation/widgets/detail_content.dart';
+import 'package:portal_jtv/features/news_detail/presentation/widgets/related_news_content.dart';
 import 'package:portal_jtv/features/news_detail/presentation/widgets/text_size_sheet.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:portal_jtv/core/utils/auth_guard.dart';
+import 'package:portal_jtv/core/services/toast_service.dart';
 
 class DetailPage extends StatelessWidget {
   final DetailArgsEntity args;
@@ -32,8 +36,12 @@ class DetailPage extends StatelessWidget {
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => context.pop(),
                   ),
-                  expandedHeight: 250,
                   pinned: true,
+                  centerTitle: false,
+                  title: Image.asset(
+                    'assets/logos/logo-jtv-white.png',
+                    height: 24,
+                  ),
                   actions: [
                     // Tombol Text Size
                     IconButton(
@@ -44,50 +52,50 @@ class DetailPage extends StatelessWidget {
                     // Tombol Bookmark (optimistic update)
                     GestureDetector(
                       onTap: () {
+                        if (!checkAuthAndPrompt(context)) return;
                         context.read<DetailBloc>().add(const ToggleBookmark());
                         if (!state.isSaved) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: [
-                                  Text('Berita disimpan'),
-                                  BlocBuilder<NavigationCubit, int>(
-                                    builder: (context, state) {
-                                      return TextButton(
-                                        onPressed: () {
-                                          context
-                                              .read<NavigationCubit>()
-                                              .changeIndex(3);
-                                          context.go('/bookmark');
-                                        },
-                                        child: Text(
-                                          'Lihat',
-                                          style: TextStyle(
-                                            color: PortalColors.jtvJingga,
-                                          ),
-                                        ),
-                                      );
-                                    },
+                          ToastService.showSuccess(
+                            context,
+                            'Berita disimpan',
+                            action: BlocBuilder<NavigationCubit, int>(
+                              builder: (context, state) {
+                                return TextButton(
+                                  onPressed: () {
+                                    context.read<NavigationCubit>().changeIndex(
+                                      3,
+                                    );
+                                    context.go('/bookmark');
+                                  },
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: const Size(0, 30),
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                   ),
-                                ],
-                              ),
-                              duration: Duration(seconds: 1),
+                                  child: Text(
+                                    'Lihat',
+                                    style: TextStyle(
+                                      color: PortalColors.jtvJingga,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Berita dihapus dari simpanan'),
-                              duration: Duration(seconds: 1),
-                            ),
+                          ToastService.showInfo(
+                            context,
+                            'Berita dihapus dari simpanan',
                           );
                         }
                       },
-                      child: Image.asset(
-                        state.isSaved
-                            ? "assets/icons/bookmark-active.png"
-                            : "assets/icons/bookmark-inactive.png",
-                        height: 24,
+                      child: Icon(
+                        state.isSaved ? Icons.bookmark : Icons.bookmark_border,
+                        color: state.isSaved
+                            ? PortalColors.jtvJingga
+                            : PortalColors.white,
                       ),
                     ),
 
@@ -97,16 +105,6 @@ class DetailPage extends StatelessWidget {
                       onPressed: () => _shareArticle(state),
                     ),
                   ],
-                  flexibleSpace: FlexibleSpaceBar(
-                    collapseMode: CollapseMode.parallax,
-
-                    // Foto langsung tampil dari args (pre-populated)
-                    background: Image.network(
-                      args.photo,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Container(color: Colors.grey),
-                    ),
-                  ),
                 ),
 
                 // Konten
@@ -116,13 +114,20 @@ class DetailPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Kategori + Tanggal (dari args, langsung tampil)
-                        Text(
-                          '${args.category} • ${args.date}',
-                          style: TextStyle(color: Colors.blue, fontSize: 13),
-                        ),
                         const SizedBox(height: 8),
 
+                        // Categori (dari args, langsung tampil)
+                        Text(
+                          args.category,
+                          style: Theme.of(context).textTheme.headlineSmall!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+
+                        const SizedBox(height: 8),
                         // Judul (dari args, LANGSUNG TAMPIL)
                         Text(
                           args.title,
@@ -131,28 +136,29 @@ class DetailPage extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
 
                         // Author (dari args, langsung tampil)
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 16,
-                              backgroundImage: NetworkImage(args.picAuthor),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              args.author,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
+                        Text(
+                          '${args.author} • ${formatDate(args.date)}',
+                          style: Theme.of(context).textTheme.headlineSmall!
+                              .copyWith(
+                                color: PortalColors.grey700,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ),
-                          ],
                         ),
+                        const SizedBox(height: 8),
+
+                        // Kategori + Tanggal (dari args, langsung tampil)
                         const SizedBox(height: 16),
 
                         // ===== KONTEN DARI API (loading/success) =====
                         buildContent(context, state, args),
+                        const SizedBox(height: 16),
+
+                        if (state.status == DetailStatus.success)
+                          RelatedNewsContent(relatedNews: state.relatedNews),
                       ],
                     ),
                   ),
@@ -166,7 +172,7 @@ class DetailPage extends StatelessWidget {
   }
 
   void _shareArticle(DetailState state) {
-    final url = 'https://yourdomain.com/${args.seo}';
+    final url = 'https://portaljtv.com/news/${args.seo}';
     SharePlus.instance.share(ShareParams(text: '${args.title}\n\n$url'));
   }
 }

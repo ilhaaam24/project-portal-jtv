@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_jtv/core/network/connectivity_cubit.dart';
+import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
+import 'package:portal_jtv/features/home/domain/entities/video_entity.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_bloc.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_event.dart';
 import 'package:portal_jtv/features/home/presentation/bloc/terbaru/terbaru_state.dart';
-import 'package:portal_jtv/features/home/presentation/widgets/headline_carousel.dart';
+import 'package:portal_jtv/features/home/presentation/widgets/headline_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/news_card.dart';
-import 'package:portal_jtv/features/home/presentation/widgets/sorot_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/tittle_section.dart';
 import 'package:portal_jtv/features/home/presentation/widgets/video_section2.dart';
 
@@ -45,14 +49,21 @@ class _TerbaruTabState extends State<TerbaruTab> {
       body: Column(
         children: [
           Expanded(
-            child: BlocBuilder<HomeBloc, HomeState>(
-              builder: (context, state) {
-                switch (state.status) {
-                  case HomeStatus.initial:
-                  case HomeStatus.loading:
-                    return const Center(child: CircularProgressIndicator());
-
-                  case HomeStatus.failure:
+            child: BlocListener<ConnectivityCubit, ConnectivityState>(
+              listener: (context, state) {
+                if (state.isConnected) {
+                  context.read<HomeBloc>().add(const LoadHomeData());
+                }
+              },
+              child: BlocBuilder<HomeBloc, HomeState>(
+                builder: (context, state) {
+                  if (state.status == HomeStatus.failure) {
+                    if (state.errorMessage == "No internet connection") {
+                      return NoInternetWidget(
+                        onRetry: () =>
+                            context.read<HomeBloc>().add(const LoadHomeData()),
+                      );
+                    }
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +73,7 @@ class _TerbaruTabState extends State<TerbaruTab> {
                           ElevatedButton(
                             onPressed: () {
                               context.read<HomeBloc>().add(
-                                const LoadHomeData(),
+                                const RefreshHomeData(),
                               );
                             },
                             child: const Text('Coba Lagi'),
@@ -70,9 +81,15 @@ class _TerbaruTabState extends State<TerbaruTab> {
                         ],
                       ),
                     );
+                  }
 
-                  case HomeStatus.success:
-                    return RefreshIndicator(
+                  final isLoading =
+                      state.status == HomeStatus.loading ||
+                      state.status == HomeStatus.initial;
+
+                  return Skeletonizer(
+                    enabled: isLoading,
+                    child: RefreshIndicator(
                       onRefresh: () async {
                         context.read<HomeBloc>().add(const RefreshHomeData());
                       },
@@ -81,30 +98,22 @@ class _TerbaruTabState extends State<TerbaruTab> {
                         child: CustomScrollView(
                           controller: _scrollController,
                           slivers: [
-                            // 1. Breaking News Section
-                            // if (state.breakingNews.isNotEmpty)
-                            //   SliverToBoxAdapter(
-                            //     child: buildBreakingNewsSection(state),
-                            //   ),
-
                             // 2. Headlines Carousel
-                            if (state.headlines.isNotEmpty)
+                            if (isLoading || state.headlines.isNotEmpty)
                               SliverToBoxAdapter(
-                                child: HeadlineCarousel(
-                                  headlines: state.headlines,
+                                child: buildHeadlinesSection(
+                                  isLoading ? _dummyHomeState : state,
                                 ),
                               ),
 
                             // 3. Video Section
-                            if (state.videos.isNotEmpty)
+                            if (isLoading || state.videos.isNotEmpty)
                               SliverToBoxAdapter(
-                                child: VideoSection(videos: state.videos),
-                              ),
-
-                            // 4. Sorot Section
-                            if (state.sorot.isNotEmpty)
-                              SliverToBoxAdapter(
-                                child: buildSorotSection(state),
+                                child: VideoSection(
+                                  videos: isLoading
+                                      ? _dummyVideos
+                                      : state.videos,
+                                ),
                               ),
 
                             // 5. Section Title - Berita Terbaru
@@ -117,40 +126,54 @@ class _TerbaruTabState extends State<TerbaruTab> {
 
                             // 6. Latest News List (Infinite Scroll)
                             SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  final newsList = isLoading
+                                      ? _dummyLatestNews
+                                      : state.latestNews;
 
-                              delegate: SliverChildBuilderDelegate((
-                                context,
-                                index,
-                              ) {
-                                if (index >= state.latestNews.length) {
-                                  // Loading indicator di bottom
-                                  return state.hasReachedMax
-                                      ? const Padding(
-                                          padding: EdgeInsets.all(16),
-                                          child: Center(
-                                            child: Text(
-                                              'Semua berita sudah ditampilkan',
+                                  if (index >= newsList.length) {
+                                    if (isLoading) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return state.hasReachedMax
+                                        ? const Padding(
+                                            padding: EdgeInsets.all(16),
+                                            child: Center(
+                                              child: Text(
+                                                'Semua berita sudah ditampilkan',
+                                              ),
                                             ),
-                                          ),
-                                        )
-                                      : const Padding(
-                                          padding: EdgeInsets.all(16),
-                                          child: Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        );
-                                }
+                                          )
+                                        : const Padding(
+                                            padding: EdgeInsets.all(16),
+                                            child: Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          );
+                                  }
 
-                                final news = state.latestNews[index];
-                                return buildNewsCard(news, context);
-                              }, childCount: state.latestNews.length + 1),
+                                  final news = newsList[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: NewsCard(news: news),
+                                  );
+                                },
+                                childCount: isLoading
+                                    ? _dummyLatestNews.length
+                                    : state.latestNews.length + 1,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    );
-                }
-              },
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -164,3 +187,41 @@ class _TerbaruTabState extends State<TerbaruTab> {
     super.dispose();
   }
 }
+
+const _dummyNews = NewsEntity(
+  idBerita: 0,
+  title: 'Judul berita yang sedang dimuat oleh sistem JTV Portal',
+  seo: '',
+  seoBiro: '',
+  status: '',
+  photo: '',
+  summary: '',
+  caption: '',
+  city: 'Surabaya',
+  date: '2024-01-01',
+  category: 'Kategori',
+  seoCategory: '',
+  author: 'Author',
+  seoAuthor: '',
+  picAuthor: '',
+  isYoutube: false,
+);
+
+final _dummyLatestNews = List.generate(5, (index) => _dummyNews);
+
+const _dummyVideo = VideoEntity(
+  id: 0,
+  youtubeId: '',
+  title: 'Video sedang dimuat...',
+  thumbnail: '',
+  date: '2024-01-01',
+);
+
+final _dummyVideos = List.generate(3, (index) => _dummyVideo);
+
+final _dummyHomeState = HomeState(
+  status: HomeStatus.loading,
+  headlines: _dummyLatestNews,
+  videos: _dummyVideos,
+  latestNews: _dummyLatestNews,
+);

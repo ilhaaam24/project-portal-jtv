@@ -44,6 +44,10 @@ class FaqPage extends StatelessWidget {
           return Card(
             margin: const EdgeInsets.only(bottom: 8),
             child: ExpansionTile(
+              shape: const RoundedRectangleBorder(side: BorderSide.none),
+              collapsedShape: const RoundedRectangleBorder(
+                side: BorderSide.none,
+              ),
               tilePadding: const EdgeInsets.symmetric(horizontal: 16),
               title: Text(
                 item['q']!,

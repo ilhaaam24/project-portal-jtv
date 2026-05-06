@@ -30,6 +30,7 @@ class SearchCleared extends SearchEvent {
 class SearchHistoryCleared extends SearchEvent {
   const SearchHistoryCleared();
 }
+
 class SearchRemoveHistoryItem extends SearchEvent {
   final String keyword;
 

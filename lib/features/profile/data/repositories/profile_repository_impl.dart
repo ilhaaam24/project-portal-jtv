@@ -7,10 +7,16 @@ import 'package:portal_jtv/features/profile/data/datasources/profile_remote_data
 import 'package:portal_jtv/features/profile/domain/entities/profile_entity.dart';
 import 'package:portal_jtv/features/profile/domain/repositories/profile_repository.dart';
 
+import 'package:portal_jtv/features/auth/data/datasources/auth_local_datasource.dart';
+
 class ProfileRepositoryImpl implements ProfileRepository {
   final ProfileRemoteDataSource remoteDataSource;
+  final AuthLocalDataSource localDataSource;
 
-  ProfileRepositoryImpl({required this.remoteDataSource});
+  ProfileRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+  });
 
   @override
   Future<Either<Failure, ProfileEntity>> getProfile() async {
@@ -50,6 +56,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Either<Failure, bool>> logout() async {
     try {
       final result = await remoteDataSource.logout();
+      if (result) {
+        await localDataSource.clearAuth();
+      }
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));

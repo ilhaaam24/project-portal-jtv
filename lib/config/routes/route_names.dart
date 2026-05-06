@@ -1,4 +1,5 @@
 class RouteNames {
+  static const onboarding = '/onboarding';
   static const home = '/';
   static const live = '/live';
   static const bookmark = '/bookmark';
@@ -9,4 +10,8 @@ class RouteNames {
   static const faq = '/faq';
   static const search = '/search';
   static const categoryNews = '/category-news';
+  static const videoDetail = '/video-detail';
+  static const comments = '/comments';
+  static const signIn = '/sign-in';
+  static const signUp = '/sign-up';
 }

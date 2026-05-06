@@ -1,4 +1,3 @@
-
 import 'package:portal_jtv/features/live/domain/entities/livestream_entity.dart';
 
 class LivestreamModel extends LivestreamEntity {

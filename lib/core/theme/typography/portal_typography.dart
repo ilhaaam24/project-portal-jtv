@@ -84,8 +84,8 @@ class PortalTypography {
 
   /// bodyLargeMedium Text Style
   static TextStyle bodyLargeMedium = _commonStyle.copyWith(
-    fontSize: 14,
-    fontWeight: FontWeight.w300,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
     height: 1.56,
   );
 

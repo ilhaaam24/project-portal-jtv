@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:portal_jtv/core/error/exceptions.dart';
 import 'package:portal_jtv/core/error/failures.dart';
+import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import 'package:portal_jtv/features/news_detail/data/datasources/detail_remote_datasource.dart';
 import 'package:portal_jtv/features/news_detail/domain/repositories/detail_repository.dart';
 
@@ -74,6 +75,21 @@ class DetailRepositoryImpl implements DetailRepository {
     try {
       final result = await remoteDataSource.removeBookmark(idBerita);
       return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<NewsEntity>>> getRelatedNews({
+    int limit = 10,
+    String seoCategory = '',
+  }) async {
+    try {
+      final result = await remoteDataSource.getRelatedNews(limit, seoCategory);
+      return right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on NetworkException catch (e) {

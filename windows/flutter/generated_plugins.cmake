@@ -3,8 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  connectivity_plus
   firebase_core
-  flutter_localization
+  flutter_inappwebview_windows
+  flutter_secure_storage_windows
   flutter_tts
   media_kit_libs_windows_video
   media_kit_video

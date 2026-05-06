@@ -6,6 +6,9 @@ class ForYouEntity extends Equatable {
   final String seo;
   final String photo;
   final String date;
+  final String author;
+
+  final String seoCategory;
   final String categoryName;
   final int score;
 
@@ -15,10 +18,22 @@ class ForYouEntity extends Equatable {
     required this.seo,
     required this.photo,
     required this.date,
+    required this.author,
     required this.categoryName,
+    required this.seoCategory,
     required this.score,
   });
 
   @override
-  List<Object?> get props => [id, title, seo, photo, date, categoryName, score];
+  List<Object?> get props => [
+    id,
+    title,
+    seo,
+    photo,
+    date,
+    author,
+    categoryName,
+    seoCategory,
+    score,
+  ];
 }

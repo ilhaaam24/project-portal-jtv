@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:portal_jtv/features/home/domain/entities/news_entity.dart';
 import '../../../../core/error/failures.dart';
 import '../entities/news_detail_entity.dart';
 import '../entities/tag_entity.dart';
@@ -18,6 +19,12 @@ abstract class DetailRepository {
   Future<Either<Failure, bool>> saveBookmark(int idBerita);
 
   Future<Either<Failure, bool>> removeBookmark(int idBerita);
+
+  /// Ambil berita terkait berdasarkan kategori
+  Future<Either<Failure, List<NewsEntity>>> getRelatedNews({
+    int limit = 10,
+    String seoCategory = '',
+  });
 }
 
 /// Wrapper yang menggabungkan detail berita + tags

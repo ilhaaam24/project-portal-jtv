@@ -2,6 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/core/theme/color/portal_colors.dart';
+import 'package:portal_jtv/core/utils/string_utils.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String nama;
@@ -22,48 +26,71 @@ class ProfileHeader extends StatelessWidget {
       child: Column(
         children: [
           // Avatar
-          CircleAvatar(
-            radius: 48,
-            backgroundColor: Colors.grey[300],
-            backgroundImage: photo.isNotEmpty
-                ? CachedNetworkImageProvider(photo)
-                : null,
-            child: photo.isEmpty
-                ? Icon(Icons.person, size: 48, color: Colors.grey[600])
-                : null,
+          Skeleton.leaf(
+            enabled: true,
+            child: CircleAvatar(
+              radius: 48,
+              backgroundColor: PortalColors.jtvBiru,
+              backgroundImage: photo.isNotEmpty
+                  ? CachedNetworkImageProvider(photo)
+                  : null,
+              child: Text(
+                StringUtils.getInitials(nama),
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 16),
 
-          SizedBox(
-            child: email == "-"
-                ? TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Login",
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+          Skeleton.leaf(
+            enabled: true,
+            child: SizedBox(
+              child: email == "-"
+                  ? TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: PortalColors.jtvBiru,
                       ),
-                    ),
-                  )
-                : Column(
-                    children: [
-                      Text(
-                        nama,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      onPressed: () {
+                        context.pushNamed(
+                          'sign-in',
+                          extra: {'fromGuard': true},
+                        );
+                      },
+                      child: Text(
+                        "Login",
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        Text(
+                          nama,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
+                        const SizedBox(height: 4),
 
-                      // Email
-                      Text(
-                        email,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
+                        // Email
+                        Text(
+                          email,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
           ),
           // Nama
         ],

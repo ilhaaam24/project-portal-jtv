@@ -5,14 +5,16 @@ class CategoryEntity extends Equatable {
   final String title;
   final String seo;
   final int seq;
+  final String? imageUrl;
 
   const CategoryEntity({
     required this.id,
     required this.title,
     required this.seo,
     required this.seq,
+    required this.imageUrl,
   });
 
   @override
-  List<Object?> get props => [id, title, seo, seq];
+  List<Object?> get props => [id, title, seo, seq, imageUrl];
 }

@@ -1,6 +1,7 @@
 // lib/features/search/presentation/pages/search_page.dart
 
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -348,12 +349,24 @@ class _SearchResultCard extends StatelessWidget {
             // Thumbnail
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                news.photo,
+              child: CachedNetworkImage(
+                imageUrl: news.photo,
                 width: 110,
                 height: 75,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Container(
+                placeholder: (context, url) => Container(
+                  width: 110,
+                  height: 75,
+                  color: Colors.grey[200],
+                  child: const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
                   width: 110,
                   height: 75,
                   color: Colors.grey[300],

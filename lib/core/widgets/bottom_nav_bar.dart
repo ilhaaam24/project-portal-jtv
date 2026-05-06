@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_jtv/core/navigation/navigation_cubit.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
 import 'package:portal_jtv/core/widgets/nav_item.dart';
+import 'package:portal_jtv/features/profile/presentation/cubit/theme_cubit.dart';
 import 'package:portal_jtv/l10n/app_localizations.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -12,6 +13,7 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.watch<ThemeCubit>().isDark;
     return BlocBuilder<NavigationCubit, int>(
       builder: (context, currentIndex) {
         final l10n = AppLocalizations.of(context)!;
@@ -25,23 +27,28 @@ class BottomNavBar extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
             elevation: 4,
             child: SizedBox(
-              height: 60,
+              height: 48,
               child: Row(
-                spacing: 8,
+                spacing: 4,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   // Home
                   NavItem(
                     icon: "assets/icons/navigation/home_inactive.png",
-                    activeIcon: "assets/icons/navigation/home_active.png",
+                    activeIcon: isDark
+                        ? "assets/icons/navigation/home_active_dark.png"
+                        : "assets/icons/navigation/home_active.png",
                     label: l10n.navHome,
+
                     isSelected: currentIndex == 0,
                     onTap: () => _onTabTap(context, 0),
                   ),
                   // Category
                   NavItem(
                     icon: "assets/icons/navigation/category_inactive.png",
-                    activeIcon: "assets/icons/navigation/category_active.png",
+                    activeIcon: isDark
+                        ? "assets/icons/navigation/category_active_dark.png"
+                        : "assets/icons/navigation/category_active.png",
                     label: l10n.navCategory,
                     isSelected: currentIndex == 1,
                     onTap: () => _onTabTap(context, 1),
@@ -49,14 +56,18 @@ class BottomNavBar extends StatelessWidget {
                   // Live TV
                   NavItem(
                     icon: "assets/icons/navigation/play_inactive.png",
-                    activeIcon: "assets/icons/navigation/play_active.png",
+                    activeIcon: isDark
+                        ? "assets/icons/navigation/play_active_dark.png"
+                        : "assets/icons/navigation/play_active.png",
                     label: l10n.navLive,
                     isSelected: currentIndex == 2,
                     onTap: () => _onTabTap(context, 2),
                   ),
                   NavItem(
                     icon: "assets/icons/navigation/archive_inactive.png",
-                    activeIcon: "assets/icons/navigation/archive_active.png",
+                    activeIcon: isDark
+                        ? "assets/icons/navigation/archive_active_dark.png"
+                        : "assets/icons/navigation/archive_active.png",
                     label: l10n.navSave,
                     isSelected: currentIndex == 3,
                     onTap: () => _onTabTap(context, 3),
@@ -64,7 +75,9 @@ class BottomNavBar extends StatelessWidget {
                   // Profile
                   NavItem(
                     icon: "assets/icons/navigation/user_inactive.png",
-                    activeIcon: "assets/icons/navigation/user_active.png",
+                    activeIcon: isDark
+                        ? "assets/icons/navigation/user_active_dark.png"
+                        : "assets/icons/navigation/user_active.png",
                     label: l10n.navProfile,
                     isSelected: currentIndex == 4,
                     onTap: () => _onTabTap(context, 4),

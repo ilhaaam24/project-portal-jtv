@@ -1,8 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:portal_jtv/core/helper/format_date.dart';
 import 'package:portal_jtv/core/theme/color/portal_colors.dart';
+import 'package:portal_jtv/features/bookmark/domain/entities/saved_news_entity.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SavedNewsCard extends StatelessWidget {
-  final dynamic item;
+  final SavedNewsEntity item;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
@@ -16,7 +21,7 @@ class SavedNewsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: ValueKey(item.id),
+      key: ValueKey(item.idSaved),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.endToStart) {
@@ -24,7 +29,7 @@ class SavedNewsCard extends StatelessWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                content: Text(
+                content: const Text(
                   "Apakah kamu yakin ingin menghapus berita ini dari daftar simpan?",
                 ),
                 actions: <Widget>[
@@ -56,99 +61,166 @@ class SavedNewsCard extends StatelessWidget {
         color: Colors.red,
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-      child: Card(
-        elevation: 0,
-        shadowColor: Colors.transparent,
-
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.grey.shade300, width: .5),
+          ),
+        ),
+        child: Card(
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          color: Colors.transparent,
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: onTap,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Thumbnail
+                // ─── GAMBAR ───
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    item.berita.photo ?? '',
-                    width: 100,
-                    height: 75,
+                  borderRadius: BorderRadius.circular(16),
+                  child: CachedNetworkImage(
+                    imageUrl: item.photo ?? '',
+                    width: 90,
+                    height: 90,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Container(
-                      width: 100,
-                      height: 75,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.image, color: Colors.grey),
+                    placeholder: (context, url) => Container(
+                      width: 90,
+                      height: 90,
+                      color: Colors.grey.shade200,
+                      child: const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      width: 90,
+                      height: 90,
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 12),
 
-                // Content
+                // ─── TEKS ───
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Kategori
-                      if (item.berita.category != null)
-                        Text(
-                          item.berita.category!,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.blue[700],
-                          ),
-                        ),
-                      const SizedBox(height: 4),
-
-                      // Judul
                       Text(
-                        item.berita.title,
-                        maxLines: 2,
+                        item.title,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 6),
-
-                      // Tanggal + Info disimpan
+                      const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(
-                            Icons.access_time,
-                            size: 12,
-                            color: Colors.grey[500],
+                          SvgPicture.asset(
+                            'assets/icons/author.svg',
+                            height: 18,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            item.berita.date ?? '',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey[500],
+                          Expanded(
+                            child: Text(
+                              '${item.author} • ${formatDate(item.date ?? "")}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
                             ),
                           ),
-                          // const SizedBox(width: 12),
-                          // Icon(
-                          //   Icons.bookmark,
-                          //   size: 12,
-                          //   color: Colors.grey[500],
-                          // ),
-                          // const SizedBox(width: 4),
-                          // Text(
-                          //   'Disimpan ${_formatDate(item.createdAt)}',
-                          //   style: TextStyle(
-                          //     fontSize: 11,
-                          //     color: Colors.grey[500],
-                          //   ),
-                          // ),
                         ],
                       ),
                     ],
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                // ─── AKSI & KATEGORI ───
+                SizedBox(
+                  height: 100,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (item.category != null && item.category != "")
+                          Container(
+                            width: 70,
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: PortalColors.jtvJingga,
+                            ),
+                            child: Text(
+                              item.category!,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: Theme.of(context).textTheme.bodyMedium!
+                                  .copyWith(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    color: PortalColors.white,
+                                  ),
+                            ),
+                          )
+                        else
+                          const SizedBox(),
+                        SizedBox(
+                          width: 50,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Tombol Hapus (Pengganti Bookmark)
+                              GestureDetector(
+                                onTap: onDelete,
+                                child: Image.asset(
+                                  'assets/icons/bookmark-active.png',
+                                  height: 18,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  final url =
+                                      'https://portaljtv.com/${item.seoCategory}/${item.seo}';
+                                  SharePlus.instance.share(
+                                    ShareParams(
+                                      uri: Uri.parse(url),
+                                      subject: item.title,
+                                    ),
+                                  );
+                                },
+                                child: Image.asset(
+                                  'assets/icons/export-card.png',
+                                  height: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -157,29 +229,5 @@ class SavedNewsCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatDate(String dateStr) {
-    try {
-      final date = DateTime.parse(dateStr);
-      final months = [
-        '',
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'Mei',
-        'Jun',
-        'Jul',
-        'Agt',
-        'Sep',
-        'Okt',
-        'Nov',
-        'Des',
-      ];
-      return '${date.day} ${months[date.month]} ${date.year}';
-    } catch (_) {
-      return dateStr;
-    }
   }
 }

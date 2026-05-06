@@ -1,13 +1,16 @@
-
 import 'package:portal_jtv/core/constants/api_constants.dart';
 import 'package:portal_jtv/core/error/exceptions.dart';
 import 'package:portal_jtv/core/network/api_client.dart';
+import 'package:portal_jtv/features/home/data/models/news_model.dart';
 import 'package:portal_jtv/features/news_detail/data/models/news_detail_model.dart';
 import 'package:portal_jtv/features/news_detail/data/models/tag_model.dart';
 
 abstract class DetailRemoteDataSource {
   /// Ambil detail berita + tags
   Future<DetailRemoteResult> getNewsDetail(String seo);
+
+  /// Ambil berita terkait berdasarkan kategori
+  Future<List<NewsModel>> getRelatedNews(int limit, String seoCategory);
 
   Future<bool> sendHitCounter({required String seo, required String tipe});
 
@@ -100,6 +103,20 @@ class DetailRemoteDataSourceImpl implements DetailRemoteDataSource {
       // DELETE request - perlu tambah method delete di ApiClient
       final response = await client.delete('/saved-news/$idBerita');
       return !(response.data['is_saved'] ?? false);
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<List<NewsModel>> getRelatedNews(int limit, String seoCategory) async {
+    try {
+      final response = await client.get(
+        '${ApiConstants.newsKategori}/$seoCategory?limit=$limit',
+      );
+      return (response.data['data'] as List)
+          .map((json) => NewsModel.fromJson(json))
+          .toList();
     } catch (e) {
       throw ServerException(message: e.toString());
     }

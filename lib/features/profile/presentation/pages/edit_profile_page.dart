@@ -6,6 +6,7 @@ import '../../domain/entities/profile_entity.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_event.dart';
 import '../bloc/profile_state.dart';
+import '../../../../core/services/toast_service.dart';
 
 class EditProfilePage extends StatefulWidget {
   final ProfileEntity profile;
@@ -48,19 +49,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
         listenWhen: (prev, curr) => prev.updateStatus != curr.updateStatus,
         listener: (context, state) {
           if (state.updateStatus == UpdateStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.updateMessage ?? 'Berhasil!'),
-                backgroundColor: Colors.green,
-              ),
+            ToastService.showSuccess(
+              context,
+              state.updateMessage ?? 'Berhasil!',
             );
             Navigator.pop(context);
           } else if (state.updateStatus == UpdateStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.updateMessage ?? 'Gagal update'),
-                backgroundColor: Colors.red,
-              ),
+            ToastService.showError(
+              context,
+              state.updateMessage ?? 'Gagal update',
             );
           }
         },
@@ -86,30 +83,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 // Email
                 TextFormField(
+                  enabled: false,
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(),
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (val) {
-                    if (val == null || val.isEmpty) return 'Email wajib diisi';
-                    if (!val.contains('@')) return 'Email tidak valid';
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 16),
 
                 // Phone
                 TextFormField(
+                  enabled: false,
                   controller: _phoneController,
                   decoration: const InputDecoration(
                     labelText: 'No. Telepon',
                     prefixIcon: Icon(Icons.phone_outlined),
-                    border: OutlineInputBorder(),
                   ),
-                  keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 16),
 

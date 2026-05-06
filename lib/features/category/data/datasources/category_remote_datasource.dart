@@ -97,7 +97,7 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
       if (limit != null) queryParams['limit'] = limit;
 
       final response = await client.get(
-        '/news/kanal/$seo',
+        '/news/terbaru/$seo',
         queryParameters: queryParams,
       );
 

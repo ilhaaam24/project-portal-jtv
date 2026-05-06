@@ -1,11 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_jtv/core/network/connectivity_cubit.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../bloc/category_bloc.dart';
 import '../bloc/category_event.dart';
 import '../bloc/category_state.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/biro_entity.dart';
+import 'package:portal_jtv/core/widgets/no_internet_widget.dart';
 import 'package:portal_jtv/config/injection/injection.dart' as di;
 
 class CategoryPage extends StatelessWidget {
@@ -35,67 +39,96 @@ class _CategoryViewState extends State<_CategoryView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Kategori'), centerTitle: true),
-      body: BlocBuilder<CategoryBloc, CategoryState>(
-        builder: (context, state) {
-          switch (state.status) {
-            case CategoryStatus.initial:
-            case CategoryStatus.loading:
-              return const Center(child: CircularProgressIndicator());
-
-            case CategoryStatus.failure:
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(state.errorMessage ?? 'Gagal memuat'),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => context.read<CategoryBloc>().add(
-                        const LoadCategories(),
-                      ),
-                      child: const Text('Coba Lagi'),
-                    ),
-                  ],
-                ),
-              );
-
-            case CategoryStatus.success:
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ─── BIRO DROPDOWN ───
-                    _DropdownSection(
-                      title: 'Biro',
-                      isExpanded: _isBiroExpanded,
-                      onToggle: () =>
-                          setState(() => _isBiroExpanded = !_isBiroExpanded),
-                      child: _buildBiroGrid(context, state.biros),
-                    ),
-
-                    const Divider(),
-                    const SizedBox(height: 4),
-
-                    // ─── KANAL DROPDOWN ───
-                    _DropdownSection(
-                      title: 'Kanal',
-                      isExpanded: _isKanalExpanded,
-                      onToggle: () =>
-                          setState(() => _isKanalExpanded = !_isKanalExpanded),
-                      child: _buildCategoryGrid(context, state.categories),
-                    ),
-                  ],
-                ),
-              );
+      body: BlocListener<ConnectivityCubit, ConnectivityState>(
+        listener: (context, state) {
+          if (state.isConnected) {
+            context.read<CategoryBloc>().add(const LoadCategories());
           }
         },
+        child: BlocBuilder<CategoryBloc, CategoryState>(
+          builder: (context, state) {
+            switch (state.status) {
+              case CategoryStatus.initial:
+              case CategoryStatus.loading:
+                return Skeletonizer(
+                  enabled: true,
+                  child: _buildBodyContent(
+                    biros: _dummyBiros,
+                    categories: _dummyCategories,
+                  ),
+                );
+
+              case CategoryStatus.failure:
+                if (state.errorMessage == "No internet connection") {
+                  return NoInternetWidget(
+                    onRetry: () => context.read<CategoryBloc>().add(
+                      const LoadCategories(),
+                    ),
+                  );
+                }
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(state.errorMessage ?? 'Gagal memuat'),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => context.read<CategoryBloc>().add(
+                          const LoadCategories(),
+                        ),
+                        child: const Text('Coba Lagi'),
+                      ),
+                    ],
+                  ),
+                );
+
+              case CategoryStatus.success:
+                return _buildBodyContent(
+                  biros: state.biros,
+                  categories: state.categories,
+                );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBodyContent({
+    required List<BiroEntity> biros,
+    required List<CategoryEntity> categories,
+  }) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ─── BIRO DROPDOWN ───
+          _DropdownSection(
+            title: 'Biro',
+            isExpanded: _isBiroExpanded,
+            onToggle: () => setState(() => _isBiroExpanded = !_isBiroExpanded),
+            child: _buildBiroGrid(context, biros),
+          ),
+
+          const Divider(),
+          const SizedBox(height: 4),
+
+          // ─── KANAL DROPDOWN ───
+          _DropdownSection(
+            title: 'Kanal',
+            isExpanded: _isKanalExpanded,
+            onToggle: () =>
+                setState(() => _isKanalExpanded = !_isKanalExpanded),
+            child: _buildCategoryGrid(context, categories),
+          ),
+        ],
       ),
     );
   }
@@ -104,18 +137,6 @@ class _CategoryViewState extends State<_CategoryView> {
     BuildContext context,
     List<CategoryEntity> categories,
   ) {
-    final categoryIcons = <String, String>{
-      'peristiwa': 'assets/icons/category/peristiwa.png',
-      'politik': 'assets/icons/category/politik.png',
-      'hukum': 'assets/icons/category/hukum.png',
-      'ekbis': 'assets/icons/category/ekbis.png',
-      'olahraga': 'assets/icons/category/olahraga.png',
-      'pendidikan': 'assets/icons/category/pendidikan.png',
-      'kesehatan': 'assets/icons/category/kesehatan.png',
-      'nasional': 'assets/icons/category/nasional.png',
-      'gaya-hidup': 'assets/icons/category/gaya-hidup.png',
-      'komunitas': 'assets/icons/category/komunitas.png',
-    };
 
     return GridView.builder(
       shrinkWrap: true,
@@ -129,35 +150,58 @@ class _CategoryViewState extends State<_CategoryView> {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        final icon = categoryIcons[category.seo];
 
-        return icon != null
-            ? GestureDetector(
-                onTap: () => _navigateToNews(
-                  context,
-                  seo: category.seo,
-                  title: category.title,
-                  isBiro: false,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(icon, width: 48, height: 48),
-                    const SizedBox(height: 6),
-                    Text(
-                      category.title,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                      ),
+        return GestureDetector(
+          onTap: () => _navigateToNews(
+            context,
+            seo: category.seo,
+            title: category.title,
+            isBiro: false,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (category.imageUrl != '')
+                CachedNetworkImage(
+                  imageUrl: category.imageUrl!,
+                  width: 48,
+                  height: 48,
+                  errorWidget: (context, url, error) => Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ],
+                    child: const Icon(Icons.not_interested, size: 24),
+                  ),
+                )
+              else
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.not_interested,
+                    size: 24,
+                    color: Colors.grey,
+                  ),
                 ),
-              )
-            : null;
+              const SizedBox(height: 6),
+              Text(
+                category.title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -206,9 +250,10 @@ class _CategoryViewState extends State<_CategoryView> {
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
@@ -229,6 +274,76 @@ class _CategoryViewState extends State<_CategoryView> {
     );
   }
 }
+
+const _dummyBiros = [
+  BiroEntity(title: 'Jember', seo: 'jember'),
+  BiroEntity(title: 'Kediri', seo: 'kediri'),
+  BiroEntity(title: 'Banyuwangi', seo: 'banyuwangi'),
+  BiroEntity(title: 'Pacitan', seo: 'pacitan'),
+  BiroEntity(title: 'Madiun', seo: 'madiun'),
+  BiroEntity(title: 'Madura', seo: 'madura'),
+  BiroEntity(title: 'Malang', seo: 'malang'),
+  BiroEntity(title: 'Bojonegoro', seo: 'bojonegoro'),
+];
+
+const _dummyCategories = [
+  CategoryEntity(
+    id: 1,
+    title: 'Peristiwa',
+    seo: 'peristiwa',
+    seq: 1,
+    imageUrl: "assets/icons/category/peristiwa.png",
+  ),
+  CategoryEntity(
+    id: 2,
+    title: 'Politik',
+    seo: 'politik',
+    seq: 2,
+    imageUrl: "assets/icons/category/politik.png",
+  ),
+  CategoryEntity(
+    id: 3,
+    title: 'Hukum',
+    seo: 'hukum',
+    seq: 3,
+    imageUrl: "assets/icons/category/hukum.png",
+  ),
+  CategoryEntity(
+    id: 4,
+    title: 'Ekbis',
+    seo: 'ekbis',
+    seq: 4,
+    imageUrl: "assets/icons/category/ekbis.png",
+  ),
+  CategoryEntity(
+    id: 5,
+    title: 'Olahraga',
+    seo: 'olahraga',
+    seq: 5,
+    imageUrl: "",
+  ),
+  CategoryEntity(
+    id: 6,
+    title: 'Pendidikan',
+    seo: 'pendidikan',
+    seq: 6,
+    imageUrl: "",
+  ),
+  CategoryEntity(
+    id: 7,
+    title: 'Kesehatan',
+    seo: 'kesehatan',
+    seq: 7,
+    imageUrl: "",
+  ),
+  CategoryEntity(
+    id: 8,
+    title: 'Nasional',
+    seo: 'nasional',
+    seq: 8,
+    imageUrl: "",
+  ),
+];
 
 /// Widget reusable untuk section dropdown (Biro / Kanal)
 class _DropdownSection extends StatelessWidget {

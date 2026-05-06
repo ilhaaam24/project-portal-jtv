@@ -1,6 +1,8 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get_it/get_it.dart';
 import 'package:portal_jtv/core/network/api_client.dart';
+import 'package:portal_jtv/core/network/connectivity_cubit.dart';
+import 'package:portal_jtv/core/services/connectivity_service.dart';
 import 'package:portal_jtv/core/services/notification_service.dart';
 import 'package:portal_jtv/core/services/shared_preferences_service.dart';
 import 'package:portal_jtv/core/utils/text_size_preferences.dart';
@@ -35,6 +37,7 @@ import 'package:portal_jtv/features/live/data/datasources/live_remote_datasource
 import 'package:portal_jtv/features/live/data/repositories/live_repository_impl.dart';
 import 'package:portal_jtv/features/live/domain/repositories/live_repository.dart';
 import 'package:portal_jtv/features/live/domain/usecases/get_livestream.dart';
+import 'package:portal_jtv/features/live/domain/usecases/get_live_schedule.dart';
 import 'package:portal_jtv/features/live/presentation/bloc/live_bloc.dart';
 
 // ============ DETAIL FEATURE ============
@@ -42,6 +45,7 @@ import 'package:portal_jtv/features/news_detail/data/datasources/detail_remote_d
 import 'package:portal_jtv/features/news_detail/data/repositories/detail_repository_impl.dart';
 import 'package:portal_jtv/features/news_detail/domain/repositories/detail_repository.dart';
 import 'package:portal_jtv/features/news_detail/domain/usecases/get_news_detail.dart';
+import 'package:portal_jtv/features/news_detail/domain/usecases/get_related_news.dart';
 import 'package:portal_jtv/features/news_detail/domain/usecases/send_hit_counter.dart';
 import 'package:portal_jtv/features/news_detail/domain/usecases/check_bookmark_status.dart';
 import 'package:portal_jtv/features/news_detail/domain/usecases/save_bookmark.dart';
@@ -66,6 +70,37 @@ import 'package:portal_jtv/features/search/domain/usecases/search_news.dart';
 import 'package:portal_jtv/features/search/presentation/bloc/search_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// ============ VIDEO DETAIL FEATURE ============
+import 'package:portal_jtv/features/video_detail/data/datasources/video_remote_datasource.dart';
+import 'package:portal_jtv/features/video_detail/data/repositories/video_repository_impl.dart';
+import 'package:portal_jtv/features/video_detail/domain/repositories/video_repository.dart';
+import 'package:portal_jtv/features/video_detail/domain/usecases/get_paginated_videos.dart';
+import 'package:portal_jtv/features/video_detail/presentation/bloc/video_detail_bloc.dart';
+
+// ============ COMMENT FEATURE ============
+import 'package:portal_jtv/features/comment/data/datasources/comment_remote_datasource.dart';
+import 'package:portal_jtv/features/comment/data/repositories/comment_repository_impl.dart';
+import 'package:portal_jtv/features/comment/domain/repositories/comment_repository.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/get_comments.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/post_comment.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/update_comment.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/delete_comment.dart';
+import 'package:portal_jtv/features/comment/domain/usecases/toggle_comment_like.dart';
+import 'package:portal_jtv/features/comment/presentation/bloc/comment_bloc.dart';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+// ============ AUTH FEATURE ============
+import 'package:portal_jtv/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:portal_jtv/features/auth/data/datasources/auth_local_datasource.dart';
+import 'package:portal_jtv/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:portal_jtv/features/auth/domain/repositories/auth_repository.dart';
+import 'package:portal_jtv/features/auth/domain/usecases/login.dart';
+import 'package:portal_jtv/features/auth/domain/usecases/get_saved_auth.dart';
+import 'package:portal_jtv/features/auth/domain/usecases/logout.dart'
+    as auth_logout;
+import 'package:portal_jtv/features/auth/presentation/bloc/auth_bloc.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -78,9 +113,6 @@ Future<void> init() async {
   sl.registerLazySingleton<SharedPreferencesService>(
     () => SharedPreferencesService(sl()),
   );
-  // Core
-  sl.registerLazySingleton<ApiClient>(() => ApiClient(sl()));
-
   sl.registerLazySingleton<TextSizePreferences>(
     () => TextSizePreferences(sl()),
   );
@@ -127,6 +159,7 @@ Future<void> init() async {
   // Bloc
   sl.registerFactory<DetailBloc>(
     () => DetailBloc(
+      getRelatedNews: sl(),
       getNewsDetail: sl(),
       sendHitCounter: sl(),
       checkBookmarkStatus: sl(),
@@ -145,6 +178,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CheckBookmarkStatus(sl()));
   sl.registerLazySingleton(() => SaveBookmark(sl()));
   sl.registerLazySingleton(() => RemoveBookmark(sl()));
+  sl.registerLazySingleton(() => GetRelatedNews(sl()));
 
   // Repository
   sl.registerLazySingleton<DetailRepository>(
@@ -161,7 +195,11 @@ Future<void> init() async {
   //============================================================
   // Bloc
   sl.registerFactory<BookmarkBloc>(
-    () => BookmarkBloc(getSavedNewsList: sl(), deleteSavedNews: sl()),
+    () => BookmarkBloc(
+      getSavedNewsList: sl(),
+      deleteSavedNews: sl(),
+      saveBookmark: sl(),
+    ),
   );
   // Use Cases
   sl.registerLazySingleton(() => GetSavedNewsList(sl()));
@@ -191,14 +229,16 @@ Future<void> init() async {
   // Cubits (Singleton — shared across app)
   sl.registerLazySingleton<ThemeCubit>(() => ThemeCubit(sl()));
   sl.registerLazySingleton<LanguageCubit>(() => LanguageCubit(sl()));
-  sl.registerLazySingleton<NotificationCubit>(() => NotificationCubit(sl()));
+  sl.registerLazySingleton<NotificationCubit>(
+    () => NotificationCubit(sl(), sl()),
+  );
   // Use Cases
   sl.registerLazySingleton(() => GetProfile(sl()));
   sl.registerLazySingleton(() => UpdateProfile(sl()));
   sl.registerLazySingleton(() => Logout(sl()));
   // Repository
   sl.registerLazySingleton<ProfileRepository>(
-    () => ProfileRepositoryImpl(remoteDataSource: sl()),
+    () => ProfileRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
   );
   // Data Sources
   sl.registerLazySingleton<ProfileRemoteDataSource>(
@@ -228,9 +268,12 @@ Future<void> init() async {
 
   // ============ LIVE FEATURE ============
 
-  sl.registerFactory<LiveBloc>(() => LiveBloc(getLivestream: sl()));
+  sl.registerFactory<LiveBloc>(
+    () => LiveBloc(getLivestream: sl(), getLiveSchedule: sl()),
+  );
 
   sl.registerLazySingleton(() => GetLivestream(sl()));
+  sl.registerLazySingleton(() => GetLiveSchedule(sl()));
 
   sl.registerLazySingleton<LiveRepository>(
     () => LiveRepositoryImpl(remoteDataSource: sl()),
@@ -254,8 +297,75 @@ Future<void> init() async {
     () => CategoryRemoteDataSourceImpl(client: sl()),
   );
 
+  // ============ VIDEO DETAIL FEATURE ============
+
+  sl.registerFactory<VideoDetailBloc>(
+    () => VideoDetailBloc(getPaginatedVideos: sl()),
+  );
+  sl.registerLazySingleton(() => GetPaginatedVideos(sl()));
+  sl.registerLazySingleton<VideoRepository>(
+    () => VideoRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<VideoRemoteDataSource>(
+    () => VideoRemoteDataSourceImpl(client: sl()),
+  );
+
   // ============ NOTIFICATION SERVICE ============
   sl.registerLazySingleton<NotificationService>(
-    () => NotificationService(sl()),
+    () => NotificationService(sl(), sl()),
   );
+
+  // ============ COMMENT FEATURE ============
+
+  // Bloc
+  sl.registerFactory<CommentBloc>(
+    () => CommentBloc(
+      getComments: sl(),
+      postComment: sl(),
+      deleteComment: sl(),
+      toggleCommentLike: sl(),
+    ),
+  );
+  // Use Cases
+  sl.registerLazySingleton(() => GetComments(sl()));
+  sl.registerLazySingleton(() => PostComment(sl()));
+  sl.registerLazySingleton(() => UpdateComment(sl()));
+  sl.registerLazySingleton(() => DeleteComment(sl()));
+  sl.registerLazySingleton(() => ToggleCommentLike(sl()));
+  // Repository
+  sl.registerLazySingleton<CommentRepository>(
+    () => CommentRepositoryImpl(remoteDataSource: sl()),
+  );
+  // Data Sources
+  sl.registerLazySingleton<CommentRemoteDataSource>(
+    () => CommentRemoteDataSourceImpl(client: sl()),
+  );
+  // ============ AUTH FEATURE ============
+  sl.registerLazySingleton(() => const FlutterSecureStorage());
+
+  sl.registerLazySingleton<AuthBloc>(
+    () => AuthBloc(
+      login: sl(),
+      getSavedAuth: sl(),
+      logout: sl(),
+      notificationService: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => Login(sl()));
+  sl.registerLazySingleton(() => GetSavedAuth(sl()));
+  sl.registerLazySingleton(() => auth_logout.Logout(sl()));
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
+  );
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(client: sl()),
+  );
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(secureStorage: sl()),
+  );
+
+  // Core (Registered here to ensure all dependencies like AuthLocalDataSource are available)
+  sl.registerLazySingleton<ConnectivityService>(() => ConnectivityService());
+  sl.registerLazySingleton<ConnectivityCubit>(() => ConnectivityCubit(sl()));
+  sl.registerLazySingleton<ApiClient>(() => ApiClient(sl()));
 }

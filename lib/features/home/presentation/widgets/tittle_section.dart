@@ -12,7 +12,12 @@ class TittleSection extends StatelessWidget {
         Container(width: 4, height: 24, color: PortalColors.jtvJingga),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(title, style: Theme.of(context).textTheme.headlineSmall),
+          child: Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.w500),
+          ),
         ),
       ],
     );
