@@ -123,8 +123,9 @@ class NotificationService {
           final data = jsonDecode(response.payload!);
           final seo = data['seo'] as String?;
           final title = data['judul_berita'] as String?;
+          final photo = data['image'] as String?;
           if (seo != null && _router != null) {
-            _navigateToDetail(seo, title);
+            _navigateToDetail(seo: seo, title: title, photo: photo);
           }
         }
       },
@@ -193,18 +194,25 @@ class NotificationService {
     final notification = message.notification;
     if (notification == null) return;
 
+    // Buat mutable copy dari data dan tambahkan title jika belum ada
+    final Map<String, dynamic> data = Map<String, dynamic>.from(message.data);
+    if (!data.containsKey('judul_berita') && notification.title != null) {
+      data['judul_berita'] = notification.title;
+    }
+
     // Ambil image URL dari notifikasi FCM
     final imageUrl =
-        message.data['image'] ??
+        data['image'] ??
         notification.android?.imageUrl ??
         notification.apple?.imageUrl;
 
     if (imageUrl != null && imageUrl.trim().isNotEmpty) {
+      data['image'] = imageUrl.trim();
       // Tampilkan notif dengan gambar (async)
-      _showNotificationWithImage(notification, message.data, imageUrl.trim());
+      _showNotificationWithImage(notification, data, imageUrl.trim());
     } else {
       // Tampilkan notif biasa tanpa gambar
-      _showSimpleNotification(notification, message.data);
+      _showSimpleNotification(notification, data);
     }
   }
 
@@ -275,22 +283,27 @@ class NotificationService {
   /// Handle tap pada notifikasi (background / terminated)
   void _onNotificationTap(RemoteMessage message) {
     debugPrint('[FCM] Notification tapped: ${message.data}');
-    final seo = message.data['seo'] as String?;
-    final title = message.data['judul_berita'] as String?;
+    final data = message.data;
+    final seo = data['seo'] as String?;
+    // Fallback ke title dari notification jika judul_berita di data kosong
+    final title =
+        (data['judul_berita'] as String?) ?? message.notification?.title;
+    final photo = data['image'] as String?;
+
     if (seo != null) {
-      _navigateToDetail(seo, title);
+      _navigateToDetail(seo: seo, title: title, photo: photo);
     }
   }
 
   /// Navigate ke halaman detail berita
-  void _navigateToDetail(String seo, String? title) {
+  void _navigateToDetail({required String seo, String? title, String? photo}) {
     if (_router == null) return;
 
     final args = DetailArgsEntity(
       idBerita: 0,
       seo: seo,
       title: title ?? '',
-      photo: '',
+      photo: photo ?? '',
       date: '',
       category: '',
       seoCategory: '',
